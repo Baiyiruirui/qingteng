@@ -1,4 +1,4 @@
-import { streamText } from 'ai'
+import { streamText, convertToModelMessages } from 'ai'
 import { route } from '@/ai/router'
 import { CHARACTER_SYSTEM_PROMPT } from '@/ai/prompts/v1/character'
 
@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     const result = streamText({
       model: route.characterDialog,
       system: CHARACTER_SYSTEM_PROMPT,
-      messages,
+      messages: await convertToModelMessages(messages),
     })
     return result.toUIMessageStreamResponse()
   } catch (err) {
