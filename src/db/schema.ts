@@ -27,7 +27,7 @@ export const poems = pgTable('poems', {
 
 export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
-  name: text('name').notNull(),
+  name: text('name').notNull().unique(),
   passwordHash: text('password_hash').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
 })
