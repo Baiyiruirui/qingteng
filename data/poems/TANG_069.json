@@ -1,0 +1,175 @@
+{
+  "poem_id": "TANG_069",
+  "title": "山居秋暝",
+  "author": "王维",
+  "dynasty": "唐",
+  "grade": "初中",
+  "text_type": "律诗",
+  "themes": [
+    "山水田园",
+    "隐逸生活",
+    "禅意",
+    "人与自然和谐",
+    "秋日美景"
+  ],
+  "imagery": [
+    "空山",
+    "新雨",
+    "明月",
+    "青松",
+    "清泉",
+    "山石",
+    "竹林",
+    "浣女",
+    "荷花",
+    "渔舟"
+  ],
+  "rhetoric": [
+    "对仗",
+    "借景抒情",
+    "动静结合"
+  ],
+  "lines": [
+    {
+      "line_id": "TANG_069_L1",
+      "content": "空山新雨后，",
+      "imagery": [
+        "空山",
+        "雨后"
+      ],
+      "emotion": [
+        "清新",
+        "宁静"
+      ],
+      "translation": "空寂的山中，刚刚下过一场新雨。",
+      "translation_keywords": [
+        "空山",
+        "新雨后"
+      ],
+      "explanation": "诗人居住的深山幽谷，刚刚下了一场雨，空气格外清新。"
+    },
+    {
+      "line_id": "TANG_069_L2",
+      "content": "天气晚来秋。",
+      "imagery": [
+        "秋天",
+        "夜晚"
+      ],
+      "emotion": [
+        "凉爽",
+        "清幽"
+      ],
+      "translation": "傍晚时分，山中更显秋意。",
+      "translation_keywords": [
+        "天气",
+        "晚来秋"
+      ],
+      "explanation": "傍晚时分，山中透出浓浓的秋意，凉爽宜人。"
+    },
+    {
+      "line_id": "TANG_069_L3",
+      "content": "明月松间照，",
+      "imagery": [
+        "明月",
+        "青松"
+      ],
+      "emotion": [
+        "皎洁",
+        "清幽"
+      ],
+      "translation": "皎洁的明月透过松林洒落下来。",
+      "translation_keywords": [
+        "明月",
+        "松间照"
+      ],
+      "explanation": "皎洁的月光透过茂密的松林，斑驳地洒在地上，营造出一种清幽的氛围。"
+    },
+    {
+      "line_id": "TANG_069_L4",
+      "content": "清泉石上流。",
+      "imagery": [
+        "清泉",
+        "山石"
+      ],
+      "emotion": [
+        "清澈",
+        "潺潺"
+      ],
+      "translation": "清澈的泉水在山石上潺潺流淌。",
+      "translation_keywords": [
+        "清泉",
+        "石上流"
+      ],
+      "explanation": "清澈的泉水从山石上潺潺流过，发出悦耳的声音。"
+    },
+    {
+      "line_id": "TANG_069_L5",
+      "content": "竹喧归浣女，",
+      "imagery": [
+        "竹林",
+        "浣女"
+      ],
+      "emotion": [
+        "生动",
+        "自然"
+      ],
+      "translation": "竹林深处传来喧哗声，是洗完衣服的女子回来了。",
+      "translation_keywords": [
+        "竹喧",
+        "归浣女"
+      ],
+      "explanation": "茂密的竹林深处，隐约传来一阵阵喧闹声，原来是洗完衣服的农家女子结伴归来。"
+    },
+    {
+      "line_id": "TANG_069_L6",
+      "content": "莲动下渔舟。",
+      "imagery": [
+        "荷花",
+        "渔船"
+      ],
+      "emotion": [
+        "灵动",
+        "恬静"
+      ],
+      "translation": "荷叶摇动，渔船缓缓向下游驶去。",
+      "translation_keywords": [
+        "莲动",
+        "下渔舟"
+      ],
+      "explanation": "荷叶轻轻晃动，原来是停靠在荷花旁边的渔船，正缓缓地向下游划去。"
+    },
+    {
+      "line_id": "TANG_069_L7",
+      "content": "随意春芳歇，",
+      "imagery": [
+        "春芳"
+      ],
+      "emotion": [
+        "顺其自然",
+        "超脱"
+      ],
+      "translation": "任凭春天的花草繁华凋谢。",
+      "translation_keywords": [
+        "随意",
+        "春芳",
+        "歇"
+      ],
+      "explanation": "诗人不理会春天花草的盛开与凋谢，一切顺其自然，体现了超然的心境。"
+    },
+    {
+      "line_id": "TANG_069_L8",
+      "content": "王孙自可留。",
+      "imagery": [],
+      "emotion": [
+        "悠然",
+        "自得"
+      ],
+      "translation": "隐居于此，我自然可以长久居住下去。",
+      "translation_keywords": [
+        "王孙",
+        "自可留"
+      ],
+      "explanation": "在这般清幽美好的山间，即使是贵族公子（或泛指有志之士）也愿意留下来，表明诗人自己也乐于隐居此处。"
+    }
+  ]
+}

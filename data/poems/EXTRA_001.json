@@ -1,0 +1,156 @@
+{
+  "poem_id": "EXTRA_001",
+  "title": "江南",
+  "author": "汉乐府",
+  "dynasty": "汉",
+  "grade": "小学",
+  "text_type": "古诗",
+  "themes": [
+    "自然",
+    "劳动"
+  ],
+  "imagery": [
+    "莲叶",
+    "鱼"
+  ],
+  "rhetoric": [
+    "反复",
+    "互文",
+    "铺陈"
+  ],
+  "lines": [
+    {
+      "line_id": "EXTRA_001_L1",
+      "content": "江南可采莲",
+      "imagery": [
+        "莲叶",
+        "鱼"
+      ],
+      "emotion": [
+        "自然",
+        "劳动"
+      ],
+      "translation": "江南到了可以采莲的时节。",
+      "translation_keywords": [
+        "江南",
+        "可",
+        "采莲"
+      ],
+      "explanation": "开篇点明地点和季节，用“可”字写出莲叶茂盛、适合采摘，让人感受到江南水乡的丰收和生机。"
+    },
+    {
+      "line_id": "EXTRA_001_L2",
+      "content": "莲叶何田田",
+      "imagery": [
+        "莲叶",
+        "鱼"
+      ],
+      "emotion": [
+        "自然",
+        "劳动"
+      ],
+      "translation": "莲叶长得多么茂盛、碧绿。",
+      "translation_keywords": [
+        "莲叶",
+        "何",
+        "田田"
+      ],
+      "explanation": "“田田”形容莲叶饱满、层层叠叠的样子，用感叹语气写出莲叶的繁茂，画面感很强。"
+    },
+    {
+      "line_id": "EXTRA_001_L3",
+      "content": "鱼戏莲叶间",
+      "imagery": [
+        "莲叶",
+        "鱼"
+      ],
+      "emotion": [
+        "自然",
+        "劳动"
+      ],
+      "translation": "鱼儿在莲叶之间游来游去。",
+      "translation_keywords": [
+        "鱼",
+        "戏",
+        "莲叶间"
+      ],
+      "explanation": "“戏”字把鱼儿写得活泼可爱，像在玩耍一样，让静态的莲叶有了动态的乐趣。"
+    },
+    {
+      "line_id": "EXTRA_001_L4",
+      "content": "鱼戏莲叶东",
+      "imagery": [
+        "莲叶",
+        "鱼"
+      ],
+      "emotion": [
+        "自然",
+        "劳动"
+      ],
+      "translation": "鱼儿在莲叶的东边游动。",
+      "translation_keywords": [
+        "鱼",
+        "戏",
+        "莲叶东"
+      ],
+      "explanation": "通过反复句式，写出鱼儿四处游动，仿佛在捉迷藏，也暗示了莲叶的茂密和广阔。"
+    },
+    {
+      "line_id": "EXTRA_001_L5",
+      "content": "鱼戏莲叶西",
+      "imagery": [
+        "莲叶",
+        "鱼"
+      ],
+      "emotion": [
+        "自然",
+        "劳动"
+      ],
+      "translation": "鱼儿在莲叶的西边游动。",
+      "translation_keywords": [
+        "鱼",
+        "戏",
+        "莲叶西"
+      ],
+      "explanation": "继续用方位词铺陈，强化鱼儿自由穿梭的画面，也让人感受到采莲人目光追随鱼儿的快乐。"
+    },
+    {
+      "line_id": "EXTRA_001_L6",
+      "content": "鱼戏莲叶南",
+      "imagery": [
+        "莲叶",
+        "鱼"
+      ],
+      "emotion": [
+        "自然",
+        "劳动"
+      ],
+      "translation": "鱼儿在莲叶的南边游动。",
+      "translation_keywords": [
+        "鱼",
+        "戏",
+        "莲叶南"
+      ],
+      "explanation": "方位变换，写出鱼儿无处不在，整个莲塘充满生机，也暗含采莲人内心的欢喜。"
+    },
+    {
+      "line_id": "EXTRA_001_L7",
+      "content": "鱼戏莲叶北",
+      "imagery": [
+        "莲叶",
+        "鱼"
+      ],
+      "emotion": [
+        "自然",
+        "劳动"
+      ],
+      "translation": "鱼儿在莲叶的北边游动。",
+      "translation_keywords": [
+        "鱼",
+        "戏",
+        "莲叶北"
+      ],
+      "explanation": "最后一句收束，用四个方位完整呈现鱼儿嬉戏的全景，手法简单却生动，让人仿佛身临其境。"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "poem_id": "TANG_006",
+  "title": "江雪",
+  "author": "柳宗元",
+  "dynasty": "唐",
+  "grade": "小学",
+  "text_type": "五言绝句",
+  "themes": ["写景"],
+  "imagery": ["雪", "江"],
+  "rhetoric": ["夸张", "对比"],
+  "lines": [
+    {
+      "line_id": "TANG_006_L1",
+      "content": "千山鸟飞绝",
+      "imagery": ["山"],
+      "emotion": ["孤独"],
+      "translation": "千山之中，没有鸟飞。",
+      "translation_keywords": ["没有鸟", "山"],
+      "explanation": "夸张地写出环境的寂静。"
+    },
+    {
+      "line_id": "TANG_006_L2",
+      "content": "万径人踪灭",
+      "imagery": [],
+      "emotion": ["孤独"],
+      "translation": "所有小路上都没有人的踪迹。",
+      "translation_keywords": ["没有人"],
+      "explanation": "进一步表现冷清。"
+    },
+    {
+      "line_id": "TANG_006_L3",
+      "content": "孤舟蓑笠翁",
+      "imagery": ["水"],
+      "emotion": ["孤独"],
+      "translation": "一位穿着蓑衣斗笠的老人坐在小船上。",
+      "translation_keywords": ["老人", "小船"],
+      "explanation": "人物出现，形成对比。"
+    },
+    {
+      "line_id": "TANG_006_L4",
+      "content": "独钓寒江雪",
+      "imagery": ["雪"],
+      "emotion": ["孤独"],
+      "translation": "在寒冷的江面上独自钓鱼。",
+      "translation_keywords": ["独自", "钓鱼", "寒冷"],
+      "explanation": "人与环境融为一体。"
+    }
+  ]
+}

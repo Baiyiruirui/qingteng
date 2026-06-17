@@ -1,0 +1,98 @@
+{
+  "poem_id": "EXTRA_025",
+  "title": "乐游原",
+  "author": "李商隐",
+  "dynasty": "唐",
+  "grade": "小学/初中",
+  "text_type": "绝句",
+  "themes": [
+    "人生",
+    "惜时"
+  ],
+  "imagery": [
+    "夕阳",
+    "古原"
+  ],
+  "rhetoric": [
+    "对比",
+    "象征"
+  ],
+  "lines": [
+    {
+      "line_id": "EXTRA_025_L1",
+      "content": "向晚意不适",
+      "imagery": [
+        "夕阳",
+        "古原"
+      ],
+      "emotion": [
+        "人生",
+        "惜时"
+      ],
+      "translation": "傍晚时分，心情不太好。",
+      "translation_keywords": [
+        "傍晚",
+        "心情",
+        "不好"
+      ],
+      "explanation": "开篇点明时间（向晚）和心情（意不适），为后文出游做铺垫。用“不适”直接写出内心的烦闷，让读者感受到诗人的情绪。"
+    },
+    {
+      "line_id": "EXTRA_025_L2",
+      "content": "驱车登古原",
+      "imagery": [
+        "夕阳",
+        "古原"
+      ],
+      "emotion": [
+        "人生",
+        "惜时"
+      ],
+      "translation": "驾着马车登上古老的乐游原。",
+      "translation_keywords": [
+        "驾车",
+        "登上",
+        "古原"
+      ],
+      "explanation": "诗人为了排解烦闷，驾车来到乐游原。一个“登”字写出行动，也暗示诗人想站得高、看得远，寻找慰藉。"
+    },
+    {
+      "line_id": "EXTRA_025_L3",
+      "content": "夕阳无限好",
+      "imagery": [
+        "夕阳",
+        "古原"
+      ],
+      "emotion": [
+        "人生",
+        "惜时"
+      ],
+      "translation": "夕阳的景色真是无限美好。",
+      "translation_keywords": [
+        "夕阳",
+        "无限",
+        "美好"
+      ],
+      "explanation": "诗人被夕阳的美景深深吸引，“无限好”三个字直接赞美，表达出对眼前景色的惊叹和喜爱。夕阳是温暖而壮丽的意象。"
+    },
+    {
+      "line_id": "EXTRA_025_L4",
+      "content": "只是近黄昏",
+      "imagery": [
+        "夕阳",
+        "古原"
+      ],
+      "emotion": [
+        "人生",
+        "惜时"
+      ],
+      "translation": "只可惜已经接近黄昏了。",
+      "translation_keywords": [
+        "可惜",
+        "接近",
+        "黄昏"
+      ],
+      "explanation": "笔锋一转，由赞美转为惋惜。“只是”一词转折，点出美好事物难以长久的遗憾。黄昏象征时光流逝，诗人借此抒发对美好事物易逝的感慨。"
+    }
+  ]
+}

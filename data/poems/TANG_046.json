@@ -1,0 +1,458 @@
+{
+  "poem_id": "TANG_046",
+  "title": "新安吏",
+  "author": "杜甫",
+  "dynasty": "唐",
+  "grade": "中学",
+  "text_type": "五言古诗",
+  "themes": [
+    "战争的残酷",
+    "征兵的非人道",
+    "骨肉分离",
+    "官吏的无情",
+    "批判现实"
+  ],
+  "imagery": [
+    "新安道",
+    "点兵",
+    "壮丁",
+    "耆老",
+    "鸡鸣",
+    "鼓声",
+    "日入",
+    "戈戟",
+    "幼女",
+    "泪雨"
+  ],
+  "rhetoric": [
+    "白描",
+    "对话",
+    "对比",
+    "侧面描写"
+  ],
+  "lines": [
+    {
+      "line_id": "TANG_046_L1",
+      "content": "客行新安道",
+      "imagery": [
+        "新安道"
+      ],
+      "emotion": [
+        "旅途",
+        "见闻"
+      ],
+      "translation": "我在前往新安的路上行进。",
+      "translation_keywords": [
+        "客行",
+        "新安道",
+        "旅途"
+      ],
+      "explanation": "我作为旅人，行走到新安的路上。"
+    },
+    {
+      "line_id": "TANG_046_L2",
+      "content": "喧呼闻点兵",
+      "imagery": [],
+      "emotion": [
+        "嘈杂",
+        "不安"
+      ],
+      "translation": "听到喧闹的呼喊声，原来是官府在点名征兵。",
+      "translation_keywords": [
+        "喧呼",
+        "闻",
+        "点兵",
+        "征兵"
+      ],
+      "explanation": "路上听到一片喧哗声，原来是官府在点名征兵。"
+    },
+    {
+      "line_id": "TANG_046_L3",
+      "content": "借问新安吏",
+      "imagery": [],
+      "emotion": [
+        "询问",
+        "好奇"
+      ],
+      "translation": "我向新安的差役打听情况。",
+      "translation_keywords": [
+        "借问",
+        "新安吏",
+        "询问"
+      ],
+      "explanation": "我向当地的差役询问征兵的情况。"
+    },
+    {
+      "line_id": "TANG_046_L4",
+      "content": "汝亦知时名",
+      "imagery": [],
+      "emotion": [
+        "质问",
+        "无奈"
+      ],
+      "translation": "你们也知道现在的时局是多么动荡、人心惶惶吗？",
+      "translation_keywords": [
+        "汝",
+        "亦",
+        "知",
+        "时名",
+        "时局"
+      ],
+      "explanation": "难道你们不知道现在战乱不止，民不聊生，百姓生活艰辛吗？"
+    },
+    {
+      "line_id": "TANG_046_L5",
+      "content": "县官踏九州",
+      "imagery": [],
+      "emotion": [
+        "权力",
+        "压迫"
+      ],
+      "translation": "县官的政令，在九州大地横行无阻。",
+      "translation_keywords": [
+        "县官",
+        "踏",
+        "九州",
+        "权力"
+      ],
+      "explanation": "县官的政令遍及九州大地，征兵范围极广。"
+    },
+    {
+      "line_id": "TANG_046_L6",
+      "content": "壮丁尽充军",
+      "imagery": [
+        "壮丁"
+      ],
+      "emotion": [
+        "征兵",
+        "残酷"
+      ],
+      "translation": "所有的壮年男子都被征去当兵了。",
+      "translation_keywords": [
+        "壮丁",
+        "尽",
+        "充军",
+        "征兵"
+      ],
+      "explanation": "所有身强力壮的男子都被征发去当兵了。"
+    },
+    {
+      "line_id": "TANG_046_L7",
+      "content": "耆老仍加力",
+      "imagery": [
+        "耆老"
+      ],
+      "emotion": [
+        "苛刻",
+        "压榨"
+      ],
+      "translation": "年迈的老人仍然被加派劳役，让他们拼尽力气。",
+      "translation_keywords": [
+        "耆老",
+        "仍",
+        "加力",
+        "压榨"
+      ],
+      "explanation": "甚至年迈的老人也被强迫去服役，让他们付出更多的体力。"
+    },
+    {
+      "line_id": "TANG_046_L8",
+      "content": "何以随定远",
+      "imagery": [],
+      "emotion": [
+        "疑问",
+        "服役"
+      ],
+      "translation": "他们这些老弱之人，凭什么去追随远征的将领呢？",
+      "translation_keywords": [
+        "何以",
+        "随",
+        "定远",
+        "服役"
+      ],
+      "explanation": "这些老弱的人，又如何能跟随远征的将领去打仗呢？"
+    },
+    {
+      "line_id": "TANG_046_L9",
+      "content": "鸡鸣伐鼓声",
+      "imagery": [
+        "鸡鸣",
+        "鼓声"
+      ],
+      "emotion": [
+        "催促",
+        "急迫"
+      ],
+      "translation": "天刚蒙蒙亮，击鼓催促人们上路的声音就响起来了。",
+      "translation_keywords": [
+        "鸡鸣",
+        "伐鼓",
+        "催促"
+      ],
+      "explanation": "鸡鸣时分，就传来击鼓催促的声音，命令被征者尽快上路。"
+    },
+    {
+      "line_id": "TANG_046_L10",
+      "content": "日入倒戈戟",
+      "imagery": [
+        "戈戟"
+      ],
+      "emotion": [
+        "疲惫",
+        "劳累"
+      ],
+      "translation": "日落时分，疲惫的人们放下手中的兵器休息。",
+      "translation_keywords": [
+        "日入",
+        "倒",
+        "戈戟",
+        "疲惫"
+      ],
+      "explanation": "直到日落时分，这些被征者才能放下兵器，获得片刻的休息。"
+    },
+    {
+      "line_id": "TANG_046_L11",
+      "content": "分明县官谱",
+      "imagery": [],
+      "emotion": [
+        "明确",
+        "规章"
+      ],
+      "translation": "这都是县官分明定下的征兵文书。",
+      "translation_keywords": [
+        "分明",
+        "县官",
+        "谱",
+        "命令"
+      ],
+      "explanation": "这分明是县官根据文书上所定的规章行事，无情无义。"
+    },
+    {
+      "line_id": "TANG_046_L12",
+      "content": "勿使簿书诮",
+      "imagery": [],
+      "emotion": [
+        "警告",
+        "轻视"
+      ],
+      "translation": "不要让公文簿册上的记载被轻视而无法执行。",
+      "translation_keywords": [
+        "勿使",
+        "簿书",
+        "诮",
+        "警告"
+      ],
+      "explanation": "不要让那些登记在册的征兵命令遭到轻视，务必执行。"
+    },
+    {
+      "line_id": "TANG_046_L13",
+      "content": "退之长者言",
+      "imagery": [],
+      "emotion": [
+        "倾听",
+        "悲悯"
+      ],
+      "translation": "我退后一步，听了当地老者的话。",
+      "translation_keywords": [
+        "退",
+        "之",
+        "长者",
+        "言",
+        "倾听"
+      ],
+      "explanation": "我退到一旁，听着旁边一位老人说的话。"
+    },
+    {
+      "line_id": "TANG_046_L14",
+      "content": "为我道辛苦",
+      "imagery": [],
+      "emotion": [
+        "诉苦",
+        "悲伤"
+      ],
+      "translation": "他为我诉说着征兵的种种辛苦。",
+      "translation_keywords": [
+        "为",
+        "我",
+        "道",
+        "辛苦",
+        "诉苦"
+      ],
+      "explanation": "老人向我诉说着这些被征者的艰辛和痛苦。"
+    },
+    {
+      "line_id": "TANG_046_L15",
+      "content": "幼女才六岁",
+      "imagery": [
+        "幼女"
+      ],
+      "emotion": [
+        "幼小",
+        "可怜"
+      ],
+      "translation": "家里的小女儿才六岁。",
+      "translation_keywords": [
+        "幼女",
+        "才",
+        "六岁",
+        "幼小"
+      ],
+      "explanation": "家里的小女儿才只有六岁大，如此幼小。"
+    },
+    {
+      "line_id": "TANG_046_L16",
+      "content": "未知事姑嫜",
+      "imagery": [],
+      "emotion": [
+        "未懂",
+        "嫁人"
+      ],
+      "translation": "还不懂得如何服侍公婆。",
+      "translation_keywords": [
+        "未知",
+        "事",
+        "姑嫜",
+        "嫁人"
+      ],
+      "explanation": "她还不懂得如何服侍公婆，更别说嫁人了。"
+    },
+    {
+      "line_id": "TANG_046_L17",
+      "content": "念君实小子",
+      "imagery": [],
+      "emotion": [
+        "思念",
+        "幼子"
+      ],
+      "translation": "想到你们这些年幼的孩子啊。",
+      "translation_keywords": [
+        "念",
+        "君",
+        "实",
+        "小子",
+        "思念"
+      ],
+      "explanation": "想到你们这些年幼的孩子，怎能忍心让你们去当兵？"
+    },
+    {
+      "line_id": "TANG_046_L18",
+      "content": "何由去远征",
+      "imagery": [],
+      "emotion": [
+        "疑问",
+        "远征"
+      ],
+      "translation": "怎么能让他们去远征呢？",
+      "translation_keywords": [
+        "何由",
+        "去",
+        "远征",
+        "疑问"
+      ],
+      "explanation": "他们这么年幼，如何能承担起远征的重任呢？"
+    },
+    {
+      "line_id": "TANG_046_L19",
+      "content": "举家尽征戍",
+      "imagery": [],
+      "emotion": [
+        "全家",
+        "征兵"
+      ],
+      "translation": "全家上下都被征去戍边。",
+      "translation_keywords": [
+        "举家",
+        "尽",
+        "征戍",
+        "全家被征"
+      ],
+      "explanation": "全家大小，连同老人孩子，都被征发去戍守边疆。"
+    },
+    {
+      "line_id": "TANG_046_L20",
+      "content": "荡析离本宗",
+      "imagery": [],
+      "emotion": [
+        "离散",
+        "家破"
+      ],
+      "translation": "家产荡尽，骨肉分离，离开了自己的宗族。",
+      "translation_keywords": [
+        "荡析",
+        "离",
+        "本宗",
+        "离散",
+        "家破"
+      ],
+      "explanation": "家产荡尽，骨肉分离，从此离开了世代居住的故土。"
+    },
+    {
+      "line_id": "TANG_046_L21",
+      "content": "生者今已矣",
+      "imagery": [],
+      "emotion": [
+        "活者",
+        "无望"
+      ],
+      "translation": "活着的人如今也已经如此困顿不堪。",
+      "translation_keywords": [
+        "生者",
+        "今",
+        "已矣",
+        "无望"
+      ],
+      "explanation": "活着的人如今也已经到了如此悲惨的境地。"
+    },
+    {
+      "line_id": "TANG_046_L22",
+      "content": "死者安能追",
+      "imagery": [],
+      "emotion": [
+        "死者",
+        "无法挽回"
+      ],
+      "translation": "死去的人又怎么能追得回来呢？",
+      "translation_keywords": [
+        "死者",
+        "安",
+        "能追",
+        "无法挽回"
+      ],
+      "explanation": "而那些在战乱中死去的人，又怎能追回他们的生命呢？"
+    },
+    {
+      "line_id": "TANG_046_L23",
+      "content": "黄昏挽去时",
+      "imagery": [],
+      "emotion": [
+        "黄昏",
+        "离别"
+      ],
+      "translation": "黄昏时分，被拉走的人们。",
+      "translation_keywords": [
+        "黄昏",
+        "挽",
+        "去时",
+        "离别"
+      ],
+      "explanation": "黄昏时分，被强行拉走的人们踏上了征途。"
+    },
+    {
+      "line_id": "TANG_046_L24",
+      "content": "将别泪如雨",
+      "imagery": [],
+      "emotion": [
+        "离别",
+        "痛哭"
+      ],
+      "translation": "即将离别，母子痛哭，泪如雨下。",
+      "translation_keywords": [
+        "将别",
+        "泪",
+        "如雨",
+        "痛哭"
+      ],
+      "explanation": "即将与家人骨肉分离时，悲痛欲绝，泪水如同雨下。"
+    }
+  ]
+}

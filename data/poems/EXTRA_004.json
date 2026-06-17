@@ -1,0 +1,102 @@
+{
+  "poem_id": "EXTRA_004",
+  "title": "咏鹅",
+  "author": "骆宾王",
+  "dynasty": "唐",
+  "grade": "小学",
+  "text_type": "绝句",
+  "themes": [
+    "童趣",
+    "动物"
+  ],
+  "imagery": [
+    "白鹅",
+    "绿水"
+  ],
+  "rhetoric": [
+    "拟声",
+    "对仗",
+    "色彩对比"
+  ],
+  "lines": [
+    {
+      "line_id": "EXTRA_004_L1",
+      "content": "鹅鹅鹅",
+      "imagery": [
+        "白鹅",
+        "绿水"
+      ],
+      "emotion": [
+        "童趣",
+        "动物"
+      ],
+      "translation": "鹅啊，鹅啊，鹅啊。",
+      "translation_keywords": [
+        "鹅",
+        "叫声",
+        "重复"
+      ],
+      "explanation": "开头连用三个“鹅”字，模仿鹅的叫声，一下子把读者带入鹅群中，充满童趣和动感。"
+    },
+    {
+      "line_id": "EXTRA_004_L2",
+      "content": "曲项向天歌",
+      "imagery": [
+        "白鹅",
+        "绿水"
+      ],
+      "emotion": [
+        "童趣",
+        "动物"
+      ],
+      "translation": "弯着脖子朝着天空唱歌。",
+      "translation_keywords": [
+        "弯曲",
+        "脖子",
+        "天空",
+        "歌唱"
+      ],
+      "explanation": "“曲项”写出鹅伸长脖子仰天鸣叫的姿态，“向天歌”用拟人手法，把鹅的叫声比作唱歌，生动有趣。"
+    },
+    {
+      "line_id": "EXTRA_004_L3",
+      "content": "白毛浮绿水",
+      "imagery": [
+        "白鹅",
+        "绿水"
+      ],
+      "emotion": [
+        "童趣",
+        "动物"
+      ],
+      "translation": "白色的羽毛漂浮在碧绿的水面上。",
+      "translation_keywords": [
+        "白色",
+        "羽毛",
+        "漂浮",
+        "绿水"
+      ],
+      "explanation": "“白毛”与“绿水”形成鲜明的色彩对比，一个“浮”字写出鹅在水面悠然自得的样子，画面很美。"
+    },
+    {
+      "line_id": "EXTRA_004_L4",
+      "content": "红掌拨清波",
+      "imagery": [
+        "白鹅",
+        "绿水"
+      ],
+      "emotion": [
+        "童趣",
+        "动物"
+      ],
+      "translation": "红色的脚掌拨动着清澈的水波。",
+      "translation_keywords": [
+        "红色",
+        "脚掌",
+        "拨动",
+        "清波"
+      ],
+      "explanation": "“红掌”与“清波”再次用色彩对比，“拨”字写出鹅划水的动作，让画面动起来，充满生机。"
+    }
+  ]
+}

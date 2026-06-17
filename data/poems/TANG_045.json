@@ -1,0 +1,457 @@
+{
+  "poem_id": "TANG_045",
+  "title": "石壕吏",
+  "author": "杜甫",
+  "dynasty": "唐",
+  "grade": "中学",
+  "text_type": "五言古诗",
+  "themes": [
+    "战争的残酷",
+    "官吏的暴虐",
+    "百姓的苦难",
+    "批判现实"
+  ],
+  "imagery": [
+    "石壕村",
+    "老翁",
+    "老妇",
+    "孙子",
+    "小女",
+    "霜鬓",
+    "鸡鸣",
+    "天明",
+    "河阳"
+  ],
+  "rhetoric": [
+    "白描",
+    "对话",
+    "对比",
+    "侧面描写"
+  ],
+  "lines": [
+    {
+      "line_id": "TANG_045_L1",
+      "content": "暮投石壕村",
+      "imagery": [
+        "石壕村"
+      ],
+      "emotion": [
+        "旅途",
+        "疲惫"
+      ],
+      "translation": "黄昏时分，我投宿在石壕村。",
+      "translation_keywords": [
+        "傍晚",
+        "投宿",
+        "石壕村"
+      ],
+      "explanation": "傍晚时分，我因旅途劳顿，投宿在石壕村。"
+    },
+    {
+      "line_id": "TANG_045_L2",
+      "content": "有吏夜捉人",
+      "imagery": [],
+      "emotion": [
+        "惊恐",
+        "不安"
+      ],
+      "translation": "夜里有差役来村里抓人。",
+      "translation_keywords": [
+        "官吏",
+        "夜间",
+        "抓人",
+        "暴行"
+      ],
+      "explanation": "夜深人静之时，忽然有差役来到村中，强行抓人去服役。"
+    },
+    {
+      "line_id": "TANG_045_L3",
+      "content": "老翁逾墙走",
+      "imagery": [
+        "老翁"
+      ],
+      "emotion": [
+        "躲避",
+        "无奈"
+      ],
+      "translation": "年迈的老翁，翻墙逃走了。",
+      "translation_keywords": [
+        "老翁",
+        "越墙",
+        "逃走",
+        "躲避"
+      ],
+      "explanation": "家中的老翁为了逃避抓捕，无奈之下翻墙逃走了。"
+    },
+    {
+      "line_id": "TANG_045_L4",
+      "content": "老妇出门看",
+      "imagery": [
+        "老妇"
+      ],
+      "emotion": [
+        "面对",
+        "无奈"
+      ],
+      "translation": "老妇人出门查看情况。",
+      "translation_keywords": [
+        "老妇",
+        "出门",
+        "察看",
+        "面对"
+      ],
+      "explanation": "家中只剩下老妇人，她无奈地出门去面对差役。"
+    },
+    {
+      "line_id": "TANG_045_L5",
+      "content": "吏呼一何怒",
+      "imagery": [],
+      "emotion": [
+        "凶狠",
+        "暴虐"
+      ],
+      "translation": "差役的吼叫声是多么愤怒啊。",
+      "translation_keywords": [
+        "差役",
+        "呼喝",
+        "愤怒",
+        "凶狠"
+      ],
+      "explanation": "差役的吼叫声何等愤怒，充满了威吓与暴戾。"
+    },
+    {
+      "line_id": "TANG_045_L6",
+      "content": "妇啼一何苦",
+      "imagery": [],
+      "emotion": [
+        "悲苦",
+        "哀伤"
+      ],
+      "translation": "老妇人的哭声是多么凄苦啊。",
+      "translation_keywords": [
+        "老妇",
+        "哭泣",
+        "悲苦",
+        "哀伤"
+      ],
+      "explanation": "老妇人的哭泣声又是多么凄苦，令人闻之动容。"
+    },
+    {
+      "line_id": "TANG_045_L7",
+      "content": "听妇前致词",
+      "imagery": [],
+      "emotion": [
+        "倾听",
+        "悲悯"
+      ],
+      "translation": "我听到老妇人上前对差役说的话。",
+      "translation_keywords": [
+        "听",
+        "老妇",
+        "前",
+        "致词",
+        "叙述"
+      ],
+      "explanation": "我听到老妇人走到前面，向差役诉说她的苦况。"
+    },
+    {
+      "line_id": "TANG_045_L8",
+      "content": "三男邺城戍",
+      "imagery": [],
+      "emotion": [
+        "战争",
+        "牺牲"
+      ],
+      "translation": "我的三个儿子都到邺城去守卫边疆了。",
+      "translation_keywords": [
+        "三男",
+        "邺城",
+        "服役",
+        "战争"
+      ],
+      "explanation": "她诉说家中有三个儿子都在邺城服兵役。"
+    },
+    {
+      "line_id": "TANG_045_L9",
+      "content": "一男附书至",
+      "imagery": [],
+      "emotion": [
+        "音讯",
+        "死讯"
+      ],
+      "translation": "其中一个儿子刚刚捎信回来。",
+      "translation_keywords": [
+        "一男",
+        "附书",
+        "捎信",
+        "音讯"
+      ],
+      "explanation": "其中一个儿子托人带回书信。"
+    },
+    {
+      "line_id": "TANG_045_L10",
+      "content": "二男新战死",
+      "imagery": [],
+      "emotion": [
+        "战死",
+        "悲痛"
+      ],
+      "translation": "信中说，另外两个儿子刚刚战死沙场了。",
+      "translation_keywords": [
+        "二男",
+        "新",
+        "战死",
+        "牺牲",
+        "悲痛"
+      ],
+      "explanation": "信中却告知，另外两个儿子最近在战场上牺牲了。"
+    },
+    {
+      "line_id": "TANG_045_L11",
+      "content": "存者且偷生",
+      "imagery": [],
+      "emotion": [
+        "苟活",
+        "无奈"
+      ],
+      "translation": "活着的那个儿子也只能是苟且偷生。",
+      "translation_keywords": [
+        "存者",
+        "且",
+        "偷生",
+        "苟活",
+        "无奈"
+      ],
+      "explanation": "唯一的幸存者也只是在战乱中苟且偷生，处境艰难。"
+    },
+    {
+      "line_id": "TANG_045_L12",
+      "content": "死者长已矣",
+      "imagery": [],
+      "emotion": [
+        "永别",
+        "悲剧"
+      ],
+      "translation": "死去的人已经永远地离开了。",
+      "translation_keywords": [
+        "死者",
+        "长",
+        "已矣",
+        "永别"
+      ],
+      "explanation": "而死去的人，则永远地离开了，无法挽回。"
+    },
+    {
+      "line_id": "TANG_045_L13",
+      "content": "室中更无人",
+      "imagery": [],
+      "emotion": [
+        "孤寡",
+        "凄凉"
+      ],
+      "translation": "家里再没有其他的成年男子了。",
+      "translation_keywords": [
+        "室内",
+        "更",
+        "无人",
+        "孤寡"
+      ],
+      "explanation": "家中已经没有其他成年男子了，只剩下老弱妇孺。"
+    },
+    {
+      "line_id": "TANG_045_L14",
+      "content": "惟有乳下孙",
+      "imagery": [
+        "乳下孙"
+      ],
+      "emotion": [
+        "幼小",
+        "可怜"
+      ],
+      "translation": "只有一个还在吃奶的小孙子。",
+      "translation_keywords": [
+        "只有",
+        "乳下孙",
+        "幼小",
+        "可怜"
+      ],
+      "explanation": "家里只剩下还在襁褓中的小孙子，无人照料。"
+    },
+    {
+      "line_id": "TANG_045_L15",
+      "content": "有孙母未去",
+      "imagery": [],
+      "emotion": [
+        "幼小",
+        "妇女"
+      ],
+      "translation": "有孙子，是因为他的母亲还没有改嫁离去。",
+      "translation_keywords": [
+        "孙",
+        "母亲",
+        "未去",
+        "陪伴"
+      ],
+      "explanation": "幸好孙子的母亲还在，没有改嫁离开。"
+    },
+    {
+      "line_id": "TANG_045_L16",
+      "content": "出入无完裙",
+      "imagery": [],
+      "emotion": [
+        "贫困",
+        "破旧"
+      ],
+      "translation": "她进进出出，身上穿的衣服没有一件完整的。",
+      "translation_keywords": [
+        "出入",
+        "无",
+        "完裙",
+        "贫困"
+      ],
+      "explanation": "可怜她的儿媳，衣衫褴褛，进出都没有一件完好的裙子。"
+    },
+    {
+      "line_id": "TANG_045_L17",
+      "content": "老妪力虽衰",
+      "imagery": [],
+      "emotion": [
+        "年迈",
+        "虚弱"
+      ],
+      "translation": "我这个老太婆虽然年迈力衰。",
+      "translation_keywords": [
+        "老妪",
+        "力",
+        "虽衰",
+        "年迈"
+      ],
+      "explanation": "我这个老太婆虽然年迈力衰，但仍想为国效力。"
+    },
+    {
+      "line_id": "TANG_045_L18",
+      "content": "请从吏夜归",
+      "imagery": [],
+      "emotion": [
+        "替役",
+        "悲壮"
+      ],
+      "translation": "请求在夜里跟着你们回去。",
+      "translation_keywords": [
+        "请",
+        "从吏",
+        "夜归",
+        "替役",
+        "牺牲"
+      ],
+      "explanation": "我请求跟随差役连夜回去，代替家里人服役。"
+    },
+    {
+      "line_id": "TANG_045_L19",
+      "content": "急应河阳役",
+      "imagery": [],
+      "emotion": [
+        "劳役",
+        "急迫"
+      ],
+      "translation": "赶去应付河阳的兵役。",
+      "translation_keywords": [
+        "急",
+        "应",
+        "河阳役",
+        "劳役",
+        "急迫"
+      ],
+      "explanation": "赶紧去应付河阳的差役，尽自己的一份力。"
+    },
+    {
+      "line_id": "TANG_045_L20",
+      "content": "犹得备晨炊",
+      "imagery": [],
+      "emotion": [
+        "劳作",
+        "微薄"
+      ],
+      "translation": "还能为部队准备早饭。",
+      "translation_keywords": [
+        "犹得",
+        "备",
+        "晨炊",
+        "劳作",
+        "贡献"
+      ],
+      "explanation": "至少还能为将士们准备早饭，做些力所能及的事情。"
+    },
+    {
+      "line_id": "TANG_045_L21",
+      "content": "夜久语声绝",
+      "imagery": [],
+      "emotion": [
+        "沉寂",
+        "离去"
+      ],
+      "translation": "夜深了，屋里的说话声也断绝了。",
+      "translation_keywords": [
+        "夜久",
+        "语声",
+        "绝",
+        "沉寂"
+      ],
+      "explanation": "夜已深，屋内的说话声渐渐消失了，一片死寂。"
+    },
+    {
+      "line_id": "TANG_045_L22",
+      "content": "如闻泣幽咽",
+      "imagery": [],
+      "emotion": [
+        "哭泣",
+        "压抑"
+      ],
+      "translation": "我仿佛听到有人低声抽泣。",
+      "translation_keywords": [
+        "如闻",
+        "泣",
+        "幽咽",
+        "低泣",
+        "悲伤"
+      ],
+      "explanation": "我仿佛隐约听到有人在低声抽泣，是那老妇人在默默哭泣。"
+    },
+    {
+      "line_id": "TANG_045_L23",
+      "content": "天明登前途",
+      "imagery": [],
+      "emotion": [
+        "离去",
+        "继续"
+      ],
+      "translation": "天亮了，我继续赶路。",
+      "translation_keywords": [
+        "天明",
+        "登",
+        "前途",
+        "离去"
+      ],
+      "explanation": "天亮后，我重新踏上旅途。"
+    },
+    {
+      "line_id": "TANG_045_L24",
+      "content": "独与老翁别",
+      "imagery": [],
+      "emotion": [
+        "孤独",
+        "悲怆"
+      ],
+      "translation": "我独自一人离开了石壕村，只留下那老翁逃走、老妇被抓的悲惨情景。",
+      "translation_keywords": [
+        "独",
+        "与",
+        "老翁",
+        "别",
+        "悲怆",
+        "离开"
+      ],
+      "explanation": "我独自一人离开了石壕村，心中只留下老翁逃走，老妇被抓的悲惨场景。"
+    }
+  ]
+}

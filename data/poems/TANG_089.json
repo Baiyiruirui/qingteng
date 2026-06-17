@@ -1,0 +1,313 @@
+{
+  "poem_id": "TANG_089",
+  "title": "长干行",
+  "author": "李白",
+  "dynasty": "唐",
+  "grade": "小学",
+  "text_type": "乐府诗",
+  "themes": [
+    "思妇之情",
+    "爱情忠贞",
+    "时光流逝",
+    "离别相思"
+  ],
+  "imagery": [
+    "发",
+    "花",
+    "竹马",
+    "青梅",
+    "绿苔",
+    "落叶",
+    "蝴蝶",
+    "猿声"
+  ],
+  "rhetoric": [
+    "对比",
+    "借景抒情",
+    "细节描写",
+    "心理描写"
+  ],
+  "lines": [
+    {
+      "line_id": "TANG_089_L1",
+      "content": "妾发初覆额，折花门前剧。",
+      "imagery": [
+        "发",
+        "花"
+      ],
+      "emotion": [
+        "童真",
+        "烂漫"
+      ],
+      "translation": "我的头发刚刚盖住额头，在门前折花玩耍。",
+      "translation_keywords": [
+        "妾发",
+        "覆额",
+        "折花",
+        "剧"
+      ],
+      "explanation": "描绘了小女孩天真烂漫的童年情景，与青梅竹马的少年郎初识。"
+    },
+    {
+      "line_id": "TANG_089_L2",
+      "content": "郎骑竹马来，绕床弄青梅。",
+      "imagery": [
+        "竹马",
+        "青梅"
+      ],
+      "emotion": [
+        "亲昵",
+        "纯真"
+      ],
+      "translation": "他骑着竹马过来，绕着井栏玩青梅。",
+      "translation_keywords": [
+        "郎",
+        "竹马",
+        "绕床",
+        "青梅"
+      ],
+      "explanation": "“青梅竹马”典故出处，展现了两人幼年时的亲密无间。"
+    },
+    {
+      "line_id": "TANG_089_L3",
+      "content": "同居长干里，两小无嫌猜。",
+      "imagery": [],
+      "emotion": [
+        "无邪",
+        "信任"
+      ],
+      "translation": "我们一起住在长干里，从小玩到大，之间没有任何嫌隙和猜忌。",
+      "translation_keywords": [
+        "同居",
+        "长干里",
+        "两小",
+        "无嫌猜"
+      ],
+      "explanation": "概括了两人纯洁无瑕的童年友谊，为后面的爱情奠定基础。"
+    },
+    {
+      "line_id": "TANG_089_L4",
+      "content": "十四为君妇，羞颜未尝开。",
+      "imagery": [],
+      "emotion": [
+        "羞涩",
+        "拘谨"
+      ],
+      "translation": "十四岁的时候我嫁给你做妻子，害羞得脸都没有展开过。",
+      "translation_keywords": [
+        "十四",
+        "君妇",
+        "羞颜",
+        "未开"
+      ],
+      "explanation": "描写了新婚时妻子羞涩的少女情态，初为人妇的拘谨。"
+    },
+    {
+      "line_id": "TANG_089_L5",
+      "content": "低头向暗壁，千唤不一回。",
+      "imagery": [
+        "暗壁"
+      ],
+      "emotion": [
+        "娇羞",
+        "腼腆"
+      ],
+      "translation": "低着头对着暗暗的墙壁，你叫我千百声我都不回头。",
+      "translation_keywords": [
+        "低头",
+        "暗壁",
+        "千唤",
+        "不一回"
+      ],
+      "explanation": "进一步刻画了新婚妻子的娇羞，展现了她对丈夫的爱意。"
+    },
+    {
+      "line_id": "TANG_089_L6",
+      "content": "十五始展眉，愿同尘与灰。",
+      "imagery": [],
+      "emotion": [
+        "恩爱",
+        "忠贞"
+      ],
+      "translation": "十五岁时才开始展开眉头，愿意与你白头偕老，生死相随。",
+      "translation_keywords": [
+        "十五",
+        "展眉",
+        "同尘与灰"
+      ],
+      "explanation": "描写婚后生活渐入佳境，妻子开始适应并深深爱上丈夫，誓言与他共度一生。"
+    },
+    {
+      "line_id": "TANG_089_L7",
+      "content": "常存抱柱信，岂上望夫台。",
+      "imagery": [
+        "柱",
+        "望夫台"
+      ],
+      "emotion": [
+        "坚定",
+        "忠诚"
+      ],
+      "translation": "我心中常常怀着尾生抱柱的坚定信念，怎么会去登上望夫台呢？",
+      "translation_keywords": [
+        "抱柱信",
+        "望夫台"
+      ],
+      "explanation": "表达了妻子对爱情的忠贞不渝，不会变心。"
+    },
+    {
+      "line_id": "TANG_089_L8",
+      "content": "十六君远行，瞿塘滟滪堆。",
+      "imagery": [
+        "瞿塘",
+        "滟滪堆"
+      ],
+      "emotion": [
+        "离别",
+        "担忧"
+      ],
+      "translation": "十六岁时你远行他乡，去往瞿塘峡那险峻的滟滪堆。",
+      "translation_keywords": [
+        "十六",
+        "远行",
+        "瞿塘",
+        "滟滪堆"
+      ],
+      "explanation": "丈夫远行，地点是险要之地，预示着思妇的担忧。"
+    },
+    {
+      "line_id": "TANG_089_L9",
+      "content": "五月不可触，猿声天上哀。",
+      "imagery": [
+        "猿声"
+      ],
+      "emotion": [
+        "恐惧",
+        "悲哀"
+      ],
+      "translation": "五月江水暴涨，船只不能靠近滟滪堆，天空中传来猿猴的悲哀叫声。",
+      "translation_keywords": [
+        "五月",
+        "不可触",
+        "猿声",
+        "天上哀"
+      ],
+      "explanation": "渲染了旅途的艰险和离别的悲凉气氛，加剧了妻子的担忧。"
+    },
+    {
+      "line_id": "TANG_089_L10",
+      "content": "门前旧行迹，一一生绿苔。",
+      "imagery": [
+        "行迹",
+        "绿苔"
+      ],
+      "emotion": [
+        "寂寞",
+        "时光流逝"
+      ],
+      "translation": "门前你走过的旧脚印，一行行都长满了绿色的青苔。",
+      "translation_keywords": [
+        "门前",
+        "行迹",
+        "绿苔"
+      ],
+      "explanation": "以门前的变化表现时光的流逝和思妇的寂寞，丈夫久久未归。"
+    },
+    {
+      "line_id": "TANG_089_L11",
+      "content": "苔深不能扫，落叶秋风早。",
+      "imagery": [
+        "苔",
+        "落叶",
+        "秋风"
+      ],
+      "emotion": [
+        "惆怅",
+        "孤寂"
+      ],
+      "translation": "青苔长得很深已经不能扫去，树叶在秋风中早早地凋落。",
+      "translation_keywords": [
+        "苔深",
+        "扫",
+        "落叶",
+        "秋风早"
+      ],
+      "explanation": "进一步描绘了庭院的荒凉景象，暗示了思妇内心的惆怅和孤寂。"
+    },
+    {
+      "line_id": "TANG_089_L12",
+      "content": "八月蝴蝶黄，双飞西园草。",
+      "imagery": [
+        "蝴蝶",
+        "西园草"
+      ],
+      "emotion": [
+        "悲伤",
+        "孤单"
+      ],
+      "translation": "八月的时候蝴蝶变成了黄色，双双飞舞在西园的草丛中。",
+      "translation_keywords": [
+        "八月",
+        "蝴蝶黄",
+        "双飞",
+        "西园草"
+      ],
+      "explanation": "以双飞的蝴蝶衬托自己的孤单，触景生情，更添相思之苦。"
+    },
+    {
+      "line_id": "TANG_089_L13",
+      "content": "感此伤妾心，坐愁红颜老。",
+      "imagery": [
+        "红颜"
+      ],
+      "emotion": [
+        "哀愁",
+        "担忧"
+      ],
+      "translation": "看到这些景象，我的心里感到悲伤，坐着发愁容颜渐渐老去。",
+      "translation_keywords": [
+        "感此",
+        "伤妾心",
+        "坐愁",
+        "红颜老"
+      ],
+      "explanation": "直接表达了思妇因思念而产生的伤感和对青春逝去的担忧。"
+    },
+    {
+      "line_id": "TANG_089_L14",
+      "content": "早晚下三巴，预将书报家。",
+      "imagery": [
+        "书"
+      ],
+      "emotion": [
+        "期盼",
+        "叮嘱"
+      ],
+      "translation": "无论什么时候从三巴回来，请你提前写信告诉家里。",
+      "translation_keywords": [
+        "早晚",
+        "下三巴",
+        "书报家"
+      ],
+      "explanation": "殷切地期盼丈夫归来，并细心地叮嘱他提前报信。"
+    },
+    {
+      "line_id": "TANG_089_L15",
+      "content": "相迎不道远，直至长风沙。",
+      "imagery": [
+        "长风沙"
+      ],
+      "emotion": [
+        "渴望",
+        "热情"
+      ],
+      "translation": "我去迎接你，不会嫌路途遥远，一直到长风沙。",
+      "translation_keywords": [
+        "相迎",
+        "不道远",
+        "长风沙"
+      ],
+      "explanation": "表达了妻子对丈夫归来热切的渴望和不辞辛劳的深情。"
+    }
+  ]
+}

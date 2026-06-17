@@ -1,0 +1,49 @@
+{
+  "poem_id": "TANG_005",
+  "title": "悯农（其二）",
+  "author": "李绅",
+  "dynasty": "唐",
+  "grade": "小学",
+  "text_type": "五言绝句",
+  "themes": ["劳动", "爱惜粮食"],
+  "imagery": ["农田"],
+  "rhetoric": ["反问"],
+  "lines": [
+    {
+      "line_id": "TANG_005_L1",
+      "content": "锄禾日当午",
+      "imagery": ["农田"],
+      "emotion": ["同情"],
+      "translation": "中午时分，农民在田里锄禾。",
+      "translation_keywords": ["农民", "中午", "劳动"],
+      "explanation": "写农民劳作的辛苦。"
+    },
+    {
+      "line_id": "TANG_005_L2",
+      "content": "汗滴禾下土",
+      "imagery": ["农田"],
+      "emotion": ["同情"],
+      "translation": "汗水滴进庄稼下的泥土里。",
+      "translation_keywords": ["汗水", "土地"],
+      "explanation": "突出劳动的艰辛。"
+    },
+    {
+      "line_id": "TANG_005_L3",
+      "content": "谁知盘中餐",
+      "imagery": [],
+      "emotion": ["反思"],
+      "translation": "有谁知道盘中的饭。",
+      "translation_keywords": ["粮食"],
+      "explanation": "用反问引人思考。"
+    },
+    {
+      "line_id": "TANG_005_L4",
+      "content": "粒粒皆辛苦",
+      "imagery": [],
+      "emotion": ["反思"],
+      "translation": "每一粒粮食都来之不易。",
+      "translation_keywords": ["粮食", "辛苦"],
+      "explanation": "点明珍惜粮食的主题。"
+    }
+  ]
+}

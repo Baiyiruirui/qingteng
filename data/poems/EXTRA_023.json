@@ -1,0 +1,105 @@
+{
+  "poem_id": "EXTRA_023",
+  "title": "清明",
+  "author": "杜牧",
+  "dynasty": "唐",
+  "grade": "小学",
+  "text_type": "绝句",
+  "themes": [
+    "节日",
+    "行旅"
+  ],
+  "imagery": [
+    "清明雨",
+    "牧童",
+    "杏花村"
+  ],
+  "rhetoric": [
+    "设问",
+    "白描",
+    "以景结情"
+  ],
+  "lines": [
+    {
+      "line_id": "EXTRA_023_L1",
+      "content": "清明时节雨纷纷",
+      "imagery": [
+        "清明雨",
+        "牧童",
+        "杏花村"
+      ],
+      "emotion": [
+        "节日",
+        "行旅"
+      ],
+      "translation": "清明时节，细雨纷纷飘落。",
+      "translation_keywords": [
+        "清明",
+        "时节",
+        "雨",
+        "纷纷"
+      ],
+      "explanation": "开篇点明时间和天气，用“纷纷”既写雨丝细密，也暗示行人纷乱的心绪，为全诗定下凄清基调。"
+    },
+    {
+      "line_id": "EXTRA_023_L2",
+      "content": "路上行人欲断魂",
+      "imagery": [
+        "清明雨",
+        "牧童",
+        "杏花村"
+      ],
+      "emotion": [
+        "节日",
+        "行旅"
+      ],
+      "translation": "路上的行人，心情愁苦，好像丢了魂一样。",
+      "translation_keywords": [
+        "路上",
+        "行人",
+        "欲断魂"
+      ],
+      "explanation": "“欲断魂”夸张地写出行人因思念逝者或旅途劳顿而极度悲伤，与纷纷细雨相互映衬，情景交融。"
+    },
+    {
+      "line_id": "EXTRA_023_L3",
+      "content": "借问酒家何处有",
+      "imagery": [
+        "清明雨",
+        "牧童",
+        "杏花村"
+      ],
+      "emotion": [
+        "节日",
+        "行旅"
+      ],
+      "translation": "请问哪里有卖酒的地方？",
+      "translation_keywords": [
+        "借问",
+        "酒家",
+        "何处有"
+      ],
+      "explanation": "用设问句自然引出下文，行人想借酒消愁，表现出在愁苦中寻求慰藉的心理。"
+    },
+    {
+      "line_id": "EXTRA_023_L4",
+      "content": "牧童遥指杏花村",
+      "imagery": [
+        "清明雨",
+        "牧童",
+        "杏花村"
+      ],
+      "emotion": [
+        "节日",
+        "行旅"
+      ],
+      "translation": "牧童远远地指着杏花深处的村庄。",
+      "translation_keywords": [
+        "牧童",
+        "遥指",
+        "杏花村"
+      ],
+      "explanation": "以牧童的动作和杏花村作结，画面由愁转暖，给人希望和美感，含蓄而有余味。"
+    }
+  ]
+}

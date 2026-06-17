@@ -1,0 +1,98 @@
+{
+  "poem_id": "EXTRA_033",
+  "title": "示儿",
+  "author": "陆游",
+  "dynasty": "宋",
+  "grade": "小学/初中",
+  "text_type": "绝句",
+  "themes": [
+    "爱国",
+    "家国"
+  ],
+  "imagery": [
+    "九州",
+    "中原"
+  ],
+  "rhetoric": [
+    "直抒胸臆",
+    "对比"
+  ],
+  "lines": [
+    {
+      "line_id": "EXTRA_033_L1",
+      "content": "死去元知万事空",
+      "imagery": [
+        "九州",
+        "中原"
+      ],
+      "emotion": [
+        "爱国",
+        "家国"
+      ],
+      "translation": "本来就知道人死后万事都成空。",
+      "translation_keywords": [
+        "死去",
+        "元知",
+        "万事空"
+      ],
+      "explanation": "诗人开篇坦然地面对死亡，认为死后一切都不存在了，表现出一种豁达的态度。"
+    },
+    {
+      "line_id": "EXTRA_033_L2",
+      "content": "但悲不见九州同",
+      "imagery": [
+        "九州",
+        "中原"
+      ],
+      "emotion": [
+        "爱国",
+        "家国"
+      ],
+      "translation": "只是悲痛没能看到国家统一。",
+      "translation_keywords": [
+        "但悲",
+        "不见",
+        "九州同"
+      ],
+      "explanation": "一个“但”字转折，点出诗人唯一的遗憾：国家尚未统一。情感由豁达转为深沉的悲痛。"
+    },
+    {
+      "line_id": "EXTRA_033_L3",
+      "content": "王师北定中原日",
+      "imagery": [
+        "九州",
+        "中原"
+      ],
+      "emotion": [
+        "爱国",
+        "家国"
+      ],
+      "translation": "等到朝廷军队平定中原的那一天。",
+      "translation_keywords": [
+        "王师",
+        "北定",
+        "中原日"
+      ],
+      "explanation": "诗人对未来充满希望，相信总有一天宋军会收复中原。用“王师”表达对朝廷的信任。"
+    },
+    {
+      "line_id": "EXTRA_033_L4",
+      "content": "家祭无忘告乃翁",
+      "imagery": [
+        "九州",
+        "中原"
+      ],
+      "emotion": [
+        "爱国",
+        "家国"
+      ],
+      "translation": "家祭时不要忘记告诉你们的父亲。",
+      "translation_keywords": [
+        "家祭",
+        "无忘",
+        "告乃翁"
+      ],
+      "explanation": "诗人叮嘱儿子，在家祭时一定要把胜利的消息告诉自己。情感真挚，体现了至死不渝的爱国情怀。"
+    }
+  ]
+}

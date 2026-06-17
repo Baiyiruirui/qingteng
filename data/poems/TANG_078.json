@@ -1,0 +1,100 @@
+{
+  "poem_id": "TANG_078",
+  "title": "劝学",
+  "author": "颜真卿",
+  "dynasty": "唐",
+  "grade": "小学",
+  "text_type": "绝句",
+  "themes": [
+    "劝学",
+    "惜时",
+    "读书重要性",
+    "少年努力"
+  ],
+  "imagery": [
+    "灯火",
+    "鸡",
+    "黑发",
+    "白首"
+  ],
+  "rhetoric": [
+    "对比",
+    "警示",
+    "对偶"
+  ],
+  "lines": [
+    {
+      "line_id": "TANG_078_L1",
+      "content": "三更灯火五更鸡，",
+      "imagery": [
+        "灯火",
+        "鸡"
+      ],
+      "emotion": [
+        "勤奋",
+        "辛劳"
+      ],
+      "translation": "晚上三更（深夜）还在点灯读书，清晨五更（天亮前）鸡已报晓。",
+      "translation_keywords": [
+        "三更",
+        "灯火",
+        "五更",
+        "鸡"
+      ],
+      "explanation": "形容读书人夜以继日地勤奋学习，从深夜三更一直到清晨鸡鸣。"
+    },
+    {
+      "line_id": "TANG_078_L2",
+      "content": "正是男儿读书时。",
+      "imagery": [],
+      "emotion": [
+        "劝勉",
+        "激励"
+      ],
+      "translation": "这正是男子汉们应该努力读书的时候。",
+      "translation_keywords": [
+        "正是",
+        "男儿",
+        "读书时"
+      ],
+      "explanation": "强调夜以继日正是学习的最佳时机，号召人们抓住时间读书。"
+    },
+    {
+      "line_id": "TANG_078_L3",
+      "content": "黑发不知勤学早，",
+      "imagery": [
+        "黑发"
+      ],
+      "emotion": [
+        "惋惜",
+        "警示"
+      ],
+      "translation": "年轻的时候不知道要趁早勤奋学习。",
+      "translation_keywords": [
+        "黑发",
+        "不知",
+        "勤学早"
+      ],
+      "explanation": "告诫人们在年轻有为、头发乌黑的时候，要懂得抓紧时间勤奋学习。"
+    },
+    {
+      "line_id": "TANG_078_L4",
+      "content": "白首方悔读书迟。",
+      "imagery": [
+        "白首"
+      ],
+      "emotion": [
+        "后悔",
+        "遗憾",
+        "警醒"
+      ],
+      "translation": "等到年老白头时才后悔当初没有及时读书。",
+      "translation_keywords": [
+        "白首",
+        "方悔",
+        "读书迟"
+      ],
+      "explanation": "提醒人们如果年轻时不努力，等到年老发白时才后悔读书太迟，就来不及了。"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "poem_id": "TANG_001",
+  "title": "静夜思",
+  "author": "李白",
+  "dynasty": "唐",
+  "grade": "小学",
+  "text_type": "五言绝句",
+  "themes": ["思乡"],
+  "imagery": ["月亮"],
+  "rhetoric": ["比喻"],
+  "lines": [
+    {
+      "line_id": "TANG_001_L1",
+      "content": "床前明月光",
+      "imagery": ["月亮"],
+      "emotion": ["思乡"],
+      "translation": "床前洒满了明亮的月光。",
+      "translation_keywords": ["床前", "月光", "明亮"],
+      "explanation": "描写夜晚所见的月光景象。"
+    },
+    {
+      "line_id": "TANG_001_L2",
+      "content": "疑是地上霜",
+      "imagery": ["月亮"],
+      "emotion": ["思乡"],
+      "translation": "好像地上铺了一层白霜。",
+      "translation_keywords": ["好像", "白霜", "月光"],
+      "explanation": "把月光比作白霜，属于比喻。"
+    },
+    {
+      "line_id": "TANG_001_L3",
+      "content": "举头望明月",
+      "imagery": ["月亮"],
+      "emotion": ["思乡"],
+      "translation": "抬头仰望天上的明月。",
+      "translation_keywords": ["抬头", "明月"],
+      "explanation": "动作描写，引出情感。"
+    },
+    {
+      "line_id": "TANG_001_L4",
+      "content": "低头思故乡",
+      "imagery": [],
+      "emotion": ["思乡"],
+      "translation": "低下头来思念自己的家乡。",
+      "translation_keywords": ["思念", "故乡"],
+      "explanation": "点明全诗主题：思乡。"
+    }
+  ]
+}

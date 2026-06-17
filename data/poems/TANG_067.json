@@ -1,0 +1,102 @@
+{
+  "poem_id": "TANG_067",
+  "title": "宿建德江",
+  "author": "孟浩然",
+  "dynasty": "唐",
+  "grade": "小学",
+  "text_type": "绝句",
+  "themes": [
+    "思乡之情",
+    "羁旅之愁",
+    "自然风光",
+    "动静结合"
+  ],
+  "imagery": [
+    "烟渚",
+    "日暮",
+    "野旷",
+    "江清",
+    "月"
+  ],
+  "rhetoric": [
+    "对仗",
+    "借景抒情"
+  ],
+  "lines": [
+    {
+      "line_id": "TANG_067_L1",
+      "content": "移舟泊烟渚，",
+      "imagery": [
+        "船",
+        "烟",
+        "沙洲"
+      ],
+      "emotion": [
+        "平静",
+        "安宁"
+      ],
+      "translation": "移动船只停靠在烟雾弥漫的小沙洲。",
+      "translation_keywords": [
+        "移舟",
+        "泊",
+        "烟渚"
+      ],
+      "explanation": "诗人驾着小船，傍晚时分，将船停靠在笼罩着一层薄雾的沙洲边。"
+    },
+    {
+      "line_id": "TANG_067_L2",
+      "content": "日暮客愁新。",
+      "imagery": [
+        "日落"
+      ],
+      "emotion": [
+        "愁绪",
+        "思乡"
+      ],
+      "translation": "夕阳西下，旅客的愁绪又添新。",
+      "translation_keywords": [
+        "日暮",
+        "客愁",
+        "新"
+      ],
+      "explanation": "太阳落山了，夜幕降临，身在异乡的诗人，心中又涌起了新的乡愁。"
+    },
+    {
+      "line_id": "TANG_067_L3",
+      "content": "野旷天低树，",
+      "imagery": [
+        "原野",
+        "天空",
+        "树"
+      ],
+      "emotion": [
+        "开阔",
+        "渺小"
+      ],
+      "translation": "原野空旷，天幕仿佛比树还低。",
+      "translation_keywords": [
+        "野旷",
+        "天低树"
+      ],
+      "explanation": "极目远眺，旷野一望无际，天空显得很低，仿佛与远处的树木连在一起。"
+    },
+    {
+      "line_id": "TANG_067_L4",
+      "content": "江清月近人。",
+      "imagery": [
+        "江水",
+        "月亮"
+      ],
+      "emotion": [
+        "清幽",
+        "亲近"
+      ],
+      "translation": "江水清澈，月亮仿佛离人更近。",
+      "translation_keywords": [
+        "江清",
+        "月近人"
+      ],
+      "explanation": "江水清澈见底，皎洁的月亮倒映在水中，仿佛就在人的身边，给人一种亲近感。"
+    }
+  ]
+}

@@ -1,0 +1,185 @@
+{
+  "poem_id": "TANG_044",
+  "title": "月夜忆舍弟",
+  "author": "杜甫",
+  "dynasty": "唐",
+  "grade": "中学",
+  "text_type": "五言律诗",
+  "themes": [
+    "思念亲人",
+    "战争离乱",
+    "手足情深",
+    "孤苦无依"
+  ],
+  "imagery": [
+    "戍鼓",
+    "边秋",
+    "孤雁",
+    "月",
+    "露水",
+    "故乡",
+    "家书"
+  ],
+  "rhetoric": [
+    "借景抒情",
+    "反衬",
+    "设问"
+  ],
+  "lines": [
+    {
+      "line_id": "TANG_044_L1",
+      "content": "戍鼓断人行",
+      "imagery": [
+        "戍鼓"
+      ],
+      "emotion": [
+        "战争",
+        "宵禁",
+        "隔绝"
+      ],
+      "translation": "边塞的战鼓声，使得人们的行程都中断了。",
+      "translation_keywords": [
+        "戍鼓",
+        "战鼓",
+        "断",
+        "人行",
+        "隔绝"
+      ],
+      "explanation": "边塞的战鼓声响彻夜空，使行人不敢在外行走，仿佛天地间都断绝了联系。"
+    },
+    {
+      "line_id": "TANG_044_L2",
+      "content": "边秋一雁声",
+      "imagery": [
+        "边秋",
+        "孤雁"
+      ],
+      "emotion": [
+        "萧瑟",
+        "孤寂",
+        "悲凉"
+      ],
+      "translation": "边地秋日，传来一声孤雁的鸣叫。",
+      "translation_keywords": [
+        "边地",
+        "秋",
+        "一雁",
+        "鸣声",
+        "孤寂"
+      ],
+      "explanation": "在边塞的秋夜，只听见一声孤雁的哀鸣，更显凄凉与孤寂。"
+    },
+    {
+      "line_id": "TANG_044_L3",
+      "content": "露从今夜白",
+      "imagery": [
+        "露水"
+      ],
+      "emotion": [
+        "时节",
+        "寒意",
+        "思念"
+      ],
+      "translation": "今夜的露水开始变得晶莹洁白，预示着秋意更浓了。",
+      "translation_keywords": [
+        "露",
+        "今夜",
+        "白",
+        "秋深",
+        "时节"
+      ],
+      "explanation": "从今夜起，露水变得洁白，表示秋意已深，天气转凉，也暗示时间流逝。"
+    },
+    {
+      "line_id": "TANG_044_L4",
+      "content": "月是故乡明",
+      "imagery": [
+        "月",
+        "故乡"
+      ],
+      "emotion": [
+        "故乡",
+        "思念",
+        "对比"
+      ],
+      "translation": "故乡的月亮，今夜也一定分外皎洁明亮吧。",
+      "translation_keywords": [
+        "月",
+        "故乡",
+        "明",
+        "思乡"
+      ],
+      "explanation": "抬头望月，心中想到，故乡的月亮，此时是否也格外明亮呢？（反衬自己身处异乡的凄凉）"
+    },
+    {
+      "line_id": "TANG_044_L5",
+      "content": "有弟皆分散",
+      "imagery": [],
+      "emotion": [
+        "离散",
+        "担忧"
+      ],
+      "translation": "我的兄弟们都已四散，不知身在何处。",
+      "translation_keywords": [
+        "弟",
+        "皆",
+        "分散",
+        "离别",
+        "担忧"
+      ],
+      "explanation": "我有好几个弟弟，如今都因为战乱而四散分离，音讯全无。"
+    },
+    {
+      "line_id": "TANG_044_L6",
+      "content": "无家问死生",
+      "imagery": [],
+      "emotion": [
+        "无助",
+        "绝望"
+      ],
+      "translation": "没有家人可以去打听他们的生死消息。",
+      "translation_keywords": [
+        "无家",
+        "问",
+        "死生",
+        "绝望",
+        "无助"
+      ],
+      "explanation": "因为战乱，家已不成家，无处可去打听兄弟们的生死消息，内心充满绝望。"
+    },
+    {
+      "line_id": "TANG_044_L7",
+      "content": "寄书长不达",
+      "imagery": [],
+      "emotion": [
+        "音讯",
+        "阻碍"
+      ],
+      "translation": "寄出去的家书，总是长久地无法到达，音讯全无。",
+      "translation_keywords": [
+        "寄书",
+        "长",
+        "不达",
+        "音讯隔绝"
+      ],
+      "explanation": "想要寄信给兄弟，却因战乱阻隔，信件常常无法送达，音讯不通。"
+    },
+    {
+      "line_id": "TANG_044_L8",
+      "content": "况乃未休兵",
+      "imagery": [],
+      "emotion": [
+        "战乱",
+        "担忧"
+      ],
+      "translation": "何况如今战乱还未平息，更令人担忧。",
+      "translation_keywords": [
+        "况乃",
+        "未休兵",
+        "战乱",
+        "担忧"
+      ],
+      "explanation": "更何况战乱至今尚未平息，兄弟们的安危更让我牵肠挂肚。"
+    }
+  ]
+}

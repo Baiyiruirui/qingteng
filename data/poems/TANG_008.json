@@ -1,0 +1,49 @@
+{
+  "poem_id": "TANG_008",
+  "title": "山行",
+  "author": "杜牧",
+  "dynasty": "唐",
+  "grade": "小学",
+  "text_type": "七言绝句",
+  "themes": ["秋景"],
+  "imagery": ["山", "秋天"],
+  "rhetoric": ["对比"],
+  "lines": [
+    {
+      "line_id": "TANG_008_L1",
+      "content": "远上寒山石径斜",
+      "imagery": ["山"],
+      "emotion": ["喜爱"],
+      "translation": "沿着寒冷的山路向上走。",
+      "translation_keywords": ["山路", "向上"],
+      "explanation": "写登山所见。"
+    },
+    {
+      "line_id": "TANG_008_L2",
+      "content": "白云生处有人家",
+      "imagery": ["山"],
+      "emotion": ["宁静"],
+      "translation": "白云深处有几户人家。",
+      "translation_keywords": ["白云", "人家"],
+      "explanation": "山中景象宁静。"
+    },
+    {
+      "line_id": "TANG_008_L3",
+      "content": "停车坐爱枫林晚",
+      "imagery": ["秋天"],
+      "emotion": ["喜爱"],
+      "translation": "因为喜爱傍晚的枫林而停车。",
+      "translation_keywords": ["喜爱", "枫林"],
+      "explanation": "表达对秋景的喜爱。"
+    },
+    {
+      "line_id": "TANG_008_L4",
+      "content": "霜叶红于二月花",
+      "imagery": ["秋天"],
+      "emotion": ["赞美"],
+      "translation": "经霜的叶子比春花还红。",
+      "translation_keywords": ["霜叶", "更红"],
+      "explanation": "通过对比赞美秋天。"
+    }
+  ]
+}

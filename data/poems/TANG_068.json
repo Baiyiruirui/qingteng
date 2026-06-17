@@ -1,0 +1,172 @@
+{
+  "poem_id": "TANG_068",
+  "title": "望洞庭湖赠张丞相",
+  "author": "孟浩然",
+  "dynasty": "唐",
+  "grade": "初中",
+  "text_type": "律诗",
+  "themes": [
+    "壮丽山河",
+    "怀才不遇",
+    "入世之志",
+    "政治抱负"
+  ],
+  "imagery": [
+    "洞庭湖水",
+    "云梦泽",
+    "岳阳城",
+    "船",
+    "垂钓者"
+  ],
+  "rhetoric": [
+    "比喻",
+    "借景抒情",
+    "对仗",
+    "典故"
+  ],
+  "lines": [
+    {
+      "line_id": "TANG_068_L1",
+      "content": "八月湖水平，",
+      "imagery": [
+        "湖水",
+        "秋色"
+      ],
+      "emotion": [
+        "壮阔",
+        "平静"
+      ],
+      "translation": "八月时节，洞庭湖水面与堤岸齐平。",
+      "translation_keywords": [
+        "八月",
+        "湖水",
+        "平"
+      ],
+      "explanation": "在八月这个时节，洞庭湖的湖水涨得满满的，水面与岸边齐平，显得非常壮阔。"
+    },
+    {
+      "line_id": "TANG_068_L2",
+      "content": "涵虚混太清。",
+      "imagery": [
+        "湖水",
+        "天空",
+        "虚空"
+      ],
+      "emotion": [
+        "辽阔",
+        "澄澈"
+      ],
+      "translation": "湖水包涵着浩瀚的虚空，与那天上清澈的太清之境融为一体。",
+      "translation_keywords": [
+        "涵虚",
+        "混太清"
+      ],
+      "explanation": "宽广的湖面仿佛包容了整个天空，清澈的湖水与高远的天空融为一色，浑然一体。"
+    },
+    {
+      "line_id": "TANG_068_L3",
+      "content": "气蒸云梦泽，",
+      "imagery": [
+        "云气",
+        "洞庭湖"
+      ],
+      "emotion": [
+        "雄伟",
+        "气势磅礴"
+      ],
+      "translation": "浩荡的水气蒸腾着，笼罩着古时的云梦泽。",
+      "translation_keywords": [
+        "气蒸",
+        "云梦泽"
+      ],
+      "explanation": "水面上蒸腾起氤氲的云气，整个洞庭湖区域笼罩在朦胧之中，显得气势雄伟。"
+    },
+    {
+      "line_id": "TANG_068_L4",
+      "content": "波撼岳阳城。",
+      "imagery": [
+        "波浪",
+        "城墙",
+        "岳阳城"
+      ],
+      "emotion": [
+        "震动",
+        "力量感"
+      ],
+      "translation": "巨大的波涛仿佛摇撼着岳阳古城。",
+      "translation_keywords": [
+        "波撼",
+        "岳阳城"
+      ],
+      "explanation": "洞庭湖的波浪汹涌澎湃，似乎连高大的岳阳城墙都在为之震动，形容湖面波澜壮阔。"
+    },
+    {
+      "line_id": "TANG_068_L5",
+      "content": "欲济无舟楫，",
+      "imagery": [
+        "船",
+        "渡口"
+      ],
+      "emotion": [
+        "困顿",
+        "无奈"
+      ],
+      "translation": "想要渡过湖去却没有船只。",
+      "translation_keywords": [
+        "欲济",
+        "无舟楫"
+      ],
+      "explanation": "诗人想要渡过这片广阔的湖水，却苦于没有船只，暗指自己想入仕为官却无门径。"
+    },
+    {
+      "line_id": "TANG_068_L6",
+      "content": "端居耻圣明。",
+      "imagery": [],
+      "emotion": [
+        "羞愧",
+        "自责"
+      ],
+      "translation": "清闲在家，对不起这清明的盛世。",
+      "translation_keywords": [
+        "端居",
+        "耻圣明"
+      ],
+      "explanation": "自己闲居家中，不能报效国家，为朝廷出力，觉得十分惭愧，辜负了当今天子的清明盛世。"
+    },
+    {
+      "line_id": "TANG_068_L7",
+      "content": "坐观垂钓者，",
+      "imagery": [
+        "钓鱼人",
+        "鱼竿"
+      ],
+      "emotion": [
+        "羡慕",
+        "渴望"
+      ],
+      "translation": "坐着看那垂钓的人。",
+      "translation_keywords": [
+        "坐观",
+        "垂钓者"
+      ],
+      "explanation": "诗人看着那些钓鱼的人，他们能从湖中钓起鱼来，这暗示了诗人渴望得到张丞相的引荐，就像渔夫能钓到鱼一样。"
+    },
+    {
+      "line_id": "TANG_068_L8",
+      "content": "徒有羡鱼情。",
+      "imagery": [
+        "鱼"
+      ],
+      "emotion": [
+        "羡慕",
+        "渴望"
+      ],
+      "translation": "只有徒劳地羡慕鱼的感情。",
+      "translation_keywords": [
+        "徒有",
+        "羡鱼情"
+      ],
+      "explanation": "诗人只能空自羡慕钓鱼人，却无法像他们那样有所收获，表达了自己渴望得到重用、建功立业而不得的无奈与苦闷。"
+    }
+  ]
+}

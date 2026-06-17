@@ -1,0 +1,97 @@
+{
+  "poem_id": "TANG_038",
+  "title": "送友人",
+  "author": "李白",
+  "dynasty": "唐",
+  "grade": "小学",
+  "text_type": "绝句",
+  "themes": [
+    "送别",
+    "友情",
+    "离愁别绪",
+    "自然景物与情感融合"
+  ],
+  "imagery": [
+    "青山",
+    "白水",
+    "此地",
+    "孤蓬",
+    "万里"
+  ],
+  "rhetoric": [
+    "比喻",
+    "借景抒情",
+    "对仗"
+  ],
+  "lines": [
+    {
+      "line_id": "TANG_038_L1",
+      "content": "青山横北郭，",
+      "imagery": [
+        "青山",
+        "北郭"
+      ],
+      "emotion": [
+        "沉静",
+        "庄重"
+      ],
+      "translation": "青翠的山峦横卧在城郭的北面，",
+      "translation_keywords": [
+        "青山横",
+        "北郭"
+      ],
+      "explanation": "描写送别地点——城北的青山，为离别场景奠定了沉静而略带庄重的背景，烘托出离别的气氛。"
+    },
+    {
+      "line_id": "TANG_038_L2",
+      "content": "白水绕东城。",
+      "imagery": [
+        "白水",
+        "东城"
+      ],
+      "emotion": [
+        "悠远",
+        "平静"
+      ],
+      "translation": "清澈的白水缠绕着城郭的东边。",
+      "translation_keywords": [
+        "白水绕",
+        "东城"
+      ],
+      "explanation": "与上句形成对仗，白水蜿蜒，与青山一同构成一幅宁静的送别图，也暗示了离别愁绪的绵长。"
+    },
+    {
+      "line_id": "TANG_038_L3",
+      "content": "此地一为别，",
+      "imagery": [],
+      "emotion": [
+        "伤感",
+        "惆怅"
+      ],
+      "translation": "我们在此地一分手，",
+      "translation_keywords": [
+        "此地",
+        "一为别"
+      ],
+      "explanation": "点明送别，表达了对即将到来的分离的伤感和不舍。"
+    },
+    {
+      "line_id": "TANG_038_L4",
+      "content": "孤蓬万里征。",
+      "imagery": [
+        "孤蓬"
+      ],
+      "emotion": [
+        "孤独",
+        "漫长",
+        "不舍"
+      ],
+      "translation": "你就像那随风飘荡的蓬草，即将远行万里。",
+      "translation_keywords": [
+        "孤蓬",
+        "万里征"
+      ],
+      "explanation": "以“孤蓬”比喻友人漂泊不定的旅途和孤独的心情，“万里征”则强调路途遥远，加深了离别的愁绪和对友人的担忧。"
+    }
+  ]
+}

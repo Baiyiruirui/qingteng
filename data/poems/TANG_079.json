@@ -1,0 +1,101 @@
+{
+  "poem_id": "TANG_079",
+  "title": "悯农",
+  "author": "李绅",
+  "dynasty": "唐",
+  "grade": "小学",
+  "text_type": "绝句",
+  "themes": [
+    "稼穑艰难",
+    "劳动光荣",
+    "珍惜粮食",
+    "体恤农民"
+  ],
+  "imagery": [
+    "禾",
+    "汗滴",
+    "土",
+    "盘中餐",
+    "粒粒"
+  ],
+  "rhetoric": [
+    "设问",
+    "借代",
+    "对比",
+    "细节描写"
+  ],
+  "lines": [
+    {
+      "line_id": "TANG_079_L1",
+      "content": "锄禾日当午，",
+      "imagery": [
+        "禾"
+      ],
+      "emotion": [
+        "辛劳",
+        "艰苦"
+      ],
+      "translation": "农民在中午炎热的太阳下锄地、除草。",
+      "translation_keywords": [
+        "锄禾",
+        "日当午"
+      ],
+      "explanation": "描写农民在烈日当头的中午辛勤地劳作，为禾苗锄草。"
+    },
+    {
+      "line_id": "TANG_079_L2",
+      "content": "汗滴禾下土。",
+      "imagery": [
+        "汗滴",
+        "禾",
+        "土"
+      ],
+      "emotion": [
+        "艰辛",
+        "付出",
+        "汗水"
+      ],
+      "translation": "汗水一滴滴地掉落在禾苗下的泥土里。",
+      "translation_keywords": [
+        "汗滴",
+        "禾下土"
+      ],
+      "explanation": "表现农民在劳作时汗流浃背，每一滴汗水都浸润着泥土。"
+    },
+    {
+      "line_id": "TANG_079_L3",
+      "content": "谁知盘中餐，",
+      "imagery": [
+        "盘中餐"
+      ],
+      "emotion": [
+        "疑问",
+        "反思"
+      ],
+      "translation": "有谁知道我们碗里的饭食。",
+      "translation_keywords": [
+        "谁知",
+        "盘中餐"
+      ],
+      "explanation": "诗人用反问的语气引人思考，有谁能真正体会到碗中粮食的来之不易。"
+    },
+    {
+      "line_id": "TANG_079_L4",
+      "content": "粒粒皆辛苦。",
+      "imagery": [
+        "粒粒"
+      ],
+      "emotion": [
+        "感慨",
+        "敬意",
+        "珍惜"
+      ],
+      "translation": "每一粒都凝聚着农民的辛勤劳动。",
+      "translation_keywords": [
+        "粒粒",
+        "皆辛苦"
+      ],
+      "explanation": "强调每一粒粮食都包含了农民的血汗和艰辛付出。"
+    }
+  ]
+}

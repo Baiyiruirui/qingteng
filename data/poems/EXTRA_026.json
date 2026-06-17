@@ -1,0 +1,99 @@
+{
+  "poem_id": "EXTRA_026",
+  "title": "蜂",
+  "author": "罗隐",
+  "dynasty": "唐",
+  "grade": "小学",
+  "text_type": "绝句",
+  "themes": [
+    "劳动",
+    "讽喻"
+  ],
+  "imagery": [
+    "蜜蜂",
+    "百花"
+  ],
+  "rhetoric": [
+    "设问",
+    "对比",
+    "象征"
+  ],
+  "lines": [
+    {
+      "line_id": "EXTRA_026_L1",
+      "content": "不论平地与山尖",
+      "imagery": [
+        "蜜蜂",
+        "百花"
+      ],
+      "emotion": [
+        "劳动",
+        "讽喻"
+      ],
+      "translation": "不管是平坦的土地，还是高高的山顶。",
+      "translation_keywords": [
+        "不论",
+        "平地",
+        "山尖"
+      ],
+      "explanation": "这句写蜜蜂飞遍各处，不辞辛劳。用“不论”强调范围之广，突出蜜蜂的勤劳。"
+    },
+    {
+      "line_id": "EXTRA_026_L2",
+      "content": "无限风光尽被占",
+      "imagery": [
+        "蜜蜂",
+        "百花"
+      ],
+      "emotion": [
+        "劳动",
+        "讽喻"
+      ],
+      "translation": "所有美好的风景都被它们占有了。",
+      "translation_keywords": [
+        "无限",
+        "风光",
+        "尽被占"
+      ],
+      "explanation": "“无限风光”指美好的花丛，“尽被占”写蜜蜂采蜜的忙碌，也暗含讽刺：它们辛苦，却好像拥有了一切。"
+    },
+    {
+      "line_id": "EXTRA_026_L3",
+      "content": "采得百花成蜜后",
+      "imagery": [
+        "蜜蜂",
+        "百花"
+      ],
+      "emotion": [
+        "劳动",
+        "讽喻"
+      ],
+      "translation": "采遍百花，酿成蜂蜜之后。",
+      "translation_keywords": [
+        "采得",
+        "百花",
+        "成蜜"
+      ],
+      "explanation": "这句写蜜蜂劳动的成果。“百花”象征丰富的付出，“成蜜”是收获，但为下文转折铺垫。"
+    },
+    {
+      "line_id": "EXTRA_026_L4",
+      "content": "为谁辛苦为谁甜",
+      "imagery": [
+        "蜜蜂",
+        "百花"
+      ],
+      "emotion": [
+        "劳动",
+        "讽喻"
+      ],
+      "translation": "这辛苦和甜蜜，到底是为谁呢？",
+      "translation_keywords": [
+        "为谁",
+        "辛苦",
+        "甜"
+      ],
+      "explanation": "用设问点明主题：蜜蜂辛苦酿蜜，自己却享用不到，暗指劳动成果被剥削。情感由赞美转为同情和讽刺。"
+    }
+  ]
+}

@@ -1,0 +1,159 @@
+{
+  "poem_id": "TANG_070",
+  "title": "终南别业",
+  "author": "王维",
+  "dynasty": "唐",
+  "grade": "初中",
+  "text_type": "律诗",
+  "themes": [
+    "隐逸生活",
+    "禅意人生",
+    "田园风光",
+    "顺其自然",
+    "超脱世俗"
+  ],
+  "imagery": [
+    "南山",
+    "溪水",
+    "白云",
+    "林叟"
+  ],
+  "rhetoric": [
+    "对仗",
+    "借景抒情",
+    "动静结合",
+    "哲理蕴含"
+  ],
+  "lines": [
+    {
+      "line_id": "TANG_070_L1",
+      "content": "中岁颇好道，",
+      "imagery": [],
+      "emotion": [
+        "虔诚",
+        "向往"
+      ],
+      "translation": "到了中年，我便十分爱好佛道。",
+      "translation_keywords": [
+        "中岁",
+        "颇好道"
+      ],
+      "explanation": "诗人到中年以后，对佛道修行产生了浓厚的兴趣，并投入其中。"
+    },
+    {
+      "line_id": "TANG_070_L2",
+      "content": "晚家南山陲。",
+      "imagery": [
+        "南山"
+      ],
+      "emotion": [
+        "归隐",
+        "安居"
+      ],
+      "translation": "晚年时期，便把家安在终南山边。",
+      "translation_keywords": [
+        "晚家",
+        "南山陲"
+      ],
+      "explanation": "到了晚年，诗人就选择在终南山的边陲修建别墅，过着隐居生活。"
+    },
+    {
+      "line_id": "TANG_070_L3",
+      "content": "兴来每独往，",
+      "imagery": [
+        "独行"
+      ],
+      "emotion": [
+        "自由",
+        "随性"
+      ],
+      "translation": "兴致来了，常常独自一人前往山中游玩。",
+      "translation_keywords": [
+        "兴来",
+        "每独往"
+      ],
+      "explanation": "诗人心血来潮时，总是独自一人前往山林深处，享受大自然的宁静。"
+    },
+    {
+      "line_id": "TANG_070_L4",
+      "content": "胜事空自知。",
+      "imagery": [],
+      "emotion": [
+        "悠然",
+        "自得"
+      ],
+      "translation": "那些美好的事物只有自己内心才体会得到。",
+      "translation_keywords": [
+        "胜事",
+        "空自知"
+      ],
+      "explanation": "那些山林中的美好景致和感悟，只有诗人自己才能领会和感受，不与人分享，更显清高。"
+    },
+    {
+      "line_id": "TANG_070_L5",
+      "content": "行到水穷处，",
+      "imagery": [
+        "溪水尽头"
+      ],
+      "emotion": [
+        "豁达",
+        "禅意"
+      ],
+      "translation": "信步走到水流的尽头。",
+      "translation_keywords": [
+        "行到",
+        "水穷处"
+      ],
+      "explanation": "诗人随心所欲地漫步，一直走到溪水的源头或尽头，不设目标。"
+    },
+    {
+      "line_id": "TANG_070_L6",
+      "content": "坐看云起时。",
+      "imagery": [
+        "云"
+      ],
+      "emotion": [
+        "恬淡",
+        "超脱"
+      ],
+      "translation": "坐下来观看白云从山谷中升起。",
+      "translation_keywords": [
+        "坐看",
+        "云起时"
+      ],
+      "explanation": "到了水尽头，就随意坐下，观看天空中云朵的聚散变化，展现了闲适自得、顺其自然的禅意。"
+    },
+    {
+      "line_id": "TANG_070_L7",
+      "content": "偶然值林叟，",
+      "imagery": [
+        "林中老人"
+      ],
+      "emotion": [
+        "随遇而安",
+        "淳朴"
+      ],
+      "translation": "偶尔碰到林中的老翁。",
+      "translation_keywords": [
+        "偶然值",
+        "林叟"
+      ],
+      "explanation": "偶尔在山林中遇到几位淳朴的老人，便与他们攀谈起来。"
+    },
+    {
+      "line_id": "TANG_070_L8",
+      "content": "谈笑无还期。",
+      "imagery": [],
+      "emotion": [
+        "忘我",
+        "悠然"
+      ],
+      "translation": "谈笑风生，忘记了回家的时限。",
+      "translation_keywords": [
+        "谈笑",
+        "无还期"
+      ],
+      "explanation": "彼此相谈甚欢，不知不觉中竟忘记了归去的时辰，表现了诗人完全沉浸在隐居生活中的乐趣。"
+    }
+  ]
+}

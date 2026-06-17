@@ -1,0 +1,176 @@
+{
+  "poem_id": "TANG_066",
+  "title": "过故人庄",
+  "author": "孟浩然",
+  "dynasty": "唐",
+  "grade": "小学",
+  "text_type": "绝句",
+  "themes": [
+    "田园生活",
+    "友情深厚",
+    "隐逸情趣"
+  ],
+  "imagery": [
+    "鸡黍",
+    "田家",
+    "绿树",
+    "村",
+    "青山",
+    "郭",
+    "轩",
+    "场圃",
+    "桑麻",
+    "菊花"
+  ],
+  "rhetoric": [
+    "对仗",
+    "白描",
+    "细节描写"
+  ],
+  "lines": [
+    {
+      "line_id": "TANG_066_L1",
+      "content": "故人具鸡黍",
+      "imagery": [
+        "鸡黍"
+      ],
+      "emotion": [
+        "亲切",
+        "温暖",
+        "朴实"
+      ],
+      "translation": "老朋友准备了鸡肉和黍米饭。",
+      "translation_keywords": [
+        "故人",
+        "鸡黍"
+      ],
+      "explanation": "开篇点明了事件的主角和热情，用“鸡黍”二字表现了田家待客的朴实与真诚，直接点题“故人庄”。"
+    },
+    {
+      "line_id": "TANG_066_L2",
+      "content": "邀我至田家",
+      "imagery": [
+        "田家"
+      ],
+      "emotion": [
+        "随和",
+        "亲近",
+        "悠闲"
+      ],
+      "translation": "邀请我到他田园中的家里做客。",
+      "translation_keywords": [
+        "邀",
+        "田家"
+      ],
+      "explanation": "交代了诗人应邀前往，自然的叙述方式，展现了与朋友之间随性亲密的友情。"
+    },
+    {
+      "line_id": "TANG_066_L3",
+      "content": "绿树村边合",
+      "imagery": [
+        "绿树",
+        "村"
+      ],
+      "emotion": [
+        "宁静",
+        "和谐",
+        "自然"
+      ],
+      "translation": "郁郁葱葱的绿树环绕着村庄。",
+      "translation_keywords": [
+        "绿树",
+        "村边"
+      ],
+      "explanation": "描绘了故人庄的自然环境，绿树合围，一派生机盎然的景象，衬托了乡村的宁静和美好。"
+    },
+    {
+      "line_id": "TANG_066_L4",
+      "content": "青山郭外斜",
+      "imagery": [
+        "青山",
+        "郭"
+      ],
+      "emotion": [
+        "开阔",
+        "悠远",
+        "安详"
+      ],
+      "translation": "连绵的青山在村外延伸倾斜。",
+      "translation_keywords": [
+        "青山",
+        "郭外"
+      ],
+      "explanation": "与上句构成对仗，进一步描绘田园风光，远景近景结合，构成一幅恬淡、开阔的乡村画卷，表达了诗人对田园生活的喜爱。"
+    },
+    {
+      "line_id": "TANG_066_L5",
+      "content": "开轩面场圃",
+      "imagery": [
+        "轩",
+        "场圃"
+      ],
+      "emotion": [
+        "舒适",
+        "闲适",
+        "亲近自然"
+      ],
+      "translation": "推开窗户，正对着庭院里的菜园和晒谷场。",
+      "translation_keywords": [
+        "开轩",
+        "场圃"
+      ],
+      "explanation": "描绘了主人居室的内部布局，窗外便是农家日常劳作的场所，展现了浓厚的乡土气息，也体现了主人的朴实。"
+    },
+    {
+      "line_id": "TANG_066_L6",
+      "content": "把酒话桑麻",
+      "imagery": [
+        "酒",
+        "桑麻"
+      ],
+      "emotion": [
+        "欢快",
+        "惬意",
+        "友情"
+      ],
+      "translation": "我们举杯畅饮，谈论着农事家常。",
+      "translation_keywords": [
+        "把酒",
+        "话桑麻"
+      ],
+      "explanation": "描绘了朋友之间亲密融洽的交流场景，“话桑麻”点明了田园生活的话题，表现了朋友间无需客套的真挚情谊。"
+    },
+    {
+      "line_id": "TANG_066_L7",
+      "content": "待到重阳日",
+      "imagery": [],
+      "emotion": [
+        "期待",
+        "约定",
+        "延续"
+      ],
+      "translation": "等到重阳节那天。",
+      "translation_keywords": [
+        "重阳日"
+      ],
+      "explanation": "承接上文的欢聚，表达了诗人对未来再次相聚的期盼，将这份友情延续。"
+    },
+    {
+      "line_id": "TANG_066_L8",
+      "content": "还来就菊花",
+      "imagery": [
+        "菊花"
+      ],
+      "emotion": [
+        "约定",
+        "喜悦",
+        "雅致"
+      ],
+      "translation": "我还要再来拜访你，一起欣赏菊花。",
+      "translation_keywords": [
+        "就菊花"
+      ],
+      "explanation": "结束于对未来重聚的约定，以菊花这一高雅的意象，升华了朋友间情谊的纯洁和高尚，也体现了诗人对田园隐逸生活的向往。"
+    }
+  ]
+}

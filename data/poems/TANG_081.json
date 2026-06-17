@@ -1,0 +1,103 @@
+{
+  "poem_id": "TANG_081",
+  "title": "送别",
+  "author": "王维",
+  "dynasty": "唐",
+  "grade": "小学",
+  "text_type": "绝句",
+  "themes": [
+    "送别",
+    "思念",
+    "离愁",
+    "惜别",
+    "友人远行"
+  ],
+  "imagery": [
+    "山",
+    "日暮",
+    "柴扉",
+    "春草",
+    "王孙"
+  ],
+  "rhetoric": [
+    "借景抒情",
+    "设问",
+    "对比",
+    "虚实结合"
+  ],
+  "lines": [
+    {
+      "line_id": "TANG_081_L1",
+      "content": "山中相送罢，",
+      "imagery": [
+        "山"
+      ],
+      "emotion": [
+        "离别",
+        "怅然"
+      ],
+      "translation": "在山中送别友人，直到送罢。",
+      "translation_keywords": [
+        "山中",
+        "相送罢"
+      ],
+      "explanation": "描写诗人在山中与友人告别，送走友人后独自一人。"
+    },
+    {
+      "line_id": "TANG_081_L2",
+      "content": "日暮掩柴扉。",
+      "imagery": [
+        "日暮",
+        "柴扉"
+      ],
+      "emotion": [
+        "孤寂",
+        "惆怅",
+        "伤感"
+      ],
+      "translation": "傍晚时分，我才回到家，关上柴门。",
+      "translation_keywords": [
+        "日暮",
+        "掩柴扉"
+      ],
+      "explanation": "天色已晚，诗人回到简陋的家，关上柴门，显得孤寂落寞。"
+    },
+    {
+      "line_id": "TANG_081_L3",
+      "content": "春草明年绿，",
+      "imagery": [
+        "春草"
+      ],
+      "emotion": [
+        "期待",
+        "伤感",
+        "时光流逝"
+      ],
+      "translation": "明年春天，芳草又会重新变绿。",
+      "translation_keywords": [
+        "春草",
+        "明年绿"
+      ],
+      "explanation": "感叹时光流逝，景色周而复始，草木枯荣有期。"
+    },
+    {
+      "line_id": "TANG_081_L4",
+      "content": "王孙归不归？",
+      "imagery": [
+        "王孙"
+      ],
+      "emotion": [
+        "疑问",
+        "思念",
+        "担忧",
+        "留恋"
+      ],
+      "translation": "可我的朋友啊，你明年还会回来吗？",
+      "translation_keywords": [
+        "王孙",
+        "归不归"
+      ],
+      "explanation": "诗人通过设问，表达了对友人的深切思念和对友人能否归来的不确定与担忧，充满了离愁别绪。"
+    }
+  ]
+}

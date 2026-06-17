@@ -1,0 +1,49 @@
+{
+  "poem_id": "TANG_007",
+  "title": "夜宿山寺",
+  "author": "李白",
+  "dynasty": "唐",
+  "grade": "小学",
+  "text_type": "五言绝句",
+  "themes": ["写景"],
+  "imagery": ["山", "星"],
+  "rhetoric": ["夸张"],
+  "lines": [
+    {
+      "line_id": "TANG_007_L1",
+      "content": "危楼高百尺",
+      "imagery": ["山"],
+      "emotion": ["惊叹"],
+      "translation": "高楼非常高。",
+      "translation_keywords": ["高楼", "很高"],
+      "explanation": "用夸张写楼高。"
+    },
+    {
+      "line_id": "TANG_007_L2",
+      "content": "手可摘星辰",
+      "imagery": ["星"],
+      "emotion": ["惊叹"],
+      "translation": "好像伸手就能摘到星星。",
+      "translation_keywords": ["星星", "很近"],
+      "explanation": "进一步夸张高度。"
+    },
+    {
+      "line_id": "TANG_007_L3",
+      "content": "不敢高声语",
+      "imagery": [],
+      "emotion": ["敬畏"],
+      "translation": "不敢大声说话。",
+      "translation_keywords": ["安静"],
+      "explanation": "环境十分安静。"
+    },
+    {
+      "line_id": "TANG_007_L4",
+      "content": "恐惊天上人",
+      "imagery": [],
+      "emotion": ["敬畏"],
+      "translation": "担心惊动天上的人。",
+      "translation_keywords": ["担心", "惊动"],
+      "explanation": "继续使用夸张手法。"
+    }
+  ]
+}

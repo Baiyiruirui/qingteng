@@ -1,0 +1,102 @@
+{
+  "poem_id": "TANG_077",
+  "title": "登科后",
+  "author": "孟郊",
+  "dynasty": "唐",
+  "grade": "小学",
+  "text_type": "绝句",
+  "themes": [
+    "喜悦",
+    "成功",
+    "报喜",
+    "意气风发",
+    "苦尽甘来"
+  ],
+  "imagery": [
+    "春风",
+    "马蹄",
+    "长安花"
+  ],
+  "rhetoric": [
+    "对比",
+    "夸张",
+    "借代",
+    "比喻"
+  ],
+  "lines": [
+    {
+      "line_id": "TANG_077_L1",
+      "content": "昔日龌龊不足夸，",
+      "imagery": [],
+      "emotion": [
+        "压抑",
+        "苦闷",
+        "失意"
+      ],
+      "translation": "过去困顿潦倒的生活没什么值得夸耀的。",
+      "translation_keywords": [
+        "昔日",
+        "龌龊",
+        "不足夸"
+      ],
+      "explanation": "回顾过去不顺利、不得志的岁月，觉得不值一提。"
+    },
+    {
+      "line_id": "TANG_077_L2",
+      "content": "今朝放荡思无涯。",
+      "imagery": [],
+      "emotion": [
+        "畅快",
+        "自由",
+        "得意",
+        "兴奋"
+      ],
+      "translation": "今日金榜题名，心情愉快，思绪无边无际。",
+      "translation_keywords": [
+        "今朝",
+        "放荡",
+        "思无涯"
+      ],
+      "explanation": "如今金榜题名，心情无比舒畅，思绪自由奔放，感到无拘无束的得意。"
+    },
+    {
+      "line_id": "TANG_077_L3",
+      "content": "春风得意马蹄疾，",
+      "imagery": [
+        "春风",
+        "马蹄"
+      ],
+      "emotion": [
+        "欢快",
+        "兴奋",
+        "得意",
+        "豪迈"
+      ],
+      "translation": "迎着和煦的春风，策马飞奔，意气风发。",
+      "translation_keywords": [
+        "春风得意",
+        "马蹄疾"
+      ],
+      "explanation": "诗人考中进士后，如同沐浴在春风中，心情无比得意，骑着马飞快地奔驰着。"
+    },
+    {
+      "line_id": "TANG_077_L4",
+      "content": "一日看尽长安花。",
+      "imagery": [
+        "长安花"
+      ],
+      "emotion": [
+        "满足",
+        "狂喜",
+        "自豪"
+      ],
+      "translation": "好像一天之内就能看尽长安城所有的繁花。",
+      "translation_keywords": [
+        "一日",
+        "看尽",
+        "长安花"
+      ],
+      "explanation": "诗人感到一天之内就能把长安城美丽的春花全部看完，极言心情之畅快与自豪。"
+    }
+  ]
+}

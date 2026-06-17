@@ -1,0 +1,120 @@
+{
+  "poem_id": "EXTRA_019",
+  "title": "忆江南",
+  "author": "白居易",
+  "dynasty": "唐",
+  "grade": "小学",
+  "text_type": "古诗",
+  "themes": [
+    "江南",
+    "春景"
+  ],
+  "imagery": [
+    "江花",
+    "江水"
+  ],
+  "rhetoric": [
+    "比喻",
+    "反问",
+    "对仗"
+  ],
+  "lines": [
+    {
+      "line_id": "EXTRA_019_L1",
+      "content": "江南好",
+      "imagery": [
+        "江花",
+        "江水"
+      ],
+      "emotion": [
+        "江南",
+        "春景"
+      ],
+      "translation": "江南是个好地方。",
+      "translation_keywords": [
+        "江南",
+        "好"
+      ],
+      "explanation": "开篇直抒胸臆，用“好”字总领全词，表达对江南的赞美之情。"
+    },
+    {
+      "line_id": "EXTRA_019_L2",
+      "content": "风景旧曾谙",
+      "imagery": [
+        "江花",
+        "江水"
+      ],
+      "emotion": [
+        "江南",
+        "春景"
+      ],
+      "translation": "那里的风景我过去就很熟悉。",
+      "translation_keywords": [
+        "风景",
+        "旧",
+        "曾",
+        "谙"
+      ],
+      "explanation": "“旧曾谙”点明诗人对江南的熟悉与怀念，为下文回忆作铺垫。"
+    },
+    {
+      "line_id": "EXTRA_019_L3",
+      "content": "日出江花红胜火",
+      "imagery": [
+        "江花",
+        "江水"
+      ],
+      "emotion": [
+        "江南",
+        "春景"
+      ],
+      "translation": "太阳出来时，江边的花朵比火还要红。",
+      "translation_keywords": [
+        "日出",
+        "江花",
+        "红",
+        "胜火"
+      ],
+      "explanation": "运用比喻和夸张，以“火”喻花，突出江花在朝阳映照下的鲜艳夺目。"
+    },
+    {
+      "line_id": "EXTRA_019_L4",
+      "content": "春来江水绿如蓝",
+      "imagery": [
+        "江花",
+        "江水"
+      ],
+      "emotion": [
+        "江南",
+        "春景"
+      ],
+      "translation": "春天到来时，江水绿得像蓝草一样。",
+      "translation_keywords": [
+        "春来",
+        "江水",
+        "绿",
+        "如蓝"
+      ],
+      "explanation": "“绿如蓝”用比喻写江水之绿，与上句“红胜火”形成色彩对比，画面鲜明。"
+    },
+    {
+      "line_id": "EXTRA_019_L5",
+      "content": "能不忆江南",
+      "imagery": [
+        "江花",
+        "江水"
+      ],
+      "emotion": [
+        "江南",
+        "春景"
+      ],
+      "translation": "怎能不让人回忆江南呢？",
+      "translation_keywords": [
+        "能不",
+        "忆",
+        "江南"
+      ],
+      "explanation": "以反问句收束，强化思念之情，与首句“好”呼应，结构完整。"
+    }
+  ]
+}

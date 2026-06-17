@@ -1,0 +1,104 @@
+{
+  "poem_id": "EXTRA_010",
+  "title": "鹿柴",
+  "author": "王维",
+  "dynasty": "唐",
+  "grade": "小学",
+  "text_type": "绝句",
+  "themes": [
+    "山水",
+    "幽静"
+  ],
+  "imagery": [
+    "空山",
+    "深林",
+    "青苔"
+  ],
+  "rhetoric": [
+    "以动衬静",
+    "对比",
+    "视觉与听觉结合"
+  ],
+  "lines": [
+    {
+      "line_id": "EXTRA_010_L1",
+      "content": "空山不见人",
+      "imagery": [
+        "空山",
+        "深林",
+        "青苔"
+      ],
+      "emotion": [
+        "山水",
+        "幽静"
+      ],
+      "translation": "空旷的山中看不见一个人影",
+      "translation_keywords": [
+        "空山",
+        "不见",
+        "人"
+      ],
+      "explanation": "这句写山中的寂静，用“空”字突出山的空旷无人，为下文的声音做铺垫。"
+    },
+    {
+      "line_id": "EXTRA_010_L2",
+      "content": "但闻人语响",
+      "imagery": [
+        "空山",
+        "深林",
+        "青苔"
+      ],
+      "emotion": [
+        "山水",
+        "幽静"
+      ],
+      "translation": "只听到有人说话的声音回荡",
+      "translation_keywords": [
+        "但闻",
+        "人语",
+        "响"
+      ],
+      "explanation": "以“人语响”反衬山的寂静，用声音来突出环境的幽静，是“以动衬静”的手法。"
+    },
+    {
+      "line_id": "EXTRA_010_L3",
+      "content": "返景入深林",
+      "imagery": [
+        "空山",
+        "深林",
+        "青苔"
+      ],
+      "emotion": [
+        "山水",
+        "幽静"
+      ],
+      "translation": "夕阳的余晖返照进幽深的树林",
+      "translation_keywords": [
+        "返景",
+        "入",
+        "深林"
+      ],
+      "explanation": "“返景”指夕阳的光线，写光从林外射入深林，带来温暖和明亮，与前面的幽暗形成对比。"
+    },
+    {
+      "line_id": "EXTRA_010_L4",
+      "content": "复照青苔上",
+      "imagery": [
+        "空山",
+        "深林",
+        "青苔"
+      ],
+      "emotion": [
+        "山水",
+        "幽静"
+      ],
+      "translation": "又照在青青的苔藓上",
+      "translation_keywords": [
+        "复照",
+        "青苔",
+        "上"
+      ],
+      "explanation": "“青苔”点出环境的潮湿和幽暗，阳光照在青苔上，显得格外鲜明，表现自然中细微的美。"
+    }
+  ]
+}

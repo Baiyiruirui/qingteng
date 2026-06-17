@@ -1,0 +1,98 @@
+{
+  "poem_id": "TANG_080",
+  "title": "悯农（二）",
+  "author": "李绅",
+  "dynasty": "唐",
+  "grade": "小学",
+  "text_type": "绝句",
+  "themes": [
+    "农民疾苦",
+    "社会不公",
+    "劳动与收获的反差",
+    "阶级矛盾"
+  ],
+  "imagery": [
+    "粟",
+    "子",
+    "田",
+    "农夫"
+  ],
+  "rhetoric": [
+    "对比",
+    "讽刺",
+    "反语",
+    "夸张"
+  ],
+  "lines": [
+    {
+      "line_id": "TANG_080_L1",
+      "content": "春种一粒粟，",
+      "imagery": [
+        "粟"
+      ],
+      "emotion": [
+        "播种",
+        "希望"
+      ],
+      "translation": "春天播下一颗谷子。",
+      "translation_keywords": [
+        "春种",
+        "一粒粟"
+      ],
+      "explanation": "描写春天农民播种的情景，播下的是小小的谷物。"
+    },
+    {
+      "line_id": "TANG_080_L2",
+      "content": "秋收万颗子。",
+      "imagery": [
+        "子"
+      ],
+      "emotion": [
+        "丰收",
+        "成果"
+      ],
+      "translation": "秋天就能收获成千上万的粮食。",
+      "translation_keywords": [
+        "秋收",
+        "万颗子"
+      ],
+      "explanation": "描绘秋天丰收的景象，一粒谷物能带来巨大的收获。"
+    },
+    {
+      "line_id": "TANG_080_L3",
+      "content": "四海无闲田，",
+      "imagery": [
+        "闲田"
+      ],
+      "emotion": [
+        "惊讶",
+        "不解"
+      ],
+      "translation": "普天之下没有荒废的土地。",
+      "translation_keywords": [
+        "四海",
+        "无闲田"
+      ],
+      "explanation": "指出天下所有的土地都在耕种，没有一寸闲置。"
+    },
+    {
+      "line_id": "TANG_080_L4",
+      "content": "农夫犹饿死。",
+      "imagery": [
+        "农夫"
+      ],
+      "emotion": [
+        "悲愤",
+        "讽刺",
+        "震惊",
+        "不公"
+      ],
+      "translation": "辛勤劳作的农民却仍然饿死。",
+      "translation_keywords": [
+        "农夫",
+        "犹饿死"
+      ],
+      "explanation": "揭示了在土地尽耕、物产丰饶的情况下，农民依然饥饿甚至饿死的悲惨现实，强烈批判社会的不公。"
+    }
+  ]
+}

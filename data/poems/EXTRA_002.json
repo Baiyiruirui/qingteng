@@ -1,0 +1,223 @@
+{
+  "poem_id": "EXTRA_002",
+  "title": "长歌行",
+  "author": "汉乐府",
+  "dynasty": "汉",
+  "grade": "小学/初中",
+  "text_type": "古诗",
+  "themes": [
+    "惜时",
+    "劝学"
+  ],
+  "imagery": [
+    "园葵",
+    "朝露",
+    "百川"
+  ],
+  "rhetoric": [
+    "比喻",
+    "对比",
+    "起兴",
+    "反问"
+  ],
+  "lines": [
+    {
+      "line_id": "EXTRA_002_L1",
+      "content": "青青园中葵",
+      "imagery": [
+        "园葵",
+        "朝露",
+        "百川"
+      ],
+      "emotion": [
+        "惜时",
+        "劝学"
+      ],
+      "translation": "园子里绿油油的向日葵。",
+      "translation_keywords": [
+        "园中",
+        "青青",
+        "葵"
+      ],
+      "explanation": "用园中葵的茂盛生长起兴，引出对时光的感慨。"
+    },
+    {
+      "line_id": "EXTRA_002_L2",
+      "content": "朝露待日晞",
+      "imagery": [
+        "园葵",
+        "朝露",
+        "百川"
+      ],
+      "emotion": [
+        "惜时",
+        "劝学"
+      ],
+      "translation": "清晨的露水等着太阳来晒干。",
+      "translation_keywords": [
+        "朝露",
+        "待",
+        "日晞"
+      ],
+      "explanation": "朝露易干，比喻青春短暂，暗示要珍惜时光。"
+    },
+    {
+      "line_id": "EXTRA_002_L3",
+      "content": "阳春布德泽",
+      "imagery": [
+        "园葵",
+        "朝露",
+        "百川"
+      ],
+      "emotion": [
+        "惜时",
+        "劝学"
+      ],
+      "translation": "温暖的春天把恩泽洒向大地。",
+      "translation_keywords": [
+        "阳春",
+        "布",
+        "德泽"
+      ],
+      "explanation": "阳春比喻大好时光，德泽指春天的恩惠，写出万物生长的条件。"
+    },
+    {
+      "line_id": "EXTRA_002_L4",
+      "content": "万物生光辉",
+      "imagery": [
+        "园葵",
+        "朝露",
+        "百川"
+      ],
+      "emotion": [
+        "惜时",
+        "劝学"
+      ],
+      "translation": "万物都焕发出生命的光彩。",
+      "translation_keywords": [
+        "万物",
+        "生",
+        "光辉"
+      ],
+      "explanation": "光辉形容生机勃勃，与后文衰败形成对比。"
+    },
+    {
+      "line_id": "EXTRA_002_L5",
+      "content": "常恐秋节至",
+      "imagery": [
+        "园葵",
+        "朝露",
+        "百川"
+      ],
+      "emotion": [
+        "惜时",
+        "劝学"
+      ],
+      "translation": "常常担心秋天一到。",
+      "translation_keywords": [
+        "常恐",
+        "秋节",
+        "至"
+      ],
+      "explanation": "恐字写出对时光流逝的忧虑，秋节象征衰老。"
+    },
+    {
+      "line_id": "EXTRA_002_L6",
+      "content": "焜黄华叶衰",
+      "imagery": [
+        "园葵",
+        "朝露",
+        "百川"
+      ],
+      "emotion": [
+        "惜时",
+        "劝学"
+      ],
+      "translation": "花朵和叶子就会枯黄衰败。",
+      "translation_keywords": [
+        "焜黄",
+        "华叶",
+        "衰"
+      ],
+      "explanation": "焜黄写颜色枯黄，与前面光辉形成强烈对比，突出时光无情。"
+    },
+    {
+      "line_id": "EXTRA_002_L7",
+      "content": "百川东到海",
+      "imagery": [
+        "园葵",
+        "朝露",
+        "百川"
+      ],
+      "emotion": [
+        "惜时",
+        "劝学"
+      ],
+      "translation": "无数条河流向东流入大海。",
+      "translation_keywords": [
+        "百川",
+        "东到海"
+      ],
+      "explanation": "用百川东流比喻时间一去不返，形象生动。"
+    },
+    {
+      "line_id": "EXTRA_002_L8",
+      "content": "何时复西归",
+      "imagery": [
+        "园葵",
+        "朝露",
+        "百川"
+      ],
+      "emotion": [
+        "惜时",
+        "劝学"
+      ],
+      "translation": "什么时候才能再向西流回来呢？",
+      "translation_keywords": [
+        "何时",
+        "复",
+        "西归"
+      ],
+      "explanation": "反问句强调时间不可倒流，引发思考。"
+    },
+    {
+      "line_id": "EXTRA_002_L9",
+      "content": "少壮不努力",
+      "imagery": [
+        "园葵",
+        "朝露",
+        "百川"
+      ],
+      "emotion": [
+        "惜时",
+        "劝学"
+      ],
+      "translation": "年轻力壮的时候不努力上进。",
+      "translation_keywords": [
+        "少壮",
+        "不努力"
+      ],
+      "explanation": "直接点明主题，少壮指青春年华。"
+    },
+    {
+      "line_id": "EXTRA_002_L10",
+      "content": "老大徒伤悲",
+      "imagery": [
+        "园葵",
+        "朝露",
+        "百川"
+      ],
+      "emotion": [
+        "惜时",
+        "劝学"
+      ],
+      "translation": "等到年纪大了只能白白地伤心后悔。",
+      "translation_keywords": [
+        "老大",
+        "徒",
+        "伤悲"
+      ],
+      "explanation": "徒字写出后悔无用，与少壮对比，警示人们珍惜时光。"
+    }
+  ]
+}

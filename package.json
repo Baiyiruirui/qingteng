@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "import:poems": "tsx --env-file=.env.local scripts/import-poems.ts",
+    "db:check": "tsx --env-file=.env.local scripts/db-check.ts",
+    "db:verify": "tsx --env-file=.env.local scripts/verify-poems.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.84",
