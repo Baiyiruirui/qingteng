@@ -1,8 +1,10 @@
 'use client'
 
 import { useChat } from '@ai-sdk/react'
-import { useEffect, useRef, useState } from 'react'
+import { DefaultChatTransport } from 'ai'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import type { UIMessage } from 'ai'
 
 function getTextContent(parts: Array<{ type: string; text?: string }>) {
   return parts
@@ -11,11 +13,27 @@ function getTextContent(parts: Array<{ type: string; text?: string }>) {
     .join('')
 }
 
-export default function ChatClient({ name }: { name: string }) {
+type Props = {
+  userName: string
+  conversationId: string
+  initialMessages: UIMessage[]
+}
+
+export default function ChatClient({ userName, conversationId, initialMessages }: Props) {
   const router = useRouter()
-  const { messages, status, sendMessage } = useChat()
   const [input, setInput] = useState('')
+  const [newConvLoading, setNewConvLoading] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
+
+  const transport = useMemo(
+    () => new DefaultChatTransport({ body: { conversationId } }),
+    [conversationId],
+  )
+
+  const { messages, status, sendMessage } = useChat({
+    transport,
+    messages: initialMessages,
+  })
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -32,6 +50,17 @@ export default function ChatClient({ name }: { name: string }) {
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' })
     router.push('/login')
+  }
+
+  async function handleNewConversation() {
+    if (newConvLoading) return
+    setNewConvLoading(true)
+    try {
+      await fetch('/api/conversations', { method: 'POST' })
+      router.refresh()
+    } finally {
+      setNewConvLoading(false)
+    }
   }
 
   return (
@@ -51,10 +80,22 @@ export default function ChatClient({ name }: { name: string }) {
         >
           青藤
         </h1>
-        <div className="flex-1 flex justify-end items-center gap-3">
+        <div className="flex-1 flex justify-end items-center gap-4">
           <span className="text-sm" style={{ color: '#8a8a8a' }}>
-            你好,{name}
+            你好,{userName}
           </span>
+          <button
+            onClick={handleNewConversation}
+            disabled={newConvLoading}
+            className="text-xs px-2.5 py-1 rounded-lg border transition-colors disabled:opacity-40"
+            style={{
+              borderColor: '#d4cfc6',
+              color: '#8a8a8a',
+              background: 'transparent',
+            }}
+          >
+            + 新对话
+          </button>
           <button
             onClick={handleLogout}
             className="text-sm underline"
@@ -70,10 +111,10 @@ export default function ChatClient({ name }: { name: string }) {
         <div className="mx-auto max-w-[720px] px-4 space-y-8">
           {messages.length === 0 && (
             <p
-              className="text-center text-sm mt-16"
-              style={{ color: '#aaa9a4' }}
+              className="text-center font-serif mt-16 opacity-40"
+              style={{ color: '#1a1a1a' }}
             >
-              试着问他一首诗，或者聊聊你今天的心情。
+              和青藤说说话吧
             </p>
           )}
 
