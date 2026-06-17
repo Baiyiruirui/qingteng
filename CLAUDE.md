@@ -40,6 +40,7 @@
 | Week 1 Day 2 | ✅ | Drizzle schema + Neon 接入 + 6 张表 | `dc76ca0` |
 | Week 1 Day 3 | ✅ | 140 首诗词数据入库 | `d605eb9` |
 | Week 1 Day 4 | ✅ | AI 路由 + 青藤人设 + 流式对话 | `32267c9` |
+| Week 2 Day 1 | ✅ | 注册/登录/登出 + JWT cookie + 路由保护 | `b1727d1` |
 | Week 2 | ⏳ | 三层 Memory + 会话持久化 | - |
 | Week 3 | ⏳ | 诗境沉浸 + 协同创作 MVP | - |
 | Week 4 | ⏳ | Whisper 朗读 + 错题本/复习 | - |
