@@ -23,6 +23,8 @@ export default function ChatClient({ userName, conversationId, initialMessages }
   const router = useRouter()
   const [input, setInput] = useState('')
   const [newConvLoading, setNewConvLoading] = useState(false)
+  const [openingLoading, setOpeningLoading] = useState(false)
+  const openingFetched = useRef(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const transport = useMemo(
@@ -30,10 +32,34 @@ export default function ChatClient({ userName, conversationId, initialMessages }
     [conversationId],
   )
 
-  const { messages, status, sendMessage } = useChat({
+  const { messages, status, sendMessage, setMessages } = useChat({
     transport,
     messages: initialMessages,
   })
+
+  // Fetch personalized opening when conversation is empty
+  useEffect(() => {
+    if (initialMessages.length > 0 || openingFetched.current) return
+    openingFetched.current = true
+
+    setOpeningLoading(true)
+    fetch('/api/chat/opening', { method: 'POST' })
+      .then(res => res.json())
+      .then(data => {
+        if (data.opening) {
+          setMessages([
+            {
+              id: data.opening.id,
+              role: 'assistant' as const,
+              parts: [{ type: 'text' as const, text: data.opening.content }],
+            },
+          ])
+        }
+      })
+      .catch(e => console.error('[opening] fetch failed:', e))
+      .finally(() => setOpeningLoading(false))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -109,12 +135,12 @@ export default function ChatClient({ userName, conversationId, initialMessages }
       {/* Messages */}
       <main className="flex-1 overflow-y-auto py-8">
         <div className="mx-auto max-w-[720px] px-4 space-y-8">
-          {messages.length === 0 && (
+          {openingLoading && (
             <p
-              className="text-center font-serif mt-16 opacity-40"
+              className="text-center font-serif mt-16 opacity-30"
               style={{ color: '#1a1a1a' }}
             >
-              和青藤说说话吧
+              青藤正在准备打招呼…
             </p>
           )}
 

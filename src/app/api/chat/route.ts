@@ -7,6 +7,7 @@ import { db } from '@/db'
 import { conversations } from '@/db/schema'
 import { appendMessage } from '@/db/repositories/messages'
 import { recordEvent } from '@/db/repositories/events'
+import { updateShortTerm } from '@/ai/memory/short-term'
 
 export const runtime = 'nodejs'
 
@@ -48,14 +49,18 @@ export async function POST(req: Request) {
       )
     }
 
-    // Save the new user message (always the last one in the array)
+    // Save the new user message (last in array) to PG and Redis
     const lastMsg = messages[messages.length - 1]
+    let userText = ''
     if (lastMsg?.role === 'user') {
-      const userText = (lastMsg.parts as Array<{ type: string; text?: string }>)
+      userText = (lastMsg.parts as Array<{ type: string; text?: string }>)
         ?.filter((p: { type: string }) => p.type === 'text')
         .map((p: { type: string; text?: string }) => p.text ?? '')
         .join('') ?? ''
       await appendMessage(conversationId, 'user', userText)
+      updateShortTerm(session.userId, conversationId, { role: 'user', content: userText }).catch(
+        e => console.error('[redis] updateShortTerm user failed:', e),
+      )
     }
 
     const result = streamText({
@@ -79,6 +84,10 @@ export async function POST(req: Request) {
         } catch (e) {
           console.error('[onFinish] failed to persist:', e)
         }
+        // Update Redis snapshot after assistant message is saved
+        updateShortTerm(session.userId, conversationId, { role: 'assistant', content: text }).catch(
+          e => console.error('[redis] updateShortTerm assistant failed:', e),
+        )
       },
     })
     return result.toUIMessageStreamResponse()
