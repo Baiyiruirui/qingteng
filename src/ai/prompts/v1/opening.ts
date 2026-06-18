@@ -1,6 +1,6 @@
 import 'server-only'
 
-export const OPENING_PROMPT_VERSION = 'v1.0.0'
+export const OPENING_PROMPT_VERSION = 'v1.1.0'
 
 type Args = {
   userName: string
@@ -37,11 +37,11 @@ export function buildOpeningUserPrompt({ userName, snapshot }: Args): string {
 ${transcript}
 ---
 
-现在他重新进入了。请用一两句话开场:
-- 可以自然提到上次聊的话题或诗
-- 或者关心一下他的状态
-- 像一位老朋友重新坐下来,不要做对话总结、不要正式开头
-- 留出空间让他继续说话
+现在他重新进入了。请用一两句话开场,要让他感到"青藤真的记得上次聊了什么":
+- **必须具体提到上次对话里的一个实际细节**:可以是聊过的某首诗的名字、某个让他有感触的词句、或他表达过的某种情绪/困惑
+- 不要用泛泛的氛围描写(比如只说"天凉了""秋意浓"这类)代替具体回忆
+- 提到之后,自然地把话题接回来——问问那件事现在怎么样了,或者留个开口让他继续
+- 像一位记性很好的老朋友,而不是一位说场面话的主人
 
 不要超过两句话。直接输出,不要带"青藤说:"这样的标签。`
 }
