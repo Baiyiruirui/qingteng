@@ -42,7 +42,7 @@
 | Week 1 Day 4 | ✅ | AI 路由 + 青藤人设 + 流式对话 | `32267c9` |
 | Week 2 Day 1 | ✅ | 注册/登录/登出 + JWT cookie + 路由保护 | `b1727d1` |
 | Week 2 Day 2 | ✅ | 会话持久化 + 消息写库 + events 数据流 | `2828513` |
-| Week 2 Day 3 | ✅ | Redis 短期 Memory + 个性化开场白 | `(见下)` |
+| Week 2 Day 3 | ✅ | Redis 短期 Memory + 个性化开场白 | `381ff5b` |
 | Week 2 | ⏳ | 三层 Memory + 会话持久化 | - |
 | Week 3 | ⏳ | 诗境沉浸 + 协同创作 MVP | - |
 | Week 4 | ⏳ | Whisper 朗读 + 错题本/复习 | - |
