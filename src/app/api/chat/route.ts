@@ -4,10 +4,11 @@ import { route } from '@/ai/router'
 import { CHARACTER_SYSTEM_PROMPT } from '@/ai/prompts/v1/character'
 import { getSession } from '@/lib/auth-server'
 import { db } from '@/db'
-import { conversations } from '@/db/schema'
+import { conversations, users } from '@/db/schema'
 import { appendMessage } from '@/db/repositories/messages'
 import { recordEvent } from '@/db/repositories/events'
 import { updateShortTerm } from '@/ai/memory/short-term'
+import { buildSystemContext } from '@/ai/memory/build-context'
 
 export const runtime = 'nodejs'
 
@@ -30,24 +31,33 @@ export async function POST(req: Request) {
       )
     }
 
-    // Verify the conversation belongs to this user
-    const [conv] = await db
-      .select({ id: conversations.id })
-      .from(conversations)
-      .where(
-        and(
-          eq(conversations.id, conversationId),
-          eq(conversations.userId, session.userId),
-        ),
-      )
-      .limit(1)
+    // Verify conversation ownership and fetch user name in parallel
+    const [convRows, userRows] = await Promise.all([
+      db
+        .select({ id: conversations.id })
+        .from(conversations)
+        .where(
+          and(
+            eq(conversations.id, conversationId),
+            eq(conversations.userId, session.userId),
+          ),
+        )
+        .limit(1),
+      db
+        .select({ name: users.name })
+        .from(users)
+        .where(eq(users.id, session.userId))
+        .limit(1),
+    ])
 
-    if (!conv) {
+    if (!convRows[0]) {
       return Response.json(
         { error: { code: 'FORBIDDEN', message: '无权操作' } },
         { status: 403 },
       )
     }
+
+    const userName = userRows[0]?.name ?? ''
 
     // Save the new user message (last in array) to PG and Redis
     const lastMsg = messages[messages.length - 1]
@@ -63,9 +73,12 @@ export async function POST(req: Request) {
       )
     }
 
+    // Build mid-term memory context (Redis-cached, degrades gracefully on failure)
+    const profileContext = await buildSystemContext(session.userId, userName)
+
     const result = streamText({
       model: route.characterDialog,
-      system: CHARACTER_SYSTEM_PROMPT,
+      system: CHARACTER_SYSTEM_PROMPT + profileContext,
       messages: await convertToModelMessages(messages),
       onFinish: async ({ text, usage, finishReason, model }) => {
         try {

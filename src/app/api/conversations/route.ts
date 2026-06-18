@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth-server'
 import { createConversation } from '@/db/repositories/conversations'
+import { invalidateProfile } from '@/ai/memory/mid-term'
 
 export async function POST() {
   const session = await getSession()
@@ -12,5 +13,7 @@ export async function POST() {
   }
 
   const conversation = await createConversation(session.userId)
+  // Invalidate profile cache so next message sees latest conversation data
+  invalidateProfile(session.userId)
   return NextResponse.json({ conversationId: conversation.id })
 }
