@@ -44,7 +44,7 @@
 | Week 2 Day 2 | ✅ | 会话持久化 + 消息写库 + events 数据流 | `2828513` |
 | Week 2 Day 3 | ✅ | Redis 短期 Memory + 个性化开场白 | `381ff5b` |
 | Week 2 Day 4 | ✅ | 中期 Memory 学习画像 + system prompt 注入 | `4d42b85` |
-| Week 2 Day 5 | ✅ | 长期 Memory pgvector RAG + SiliconFlow embedding | - |
+| Week 2 Day 5 | ✅ | 长期 Memory pgvector RAG + SiliconFlow embedding | `8047605` |
 | Week 2 | ⏳ | 三层 Memory + 会话持久化 | - |
 | Week 3 | ⏳ | 诗境沉浸 + 协同创作 MVP | - |
 | Week 4 | ⏳ | Whisper 朗读 + 错题本/复习 | - |
