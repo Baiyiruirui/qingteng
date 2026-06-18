@@ -18,6 +18,7 @@ export default async function ChatPage() {
 
   return (
     <ChatClient
+      key={conversation.id}
       userName={user.name}
       conversationId={conversation.id}
       initialMessages={initialMessages}
