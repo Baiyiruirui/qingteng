@@ -63,7 +63,7 @@ export const memories = pgTable('memories', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: uuid('user_id').notNull().references(() => users.id),
   content: text('content').notNull(),
-  embedding: vector('embedding', { dimensions: 1536 }),
+  embedding: vector('embedding', { dimensions: 1024 }),
   source: text('source'),
   weight: real('weight').default(1),
   createdAt: timestamp('created_at').defaultNow(),

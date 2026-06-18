@@ -8,7 +8,8 @@ import { conversations, users } from '@/db/schema'
 import { appendMessage } from '@/db/repositories/messages'
 import { recordEvent } from '@/db/repositories/events'
 import { updateShortTerm } from '@/ai/memory/short-term'
-import { buildSystemContext } from '@/ai/memory/build-context'
+import { buildSystemContext, renderMemoryContext } from '@/ai/memory/build-context'
+import { recall, extractAndStore } from '@/ai/memory/long-term'
 
 export const runtime = 'nodejs'
 
@@ -73,12 +74,18 @@ export async function POST(req: Request) {
       )
     }
 
-    // Build mid-term memory context (Redis-cached, degrades gracefully on failure)
-    const profileContext = await buildSystemContext(session.userId, userName)
+    // Build mid-term profile context + recall long-term memories in parallel
+    const [profileContext, recalled] = await Promise.all([
+      buildSystemContext(session.userId, userName),
+      userText ? recall(session.userId, userText).catch(() => []) : Promise.resolve([]),
+    ])
+
+    const systemPrompt =
+      CHARACTER_SYSTEM_PROMPT + profileContext + renderMemoryContext(recalled)
 
     const result = streamText({
       model: route.characterDialog,
-      system: CHARACTER_SYSTEM_PROMPT + profileContext,
+      system: systemPrompt,
       messages: await convertToModelMessages(messages),
       onFinish: async ({ text, usage, finishReason, model }) => {
         try {
@@ -97,10 +104,19 @@ export async function POST(req: Request) {
         } catch (e) {
           console.error('[onFinish] failed to persist:', e)
         }
-        // Update Redis snapshot after assistant message is saved
+
+        // Update Redis short-term snapshot
         updateShortTerm(session.userId, conversationId, { role: 'assistant', content: text }).catch(
           e => console.error('[redis] updateShortTerm assistant failed:', e),
         )
+
+        // Extract long-term memories from this turn — fire-and-forget, never blocks
+        if (userText) {
+          const transcript = `${userName}: ${userText}\n青藤: ${text}`
+          extractAndStore(session.userId, transcript).catch(
+            e => console.error('[long-term] extract failed:', e),
+          )
+        }
       },
     })
     return result.toUIMessageStreamResponse()

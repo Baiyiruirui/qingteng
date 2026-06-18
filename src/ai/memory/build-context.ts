@@ -1,5 +1,6 @@
 import 'server-only'
 import { getProfile } from './mid-term'
+import type { RecalledMemory } from './long-term'
 
 export async function buildSystemContext(userId: string, userName: string): Promise<string> {
   const profile = await getProfile(userId)
@@ -42,4 +43,16 @@ export async function buildSystemContext(userId: string, userName: string): Prom
   )
 
   return '\n\n' + lines.join('\n')
+}
+
+export function renderMemoryContext(recalled: RecalledMemory[]): string {
+  if (recalled.length === 0) return ''
+
+  const items = recalled.map(m => `- ${m.content}`).join('\n')
+  return (
+    '\n\n---\n' +
+    '【你对他的一些印象(长期记忆,自然融入,不要罗列给他听)】\n' +
+    items +
+    '\n---'
+  )
 }
