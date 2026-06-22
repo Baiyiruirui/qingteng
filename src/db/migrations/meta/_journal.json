@@ -43,6 +43,13 @@
       "when": 1782115346125,
       "tag": "0005_classy_night_nurse",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1782117546606,
+      "tag": "0006_bent_siren",
+      "breakpoints": true
     }
   ]
 }

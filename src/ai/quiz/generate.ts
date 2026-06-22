@@ -1,11 +1,13 @@
 import { generateObject, generateText } from 'ai'
 import { z } from 'zod'
+import { eq } from 'drizzle-orm'
 import { route } from '@/ai/router'
-import { buildQuizPrompt, QUIZ_GEN_VERSION } from '@/ai/prompts/v1/quiz-generate'
+import { buildQuizPrompt, buildBlueprintPrompt, QUIZ_GEN_VERSION, QUIZ_GEN_VERSION_V2 } from '@/ai/prompts/v1/quiz-generate'
 import type { QuizType, QuizDifficulty } from '@/ai/prompts/v1/quiz-generate'
 import { getPoemForQuiz } from '@/db/repositories/poems'
 import { db } from '@/db'
-import { quizQuestions } from '@/db/schema'
+import { quizQuestions, quizBlueprints } from '@/db/schema'
+import type { BlueprintPoint } from '@/db/schema'
 
 // Zod schemas — mcq has options, others don't
 const BaseQuizSchema = z.object({
@@ -139,4 +141,103 @@ export async function generateQuestion(
     qualityScore: saved.qualityScore,
     evidenceValid: saved.evidenceValid,
   }
+}
+
+// ── Blueprint-driven generation (v2) ─────────────────────────────────────────
+
+async function generateOneByPoint(
+  poem: Awaited<ReturnType<typeof getPoemForQuiz>> & object,
+  point: BlueprintPoint,
+) {
+  const prompt = buildBlueprintPrompt(poem, point)
+  const isMcq = point.form === 'mcq'
+
+  const raw = await callWithFallback(prompt, isMcq)
+
+  // evidenceLines validation: for 默写, the answer itself IS the poem line
+  const poemLineContents = poem.lines.map(l => l.content)
+  let evidenceValid: boolean
+
+  if (point.type === '默写') {
+    // answer should be an original poem line — verify that
+    evidenceValid = verifyEvidence([raw.answer], poemLineContents)
+  } else {
+    evidenceValid = verifyEvidence(raw.evidenceLines, poemLineContents)
+  }
+
+  let qualityScore = raw.qualityScore ?? 0.85
+
+  if (!evidenceValid) {
+    console.warn('[quiz-v2] evidence verification failed', {
+      poemId: poem.id,
+      pointId: point.id,
+      pointType: point.type,
+      evidenceLines: raw.evidenceLines,
+    })
+    qualityScore = Math.min(qualityScore, 0.4)
+  }
+
+  if (isMcq && 'options' in raw) {
+    if (!verifyMcqAnswer(raw.answer, raw.options)) {
+      console.warn('[quiz-v2] mcq answer mismatch', { answer: raw.answer, options: raw.options })
+      qualityScore = Math.min(qualityScore, 0.4)
+    }
+  }
+
+  const [saved] = await db
+    .insert(quizQuestions)
+    .values({
+      poemId: poem.id,
+      type: point.form,
+      stem: raw.stem,
+      options: 'options' in raw ? (raw.options as string[]) : null,
+      answer: raw.answer,
+      explanation: raw.explanation,
+      evidenceLines: raw.evidenceLines as string[],
+      difficulty: '中',
+      qualityScore,
+      evidenceValid,
+      version: 'v2',
+      pointType: point.type,
+      pointId: point.id,
+      promptVersion: QUIZ_GEN_VERSION_V2,
+    })
+    .returning()
+
+  return {
+    id: saved.id,
+    pointId: point.id,
+    pointType: point.type,
+    form: point.form,
+    stem: saved.stem,
+    answer: saved.answer,
+    options: saved.options as string[] | null,
+    explanation: saved.explanation,
+    evidenceLines: saved.evidenceLines as string[],
+    qualityScore: saved.qualityScore,
+    evidenceValid: saved.evidenceValid,
+  }
+}
+
+export async function generateByBlueprint(poemId: string) {
+  const poem = await getPoemForQuiz(poemId)
+  if (!poem) throw new Error(`Poem not found: ${poemId}`)
+
+  const [blueprintRow] = await db
+    .select()
+    .from(quizBlueprints)
+    .where(eq(quizBlueprints.poemId, poemId))
+    .limit(1)
+
+  if (!blueprintRow) throw new Error(`No blueprint found for poem: ${poemId}`)
+
+  const points = blueprintRow.points as BlueprintPoint[]
+  const results = []
+
+  for (const point of points) {
+    const q = await generateOneByPoint(poem, point)
+    results.push(q)
+  }
+
+  return results
 }

@@ -71,6 +71,22 @@ export const immersionScripts = pgTable('immersion_scripts', {
   createdAt: timestamp('created_at').defaultNow(),
 })
 
+export const quizBlueprints = pgTable('quiz_blueprints', {
+  poemId: text('poem_id').primaryKey().references(() => poems.id),
+  points: jsonb('points').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+})
+
+export type BlueprintPoint = {
+  id: string
+  type: string
+  ability: string
+  targetLines: string[]
+  prompt_hint: string
+  answerKey: string
+  form: 'fill' | 'appreciate' | 'translate' | 'mcq'
+}
+
 export const quizQuestions = pgTable('quiz_questions', {
   id: uuid('id').defaultRandom().primaryKey(),
   poemId: text('poem_id').notNull().references(() => poems.id),
@@ -83,6 +99,9 @@ export const quizQuestions = pgTable('quiz_questions', {
   difficulty: text('difficulty').notNull(),
   qualityScore: real('quality_score'),
   evidenceValid: boolean('evidence_valid').notNull().default(false),
+  version: text('version').notNull().default('v1'),
+  pointType: text('point_type'),
+  pointId: text('point_id'),
   promptVersion: text('prompt_version'),
   createdAt: timestamp('created_at').defaultNow(),
 })
