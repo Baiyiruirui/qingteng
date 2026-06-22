@@ -29,12 +29,15 @@
 
 纯参数化 LLM 对古典文学典故的细节记忆不可靠。"八悲"这个词有印象,但与诗句的对应关系在训练数据里可能有噪声,模型选择了听起来最合理的错误对应。
 
-## 计划修法(Week 5)
+## 修法(Week 3 Day 3 已落地)
 
-不在 prompt 层面修(无法枚举所有典故)。正确路径是 RAG:
+不在 prompt 层面修(无法枚举所有典故)。已在出题引擎实现三层防护:
 
-1. **讲解特定诗时注入结构化数据**:poems 表里已有 `lines[].explanation`、`rhetoric`、`themes` 字段。当用户问到某首诗时,把该诗的结构化数据注入 context,让青藤"基于资料讲",而不是凭记忆讲。
-2. **Eval 黄金集标注**:在 `src/ai/evals/golden-50.json` 加入《登高》典故问题,标注正确答案(八意=颈联),作为回归测试用例。
+1. **Prompt 层注入权威资料** (`src/ai/prompts/v1/quiz-generate.ts`):出题前把该诗的 `lines[].content/translation/explanation`、`rhetoric`、`imagery`、`themes` 全部注入 prompt,并加明确约束:「你必须严格基于下面提供的权威资料出题,不得使用资料之外的、你自己记忆中的信息」。
+2. **generateObject + Zod 结构化** (`src/ai/quiz/generate.ts`):强制 `evidenceLines` 字段 `.min(1)`,LLM 必须为每道题提供原诗依据。
+3. **post-validation 字符串匹配**:验证 evidenceLines 中的每条引用是否真实出现在诗句语料里(去标点后 substring 匹配),不通过则质量分降至 ≤0.3 并记日志。
+
+对话场景(青藤讲解)的知识幻觉待 Week 5 RAG + Eval 继续处理。
 
 ## 是否加入 eval 黄金集
 
