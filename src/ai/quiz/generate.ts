@@ -122,6 +122,7 @@ export async function generateQuestion(
       evidenceLines: raw.evidenceLines as string[],
       difficulty,
       qualityScore,
+      evidenceValid,
       promptVersion: QUIZ_GEN_VERSION,
     })
     .returning()
@@ -137,6 +138,6 @@ export async function generateQuestion(
     evidenceLines: saved.evidenceLines as string[],
     difficulty: saved.difficulty as QuizDifficulty,
     qualityScore: saved.qualityScore,
-    evidenceValid,
+    evidenceValid: saved.evidenceValid,
   }
 }

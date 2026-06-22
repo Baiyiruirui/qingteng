@@ -1,4 +1,4 @@
-import { pgTable, text, integer, timestamp, jsonb, real, uuid } from 'drizzle-orm/pg-core'
+import { pgTable, text, integer, timestamp, jsonb, real, uuid, boolean } from 'drizzle-orm/pg-core'
 import { vector } from 'drizzle-orm/pg-core'
 
 export type PoemLine = {
@@ -82,6 +82,7 @@ export const quizQuestions = pgTable('quiz_questions', {
   evidenceLines: jsonb('evidence_lines').$type<string[]>().notNull(),
   difficulty: text('difficulty').notNull(),
   qualityScore: real('quality_score'),
+  evidenceValid: boolean('evidence_valid').notNull().default(false),
   promptVersion: text('prompt_version'),
   createdAt: timestamp('created_at').defaultNow(),
 })

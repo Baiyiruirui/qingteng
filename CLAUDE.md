@@ -10,7 +10,7 @@
 - **名称**:青藤(Qingteng)
 - **定位**:面向中学生的对话式古诗词学习产品,有持久 Memory 的 AI 诗友
 - **目标**:求职作品集项目(AI 应用工程师方向)
-- **当前状态**:Week 3 Day 1 完成,对话模式架构 + 诗境沉浸脚本导入
+- **当前状态**:Week 3 进行中,已完成对话模式架构 + 诗境沉浸 + 出题引擎,正在做青藤考你(出题模块预生成)
 - **GitHub**:https://github.com/Baiyiruirui/qingteng
 - **本地路径**:`D:\workspace\projects\qingteng`(Windows + PowerShell)
 
@@ -23,7 +23,7 @@
 - 前端:Next.js 15 App Router + TypeScript strict + Tailwind v4 + shadcn/ui + Zustand + TanStack Query
 - 服务:Next.js Server Actions / Route Handlers(不要单独搭 Hono/Express)
 - 数据:PostgreSQL (Neon) + pgvector + Upstash Redis(Week 2 接入)+ R2(后续)
-- AI:Vercel AI SDK + DeepSeek + Claude Haiku(后续)+ Whisper(Week 4)
+- AI:Vercel AI SDK + DeepSeek + Claude Haiku(后续)+ Whisper(Week 4);出题用 generateObject + Zod 结构化输出 + grounding(poem 数据注入 + evidenceLines 溯源校验)
 - 观测:Langfuse(Week 5)+ Sentry(Week 6)
 - 部署:Vercel + Neon + Upstash
 
@@ -49,8 +49,8 @@
 | Week 2 | ✅ | 三层 Memory 全通 + RAG grounding 修复 | `2f1f542` |
 | Week 3 Day 1 | ✅ | 对话模式架构 + immersion_scripts 表 + 诗库页 + session 路由 | `c2b6ff0` |
 | Week 3 Day 2 | ✅ | roleplay 沉浸对话：immersion prompt + opening + chat API + ImmersionClient UI | `fda6811` |
-| Week 3 Day 3 | ✅ | 结构化出题引擎 + 三层防幻觉 grounding + quiz_questions 表 | `e437747` |
-| Week 3 | ⏳ | 诗境沉浸 + 协同创作 MVP | - |
+| Week 3 Day 3 | ✅ | 出题引擎 grounding：evidenceValid 列 + 预生成脚本 + list API + 验证页 | `(本次)` |
+| Week 3 | ⏳ | 诗境沉浸 + 青藤考你 MVP | - |
 | Week 4 | ⏳ | Whisper 朗读 + 错题本/复习 | - |
 | Week 5 | ⏳ | Eval 50 题 + Langfuse + 美术 | - |
 | Week 6 | ⏳ | Vercel 部署 + Demo 视频 + 文档 | - |
@@ -116,6 +116,30 @@ pnpm config set registry https://registry.npmmirror.com
 2. 包版本冲突(peer dependency warning)
 3. TypeScript 类型错误
 4. 业务逻辑 bug
+
+### 7. 重大功能决策由用户拍板
+
+遇到产品方向、功能取舍、技术选型的岔路时,**先列 2-3 个方案 + 建议,等用户确认**,不要自作主张推进。
+可以自行决定的:变量命名、UI 细节、辅助函数实现。
+必须问用户的:新功能的交互设计、可能影响数据的操作、第三方服务/依赖引入。
+
+---
+
+## 产品模块（三种对话模式）
+
+| 模式 | 入口 | 特点 | 关键文件 |
+|---|---|---|---|
+| **chat**（日常对话）| `/chat` | 三层 Memory 注入，青藤人设，流式对话 | `src/app/api/chat/route.ts` |
+| **roleplay**（诗境沉浸）| 诗库 → 进入沉浸 | 无 Memory 注入，LLM 扮演诗中角色，guided map 教学 | `src/app/api/session/immersion/` |
+| **quiz**（青藤考你）| 诗库 → 出题 | 预生成题库，grounding 防幻觉，三层防护 | `src/ai/quiz/` `src/app/api/quiz/` |
+
+### 出题引擎三层防幻觉
+
+1. **Prompt 注入**：出题时把该诗结构化数据（逐句原文/译/释 + themes/imagery/rhetoric）全部注入，明令禁止使用资料之外的知识
+2. **generateObject + Zod**：强制 `evidenceLines` 字段至少 1 条，结构化输出不依赖手动 JSON.parse
+3. **Post-validation**：代码层验证每条 evidenceLine 去标点后能在原诗语料中找到，不通过则 qualityScore 打折并存入 `evidenceValid=false`
+
+预生成脚本：`pnpm pregenerate:quiz`（3 首 × 4 题型 × 3 难度 = 36 道，结果存 `quiz_questions` 表）
 
 ---
 
