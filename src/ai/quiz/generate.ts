@@ -9,7 +9,7 @@ import { db } from '@/db'
 import { quizQuestions, quizBlueprints } from '@/db/schema'
 import type { BlueprintPoint } from '@/db/schema'
 
-// Zod schemas — mcq has options, others don't
+// Zod schemas — mcq has options, subjective adds scoringPoints
 const BaseQuizSchema = z.object({
   stem: z.string().min(5),
   answer: z.string().min(1),
@@ -21,6 +21,12 @@ const BaseQuizSchema = z.object({
 const McqSchema = BaseQuizSchema.extend({
   options: z.array(z.string()).length(4),
 })
+
+const SubjectiveSchema = BaseQuizSchema.extend({
+  scoringPoints: z.array(z.string()).min(2).max(5),
+})
+
+type QuizForm = 'mcq' | 'subjective' | 'fill'
 
 // Strip punctuation for loose evidence matching
 function stripPunct(s: string): string {
@@ -43,9 +49,9 @@ function verifyMcqAnswer(answer: string, options: string[]): boolean {
 
 async function callWithFallback(
   prompt: string,
-  isMcq: boolean,
-): Promise<z.infer<typeof McqSchema> | z.infer<typeof BaseQuizSchema>> {
-  const schema = isMcq ? McqSchema : BaseQuizSchema
+  form: QuizForm,
+): Promise<z.infer<typeof McqSchema> | z.infer<typeof SubjectiveSchema> | z.infer<typeof BaseQuizSchema>> {
+  const schema = form === 'mcq' ? McqSchema : form === 'subjective' ? SubjectiveSchema : BaseQuizSchema
 
   // Try generateObject first (structured output)
   try {
@@ -81,9 +87,8 @@ export async function generateQuestion(
   if (!poem) throw new Error(`Poem not found: ${poemId}`)
 
   const prompt = buildQuizPrompt(poem, type, difficulty)
-  const isMcq = type === 'mcq'
 
-  const raw = await callWithFallback(prompt, isMcq)
+  const raw = await callWithFallback(prompt, type === 'mcq' ? 'mcq' : 'fill')
 
   // Post-validation 1: evidence lines must appear in poem text
   const poemLineContents = poem.lines.map(l => l.content)
@@ -99,7 +104,7 @@ export async function generateQuestion(
   }
 
   // Post-validation 2: mcq answer must match one option
-  if (isMcq && 'options' in raw) {
+  if (type === 'mcq' && 'options' in raw) {
     if (!verifyMcqAnswer(raw.answer, raw.options)) {
       console.warn('[quiz] mcq answer does not match any option — fixing', {
         answer: raw.answer,
@@ -150,9 +155,10 @@ async function generateOneByPoint(
   point: BlueprintPoint,
 ) {
   const prompt = buildBlueprintPrompt(poem, point)
-  const isMcq = point.form === 'mcq'
+  const isSubjective = point.form === 'appreciate' || point.form === 'translate'
+  const quizForm: QuizForm = point.form === 'mcq' ? 'mcq' : isSubjective ? 'subjective' : 'fill'
 
-  const raw = await callWithFallback(prompt, isMcq)
+  const raw = await callWithFallback(prompt, quizForm)
 
   // evidenceLines validation: for 默写, the answer itself IS the poem line
   const poemLineContents = poem.lines.map(l => l.content)
@@ -177,7 +183,7 @@ async function generateOneByPoint(
     qualityScore = Math.min(qualityScore, 0.4)
   }
 
-  if (isMcq && 'options' in raw) {
+  if (point.form === 'mcq' && 'options' in raw) {
     if (!verifyMcqAnswer(raw.answer, raw.options)) {
       console.warn('[quiz-v2] mcq answer mismatch', { answer: raw.answer, options: raw.options })
       qualityScore = Math.min(qualityScore, 0.4)
@@ -194,6 +200,7 @@ async function generateOneByPoint(
       answer: raw.answer,
       explanation: raw.explanation,
       evidenceLines: raw.evidenceLines as string[],
+      scoringPoints: 'scoringPoints' in raw ? (raw.scoringPoints as string[]) : null,
       difficulty: '中',
       qualityScore,
       evidenceValid,
@@ -214,6 +221,7 @@ async function generateOneByPoint(
     options: saved.options as string[] | null,
     explanation: saved.explanation,
     evidenceLines: saved.evidenceLines as string[],
+    scoringPoints: saved.scoringPoints as string[] | null,
     qualityScore: saved.qualityScore,
     evidenceValid: saved.evidenceValid,
   }

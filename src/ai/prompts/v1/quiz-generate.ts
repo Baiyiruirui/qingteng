@@ -1,4 +1,4 @@
-import type { PoemForQuiz } from '@/db/repositories/poems'
+﻿import type { PoemForQuiz } from '@/db/repositories/poems'
 import type { BlueprintPoint } from '@/db/schema'
 
 export const QUIZ_GEN_VERSION = 'v1.0.0'
@@ -183,6 +183,9 @@ export function buildBlueprintPrompt(poem: PoemForQuiz, point: BlueprintPoint): 
     .join('\n')
 
   const isMcq = point.form === 'mcq'
+  const isFill = point.form === 'fill'
+  const isSubjective = !isMcq && !isFill
+
   const outputSchema = isMcq
     ? `{
   "stem": "题干（如：下列对这首诗的理解，不正确的一项是）",
@@ -191,14 +194,26 @@ export function buildBlueprintPrompt(poem: PoemForQuiz, point: BlueprintPoint): 
   "explanation": "指出错误选项错在哪，引用资料说明正确理解",
   "evidenceLines": ["题目依据的原诗句"],
   "qualityScore": 0.90
+}` : isSubjective
+    ? `{
+  "stem": "题干",
+  "answer": "参考答案（完整版）",
+  "explanation": "解析，引用资料说明",
+  "evidenceLines": ["题目依据的原诗句"],
+  "scoringPoints": ["得分点1（离散、可独立判断）", "得分点2", "得分点3"],
+  "qualityScore": 0.90
 }`
     : `{
   "stem": "题干",
-  "answer": "标准答案或参考答案",
+  "answer": "标准答案",
   "explanation": "解析，引用资料说明",
   "evidenceLines": ["题目依据的原诗句"],
   "qualityScore": 0.90
 }`
+
+  const scoringPointsInstruction = isSubjective
+    ? `\nscoringPoints：将参考答案拆成 2-4 个离散的、可独立判断"答到没答到"的得分要点，每点一句话，简洁精准。`
+    : ''
 
   return `你是一位严谨的中学语文老师，根据考点蓝图为《${poem.title}》（${poem.author}·${poem.dynasty ?? ''}）出一道题。
 
@@ -219,7 +234,7 @@ ${linesText}
 【出题要求】
 ${blueprintFormInstruction(point)}
 
-evidenceLines 必须是原诗句原文（从上面资料中摘录），不可包含解释性文字。
+evidenceLines 必须是原诗句原文（从上面资料中摘录），不可包含解释性文字。${scoringPointsInstruction}
 
 只输出 JSON，不要 markdown 代码块，格式：
 ${outputSchema}`
