@@ -1,110 +1,99 @@
-# 008 · 出题引擎：三层防幻觉 Grounding
+# 008 · 出题引擎：从防幻觉到防同质化
 
-**适用场景**: 面试/Demo 被问"如何保证 AI 出的题不出错"时
-
----
-
-## 背景：LLM 出题的典型幻觉
-
-LLM 出古诗题有一个经典幻觉模式——它"知道"某首诗有什么手法和典故，却把它们对应到错误的诗句上。
-
-**真实案例**：《登高》"一句八意"典故。正确指向是颈联"万里悲秋常作客，百年多病独登台"（南宋罗大经《鹤林玉露》），DeepSeek 曾把它安在了首联写景意象上（"风急天高猿啸哀"等）。
-
-这类错误的危害：
-- 听起来专业合理，不像凭空捏造
-- 中学生无法辨别，当作知识记住
-- 考试引用直接失分
+**适用场景**: 面试/Demo 被问"如何保证 AI 出的题不出错、不重复"时
 
 ---
 
-## 三层防护方案
+## 两个阶段的演进
 
-### 层 1 · Prompt 注入权威资料
+### 阶段一（v1）：防幻觉 grounding
 
-出题前把该诗完整的结构化数据注入 prompt：
+**问题**：LLM 出古诗题容易把典故安在错误的诗句上。
+
+真实案例：《登高》"一句八意"典故属于颈联"万里悲秋常作客，百年多病独登台"（南宋罗大经《鹤林玉露》），DeepSeek 曾将它安在首联写景意象上。
+
+**解决：三层防护**
+
+1. **Prompt 注入权威资料** — 出题前把该诗逐句原文 + 译 + 释 + 修辞意象注入，明令禁止使用资料外知识
+2. **generateObject + Zod** — 强制 `evidenceLines` 字段 `.min(1)`，结构化输出
+3. **Post-validation 字符串匹配** — 代码验证 evidenceLines 真实存在于原诗，不通过标记 `evidenceValid=false` 并降 qualityScore
+
+**v1 实测**（36 道）：evidenceValid=true 34 道（**94.4%**），全部成功生成。
+
+---
+
+### 阶段二（v2）：防同质化 — 引入考点蓝图
+
+**问题**：v1 虽然不幻觉，但同质化严重。
+
+实测发现：
+- 扎堆名句：《登高》12 道里 7-8 道集中在颔联名句
+- 考点重复：翻译+赏析反复问同一联，换个问法而已
+- 偏离考纲：没有按中考五大能力点分布
+- 填空挖单字：不符合中考"理解性默写"范式
+
+**解决：考点蓝图驱动出题**
 
 ```
-原文逐句（带现代译文 + 释义）
-主题标签、意象列表、修辞手法
-```
-
-并加硬性约束：
-
-> 「你必须严格基于下面提供的权威资料出题，不得使用资料之外的、你自己记忆中的信息。这是防止错误知识污染学生的核心要求。」
-
-**效果**：把 LLM 从"凭记忆创作"变成"基于资料答题"，类似开卷考试。
-
-### 层 2 · generateObject + Zod 强制结构
-
-用 Vercel AI SDK `generateObject` + Zod schema 而非 `generateText`：
-
-```typescript
-const BaseQuizSchema = z.object({
-  stem: z.string().min(5),
-  answer: z.string().min(1),
-  explanation: z.string().min(5),
-  evidenceLines: z.array(z.string()).min(1),  // 不可省略
-  qualityScore: z.number().min(0).max(1),
-})
-```
-
-`evidenceLines.min(1)` 强制 LLM 为每道题提供原诗依据。Zod schema 验证不通过→降级到 `generateText` fallback + 手动解析。
-
-### 层 3 · Post-validation 字符串匹配
-
-LLM 返回后，代码校验 evidenceLines 中的引用是否真实存在于诗中：
-
-```typescript
-function verifyEvidence(evidenceLines: string[], poemLines: string[]): boolean {
-  const corpus = poemLines.map(stripPunct).join('')
-  return evidenceLines.every(ev => corpus.includes(stripPunct(ev)))
+data/quiz-blueprints.json
+每首诗人工设计若干互斥考点：
+{
+  "id": "p3",
+  "type": "手法",
+  "targetLines": ["遥知兄弟登高处", "遍插茱萸少一人"],
+  "prompt_hint": "后两句不写自己思亲，反写兄弟登高时发现少了自己（对写法/虚写）",
+  "answerKey": "运用了对写法...",
+  "form": "appreciate"
 }
 ```
 
-- 通过 → `evidenceValid=true` 入库
-- 不通过 → `evidenceValid=false`，`qualityScore *= 0.5`，入库但标记可疑
+每个考点对应不同诗句、不同能力维度。出题时 LLM 按考点严格出题，而非自由发挥。
+
+### 考点类型与中考五大能力对应
+
+| 考点 | 能力维度 |
+|---|---|
+| 默写 | 识记+理解 |
+| 炼字 | 鉴赏语言 |
+| 画面 | 鉴赏形象 |
+| 意象 | 鉴赏形象 |
+| 手法 | 鉴赏表达技巧 |
+| 情感 | 点评思想内容 |
+| 翻译 | 理解 |
+| 综合选择 | 分析综合 |
+
+**默写题特殊处理**：题干是"情境描述"（给情境让学生填完整诗句），而非挖单字的 cloze test。
 
 ---
 
-## 实测结果（Week 3 Day 3）
+## 蓝图生成器（为规模化铺路）
 
-预生成 3 首诗 × 4 题型 × 3 难度 = **36 道**，全部成功：
+`src/ai/quiz/generate-blueprint.ts`：输入任意一首诗的结构化数据 → 输出考点蓝图 JSON。
 
-| 指标 | 数据 |
-|---|---|
-| evidenceValid=true | 34 道（**94.4%**） |
-| evidenceValid=false | 2 道（5.6%） |
-| generateObject fallback 触发 | 1 次（qualityScore 字段缺失） |
-| 失败（抛出异常） | 0 道 |
+实测《春晓》（绝句，4 句）自动生成 6 个考点：
+- p1 [默写] 春眠不觉晓，处处闻啼鸟
+- p2 [炼字] 处处闻啼鸟
+- p3 [画面] 春眠不觉晓，处处闻啼鸟
+- p4 [手法] 花落知多少
+- p5 [情感] 夜来风雨声，花落知多少
+- p6 [综合选择] 全诗
 
-2 道 false 的分析：
-- 静夜思 · mcq · 易：模型把释义文字（"释：把月光比作白霜"）当原诗句引用，非幻觉，属于格式问题
-- 登高 · translate · 难：evidenceLines 混入了解释性文字，被去标点匹配拦截
-
-《登高》赏析题 3 道全部通过，未出现"八悲"典故误植，grounding 有效。
+**人在回路**：AI 生成蓝图 → 教研员审核调整 → 导入后按蓝图出题。这样既能规模化（140 首），又能把关质量。
 
 ---
 
 ## 关键设计取舍
 
-**为什么不直接拒绝 evidenceValid=false 的题？**
+**为什么不用 RAG 检索考点**：数据量少，直接把整首诗注入 prompt 足够，RAG 在这里引入了不必要的复杂度。
 
-拒绝会触发重试，可能陷入循环，且题目内容本身可能没问题（如上述两个 false 案例）。更好的做法：降分 + 标记，人工审核后再决定是否使用。
+**为什么预生成而非即时**：出题有延迟（1-3s），预生成避免用户等待，也允许离线质检。
 
-**为什么预生成而不是即时生成？**
-
-1. 出题有延迟（1-3 秒），预生成避免用户等待
-2. 可以离线审核题目质量
-3. 相同题目不重复出，节省 API 成本
-
-**generateObject vs generateText？**
-
-优先 `generateObject`（结构化、稳定）。DeepSeek 兼容模式下偶尔不包含所有字段，此时 fallback 到 `generateText` + 手动 Zod parse，整体成功率 100%。
+**v1 保留作对照组**：可以直观演示"有蓝图/无蓝图"的出题质量差异，是一个很好的 Demo 故事。
 
 ---
 
 ## 面试追问
 
-- "2 道 evidenceValid=false 的题怎么处理？" → 目前入库、标记，Week 5 加人工审核 UI
-- "能推广到其他学科吗？" → 只要有结构化权威数据就能做，数学难在答案验证，语文最适合
-- "为什么不用 RAG？" → RAG 用于对话（Week 2 已做），出题不需要检索——我们直接把整首诗注入 prompt，上下文长度够
+- "蓝图人工设计成本高，能自动化吗？" → 有蓝图生成器，已在春晓测试。人工主要做"审核"而非"设计"
+- "evidenceValid=false 的题怎么处理？" → 入库标记，Week 5 加人工审核 UI
+- "怎么扩展到 140 首？" → 批量跑蓝图生成器 + 人工抽检，是 Week 6 规模化任务

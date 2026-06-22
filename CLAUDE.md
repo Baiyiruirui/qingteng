@@ -50,6 +50,7 @@
 | Week 3 Day 1 | ✅ | 对话模式架构 + immersion_scripts 表 + 诗库页 + session 路由 | `c2b6ff0` |
 | Week 3 Day 2 | ✅ | roleplay 沉浸对话：immersion prompt + opening + chat API + ImmersionClient UI | `fda6811` |
 | Week 3 Day 3 | ✅ | 出题引擎 grounding：evidenceValid 列 + 预生成脚本(36 道入库) + list API + 验证页 | `610073f` |
+| Week 3 Day 3 修订 | ✅ | 考点蓝图驱动 v2 出题：quizBlueprints 表 + 蓝图生成器 + 20 道 v2 题(100% evidenceValid) | `a635c8d` |
 | Week 3 | ⏳ | 诗境沉浸 + 青藤考你 MVP | - |
 | Week 4 | ⏳ | Whisper 朗读 + 错题本/复习 | - |
 | Week 5 | ⏳ | Eval 50 题 + Langfuse + 美术 | - |
@@ -139,7 +140,15 @@ pnpm config set registry https://registry.npmmirror.com
 2. **generateObject + Zod**：强制 `evidenceLines` 字段至少 1 条，结构化输出不依赖手动 JSON.parse
 3. **Post-validation**：代码层验证每条 evidenceLine 去标点后能在原诗语料中找到，不通过则 qualityScore 打折并存入 `evidenceValid=false`
 
-预生成脚本：`pnpm pregenerate:quiz`（3 首 × 4 题型 × 3 难度 = 36 道，结果存 `quiz_questions` 表）
+### 考点蓝图（v2，防同质化）
+
+v1 按"题型×难度"机械生成，会扎堆名句、重复考点。v2 改用考点蓝图驱动：
+- `data/quiz-blueprints.json`：每首诗人工设计若干互斥考点（绝句 6 个 / 律诗 8 个）
+- 考点类型覆盖中考五大能力：默写/炼字/画面/意象/手法/情感/翻译/综合选择
+- 蓝图生成器 `src/ai/quiz/generate-blueprint.ts`：为新诗 AI 自动生成蓝图，人工审核后导入
+
+预生成脚本（v2）：`pnpm import:blueprints && pnpm pregenerate:quiz`
+已生成：静夜思 6 道 + 九月九 6 道 + 登高 8 道 = **20 道 v2，evidenceValid 100%**
 
 ---
 
