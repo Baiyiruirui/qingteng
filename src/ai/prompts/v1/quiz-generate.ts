@@ -1,4 +1,3 @@
-import 'server-only'
 import type { PoemForQuiz } from '@/db/repositories/poems'
 
 export const QUIZ_GEN_VERSION = 'v1.0.0'

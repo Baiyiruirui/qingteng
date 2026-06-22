@@ -1,4 +1,3 @@
-import 'server-only'
 import { generateObject, generateText } from 'ai'
 import { z } from 'zod'
 import { route } from '@/ai/router'
