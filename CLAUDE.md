@@ -10,7 +10,7 @@
 - **名称**:青藤(Qingteng)
 - **定位**:面向中学生的对话式古诗词学习产品,有持久 Memory 的 AI 诗友
 - **目标**:求职作品集项目(AI 应用工程师方向)
-- **当前状态**:Week 2 完成,三层 Memory 全通(短期 Redis 开场白 / 中期画像 / 长期 pgvector RAG)
+- **当前状态**:Week 3 Day 1 完成,对话模式架构 + 诗境沉浸脚本导入
 - **GitHub**:https://github.com/Baiyiruirui/qingteng
 - **本地路径**:`D:\workspace\projects\qingteng`(Windows + PowerShell)
 
@@ -47,6 +47,7 @@
 | Week 2 Day 4 | ✅ | 中期 Memory 学习画像 + system prompt 注入 | `4d42b85` |
 | Week 2 Day 5 | ✅ | 长期 Memory pgvector RAG + SiliconFlow embedding | `8047605` |
 | Week 2 | ✅ | 三层 Memory 全通 + RAG grounding 修复 | `2f1f542` |
+| Week 3 Day 1 | ✅ | 对话模式架构 + immersion_scripts 表 + 诗库页 + session 路由 | - |
 | Week 3 | ⏳ | 诗境沉浸 + 协同创作 MVP | - |
 | Week 4 | ⏳ | Whisper 朗读 + 错题本/复习 | - |
 | Week 5 | ⏳ | Eval 50 题 + Langfuse + 美术 | - |

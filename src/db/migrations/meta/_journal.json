@@ -15,6 +15,20 @@
       "when": 1781686940477,
       "tag": "0001_open_zuras",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1781772654148,
+      "tag": "0002_supreme_cassandra_nova",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1782099271992,
+      "tag": "0003_broad_lionheart",
+      "breakpoints": true
     }
   ]
 }

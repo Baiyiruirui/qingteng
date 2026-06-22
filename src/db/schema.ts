@@ -59,6 +59,18 @@ export const messages = pgTable('messages', {
   createdAt: timestamp('created_at').defaultNow(),
 })
 
+export const immersionScripts = pgTable('immersion_scripts', {
+  poemId: text('poem_id').primaryKey().references(() => poems.id),
+  difficulty: text('difficulty').notNull(),
+  role: text('role').notNull(),
+  scene: text('scene').notNull(),
+  teachingGoals: jsonb('teaching_goals').$type<string[]>().notNull(),
+  openingMove: text('opening_move').notNull(),
+  keyBeats: jsonb('key_beats').$type<string[]>().notNull(),
+  exitCondition: text('exit_condition').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+})
+
 export const memories = pgTable('memories', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: uuid('user_id').notNull().references(() => users.id),

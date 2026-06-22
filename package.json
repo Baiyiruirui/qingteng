@@ -8,7 +8,8 @@
     "start": "next start",
     "import:poems": "tsx --env-file=.env.local scripts/import-poems.ts",
     "db:check": "tsx --env-file=.env.local scripts/db-check.ts",
-    "db:verify": "tsx --env-file=.env.local scripts/verify-poems.ts"
+    "db:verify": "tsx --env-file=.env.local scripts/verify-poems.ts",
+    "import:immersion": "tsx --env-file=.env.local scripts/import-immersion.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.84",

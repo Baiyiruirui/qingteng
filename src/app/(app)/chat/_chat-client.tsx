@@ -4,6 +4,7 @@ import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import type { UIMessage } from 'ai'
 
 function getTextContent(parts: Array<{ type: string; text?: string }>) {
@@ -17,9 +18,17 @@ type Props = {
   userName: string
   conversationId: string
   initialMessages: UIMessage[]
+  sessionMode?: 'chat' | 'roleplay' | 'creative'
+  sessionPoemTitle?: string
 }
 
-export default function ChatClient({ userName, conversationId, initialMessages }: Props) {
+export default function ChatClient({
+  userName,
+  conversationId,
+  initialMessages,
+  sessionMode,
+  sessionPoemTitle,
+}: Props) {
   const router = useRouter()
   const [input, setInput] = useState('')
   const [newConvLoading, setNewConvLoading] = useState(false)
@@ -99,29 +108,47 @@ export default function ChatClient({ userName, conversationId, initialMessages }
         className="flex items-center justify-between px-6 py-5 border-b"
         style={{ borderColor: '#e8e4dc' }}
       >
-        <div className="flex-1" />
-        <h1
-          className="text-3xl font-serif tracking-widest"
-          style={{ color: '#1a1a1a' }}
-        >
-          青藤
-        </h1>
+        {/* Left: back link for session mode, poem library link for chat */}
+        <div className="flex-1">
+          {sessionMode && sessionMode !== 'chat' ? (
+            <Link href="/poems" className="text-sm" style={{ color: '#8a8a8a' }}>
+              ← 诗库
+            </Link>
+          ) : (
+            <Link href="/poems" className="text-sm" style={{ color: '#8a8a8a' }}>
+              诗库
+            </Link>
+          )}
+        </div>
+
+        {/* Center: title */}
+        <div className="text-center">
+          <h1 className="text-3xl font-serif tracking-widest" style={{ color: '#1a1a1a' }}>
+            青藤
+          </h1>
+          {sessionMode && sessionMode !== 'chat' && (
+            <p className="text-xs mt-0.5" style={{ color: '#8a8a8a' }}>
+              {sessionMode === 'roleplay' ? '沉浸模式' : '协同创作'}
+              {sessionPoemTitle ? ` · ${sessionPoemTitle}` : ''}
+            </p>
+          )}
+        </div>
+
+        {/* Right: user + actions */}
         <div className="flex-1 flex justify-end items-center gap-4">
           <span className="text-sm" style={{ color: '#8a8a8a' }}>
             你好,{userName}
           </span>
-          <button
-            onClick={handleNewConversation}
-            disabled={newConvLoading}
-            className="text-xs px-2.5 py-1 rounded-lg border transition-colors disabled:opacity-40"
-            style={{
-              borderColor: '#d4cfc6',
-              color: '#8a8a8a',
-              background: 'transparent',
-            }}
-          >
-            + 新对话
-          </button>
+          {(!sessionMode || sessionMode === 'chat') && (
+            <button
+              onClick={handleNewConversation}
+              disabled={newConvLoading}
+              className="text-xs px-2.5 py-1 rounded-lg border transition-colors disabled:opacity-40"
+              style={{ borderColor: '#d4cfc6', color: '#8a8a8a', background: 'transparent' }}
+            >
+              + 新对话
+            </button>
+          )}
           <button
             onClick={handleLogout}
             className="text-sm underline"
