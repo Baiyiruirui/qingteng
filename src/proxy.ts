@@ -9,7 +9,7 @@ function getSecret() {
   return new TextEncoder().encode(s)
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const token = request.cookies.get(COOKIE_NAME)?.value
   const secret = getSecret()
 
