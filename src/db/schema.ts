@@ -1,4 +1,4 @@
-import { pgTable, text, integer, timestamp, jsonb, real, uuid, boolean } from 'drizzle-orm/pg-core'
+import { pgTable, text, integer, timestamp, jsonb, real, uuid, boolean, uniqueIndex } from 'drizzle-orm/pg-core'
 import { vector } from 'drizzle-orm/pg-core'
 
 export type PoemLine = {
@@ -102,9 +102,34 @@ export const quizQuestions = pgTable('quiz_questions', {
   version: text('version').notNull().default('v1'),
   pointType: text('point_type'),
   pointId: text('point_id'),
+  scoringPoints: jsonb('scoring_points').$type<string[]>(),
   promptVersion: text('prompt_version'),
   createdAt: timestamp('created_at').defaultNow(),
 })
+
+export const quizAttempts = pgTable('quiz_attempts', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').notNull().references(() => users.id),
+  questionId: uuid('question_id').notNull().references(() => quizQuestions.id),
+  poemId: text('poem_id').notNull(),
+  sessionId: text('session_id').notNull(),
+  userAnswer: text('user_answer').notNull(),
+  isCorrect: boolean('is_correct'),
+  hitPoints: jsonb('hit_points').$type<string[]>(),
+  missedPoints: jsonb('missed_points').$type<string[]>(),
+  feedback: text('feedback'),
+  createdAt: timestamp('created_at').defaultNow(),
+})
+
+export const wrongQuestions = pgTable('wrong_questions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').notNull().references(() => users.id),
+  questionId: uuid('question_id').notNull().references(() => quizQuestions.id),
+  poemId: text('poem_id').notNull(),
+  wrongCount: integer('wrong_count').notNull().default(1),
+  lastWrongAt: timestamp('last_wrong_at').defaultNow(),
+  resolved: boolean('resolved').notNull().default(false),
+}, t => [uniqueIndex('wrong_questions_user_question_idx').on(t.userId, t.questionId)])
 
 export const memories = pgTable('memories', {
   id: uuid('id').defaultRandom().primaryKey(),
