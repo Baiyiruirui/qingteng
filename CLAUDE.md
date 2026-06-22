@@ -51,7 +51,8 @@
 | Week 3 Day 2 | ✅ | roleplay 沉浸对话：immersion prompt + opening + chat API + ImmersionClient UI | `fda6811` |
 | Week 3 Day 3 | ✅ | 出题引擎 grounding：evidenceValid 列 + 预生成脚本(36 道入库) + list API + 验证页 | `610073f` |
 | Week 3 Day 3 修订 | ✅ | 考点蓝图驱动 v2 出题：quizBlueprints 表 + 蓝图生成器 + 20 道 v2 题(100% evidenceValid) | `a635c8d` |
-| Week 3 | ⏳ | 诗境沉浸 + 青藤考你 MVP | - |
+| Week 3 Day 4 | ✅ | 青藤考你 MVP：scoringPoints + LLM-as-judge + quiz UI + wrong book | `91c7b32` |
+| Week 3 | ✅ | 诗境沉浸 + 青藤考你 MVP | `91c7b32` |
 | Week 4 | ⏳ | Whisper 朗读 + 错题本/复习 | - |
 | Week 5 | ⏳ | Eval 50 题 + Langfuse + 美术 | - |
 | Week 6 | ⏳ | Vercel 部署 + Demo 视频 + 文档 | - |
