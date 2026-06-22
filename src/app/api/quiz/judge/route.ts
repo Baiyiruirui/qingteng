@@ -21,6 +21,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
 
+  // Idempotency: if this session+question was already judged, return cached result
+  const [existing] = await db
+    .select()
+    .from(quizAttempts)
+    .where(and(eq(quizAttempts.sessionId, sessionId), eq(quizAttempts.questionId, questionId)))
+    .limit(1)
+
   const [question] = await db
     .select()
     .from(quizQuestions)
@@ -31,10 +38,24 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Question not found' }, { status: 404 })
   }
 
+  if (existing) {
+    // Already judged — return cached result without re-running LLM or re-incrementing counts
+    return NextResponse.json({
+      ...(existing.isCorrect !== null && { isCorrect: existing.isCorrect }),
+      ...(existing.completionRate !== null && { completionRate: existing.completionRate }),
+      answer: question.answer,
+      explanation: question.explanation,
+      ...(existing.hitPoints !== null && { hitPoints: existing.hitPoints }),
+      ...(existing.missedPoints !== null && { missedPoints: existing.missedPoints }),
+      ...(existing.feedback !== null && { feedback: existing.feedback }),
+    })
+  }
+
   const type = question.type as 'mcq' | 'fill' | 'appreciate' | 'translate'
   const isObjective = type === 'mcq' || type === 'fill'
 
-  let isCorrect: boolean
+  let isCorrect: boolean | null = null
+  let completionRate: number | null = null
   let hitPoints: string[] | null = null
   let missedPoints: string[] | null = null
   let feedback: string | null = null
@@ -45,6 +66,7 @@ export async function POST(req: Request) {
       userAnswer,
     )
     isCorrect = result.isCorrect
+    completionRate = null
   } else {
     const scoringPoints = (question.scoringPoints ?? []) as string[]
     if (scoringPoints.length === 0) {
@@ -61,13 +83,14 @@ export async function POST(req: Request) {
       userAnswer,
       poem,
     )
-    isCorrect = result.isCorrect
+    isCorrect = null
+    completionRate = result.completionRate
     hitPoints = result.hitPoints
     missedPoints = result.missedPoints
     feedback = result.feedback
   }
 
-  // Record attempt
+  // Record attempt (unique constraint on sessionId+questionId prevents duplicates at DB level)
   await db.insert(quizAttempts).values({
     userId,
     questionId,
@@ -75,13 +98,20 @@ export async function POST(req: Request) {
     sessionId,
     userAnswer,
     isCorrect,
+    completionRate,
     hitPoints,
     missedPoints,
     feedback,
   })
 
-  // Upsert wrong questions: increment count on conflict, clear resolved flag
-  if (!isCorrect) {
+  // Update wrong_questions:
+  // - Objective: answered wrong → add/increment
+  // - Subjective: completionRate < 0.25 (barely touched) → add/increment
+  const shouldAddToWrong = isObjective
+    ? isCorrect === false
+    : completionRate !== null && completionRate < 0.25
+
+  if (shouldAddToWrong) {
     await db
       .insert(wrongQuestions)
       .values({ userId, questionId, poemId: question.poemId, wrongCount: 1, resolved: false })
@@ -96,7 +126,8 @@ export async function POST(req: Request) {
   }
 
   return NextResponse.json({
-    isCorrect,
+    ...(isCorrect !== null && { isCorrect }),
+    ...(completionRate !== null && { completionRate }),
     answer: question.answer,
     explanation: question.explanation,
     ...(hitPoints !== null && { hitPoints }),

@@ -1,0 +1,2 @@
+ALTER TABLE "quiz_attempts" ADD COLUMN "completion_rate" real;--> statement-breakpoint
+CREATE UNIQUE INDEX "quiz_attempts_session_question_idx" ON "quiz_attempts" USING btree ("session_id","question_id");

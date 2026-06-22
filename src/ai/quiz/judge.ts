@@ -19,13 +19,15 @@ export interface SubjectiveQuestion {
 
 export interface ObjectiveJudgeResult {
   isCorrect: boolean
+  completionRate: null
   hitPoints: null
   missedPoints: null
   feedback: null
 }
 
 export interface SubjectiveJudgeResult {
-  isCorrect: boolean
+  isCorrect: null       // not judged as binary — use completionRate instead
+  completionRate: number
   hitPoints: string[]
   missedPoints: string[]
   feedback: string
@@ -50,7 +52,6 @@ export function judgeObjective(
 
   let isCorrect: boolean
   if (question.type === 'mcq') {
-    // Match by content or by option letter prefix (A/B/C/D)
     const letterMatch = userAnswer.trim().match(/^([A-D])/i)
     if (letterMatch && question.options) {
       const idx = 'ABCD'.indexOf(letterMatch[1].toUpperCase())
@@ -59,11 +60,10 @@ export function judgeObjective(
       isCorrect = correct === given || question.answer.trim() === userAnswer.trim()
     }
   } else {
-    // fill: allow partial credit — all stripped chars must be present
     isCorrect = correct === given
   }
 
-  return { isCorrect, hitPoints: null, missedPoints: null, feedback: null }
+  return { isCorrect, completionRate: null, hitPoints: null, missedPoints: null, feedback: null }
 }
 
 export async function judgeSubjective(
@@ -96,10 +96,11 @@ export async function judgeSubjective(
   }
 
   const total = question.scoringPoints.length
-  const isCorrect = total > 0 && raw.hitPoints.length / total >= 0.6
+  const completionRate = total > 0 ? raw.hitPoints.length / total : 0
 
   return {
-    isCorrect,
+    isCorrect: null,
+    completionRate,
     hitPoints: raw.hitPoints,
     missedPoints: raw.missedPoints,
     feedback: raw.feedback,

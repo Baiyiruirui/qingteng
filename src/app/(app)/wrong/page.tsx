@@ -21,7 +21,6 @@ export default async function WrongPage() {
       type: quizQuestions.type,
       pointType: quizQuestions.pointType,
       poemTitle: poems.title,
-      poemAuthor: poems.author,
     })
     .from(wrongQuestions)
     .innerJoin(quizQuestions, eq(wrongQuestions.questionId, quizQuestions.id))
@@ -36,25 +35,30 @@ export default async function WrongPage() {
     mcq: '选择', fill: '填空', translate: '翻译', appreciate: '赏析',
   }
 
+  function practiceLabel(type: string, count: number): string {
+    const isSubjective = type === 'appreciate' || type === 'translate'
+    return isSubjective ? `练习 ${count} 次` : `答错 ${count} 次`
+  }
+
   return (
     <div className="min-h-screen" style={{ background: '#fafaf7', color: '#1a1a1a' }}>
       <header className="flex items-center justify-between px-6 py-5 border-b" style={{ borderColor: '#e8e4dc' }}>
         <Link href="/poems" className="text-sm" style={{ color: '#8a8a8a' }}>← 诗库</Link>
-        <h1 className="text-xl font-serif tracking-widest">错题本</h1>
-        <span className="text-sm" style={{ color: '#8a8a8a' }}>{unresolved.length} 道待复习</span>
+        <h1 className="text-xl font-serif tracking-widest">待加强</h1>
+        <span className="text-sm" style={{ color: '#8a8a8a' }}>{unresolved.length} 道</span>
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-8 space-y-8">
         {rows.length === 0 && (
           <div className="text-center py-20" style={{ color: '#8a8a8a' }}>
             <p className="text-4xl mb-4">🎉</p>
-            <p className="text-sm">还没有错题，继续保持！</p>
+            <p className="text-sm">还没有待加强的内容，继续保持！</p>
           </div>
         )}
 
         {unresolved.length > 0 && (
           <section className="space-y-3">
-            <h2 className="text-sm font-medium" style={{ color: '#7c6b4f' }}>待复习</h2>
+            <h2 className="text-sm font-medium" style={{ color: '#7c6b4f' }}>待加强</h2>
             {unresolved.map(row => (
               <div
                 key={row.id}
@@ -73,15 +77,15 @@ export default async function WrongPage() {
                       <span className="text-xs" style={{ color: '#8a8a8a' }}>
                         {row.pointType ?? TYPE_LABEL[row.type] ?? row.type}
                       </span>
-                      <span className="text-xs" style={{ color: '#c0392b' }}>
-                        错了 {row.wrongCount} 次
+                      <span className="text-xs" style={{ color: '#9a8a7a' }}>
+                        {practiceLabel(row.type, row.wrongCount)}
                       </span>
                     </div>
                     <p className="text-sm line-clamp-2" style={{ color: '#1a1a1a' }}>{row.stem}</p>
                   </div>
                   <Link
                     href={`/quiz/${row.poemId}`}
-                    className="flex-shrink-0 text-xs px-3 py-1.5 rounded-lg font-medium"
+                    className="shrink-0 text-xs px-3 py-1.5 rounded-lg font-medium"
                     style={{ background: '#7c6b4f', color: '#fff' }}
                   >
                     去练习

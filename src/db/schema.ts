@@ -114,12 +114,13 @@ export const quizAttempts = pgTable('quiz_attempts', {
   poemId: text('poem_id').notNull(),
   sessionId: text('session_id').notNull(),
   userAnswer: text('user_answer').notNull(),
-  isCorrect: boolean('is_correct'),
+  isCorrect: boolean('is_correct'),           // objective only; null for subjective
+  completionRate: real('completion_rate'),     // subjective only (0-1); null for objective
   hitPoints: jsonb('hit_points').$type<string[]>(),
   missedPoints: jsonb('missed_points').$type<string[]>(),
   feedback: text('feedback'),
   createdAt: timestamp('created_at').defaultNow(),
-})
+}, t => [uniqueIndex('quiz_attempts_session_question_idx').on(t.sessionId, t.questionId)])
 
 export const wrongQuestions = pgTable('wrong_questions', {
   id: uuid('id').defaultRandom().primaryKey(),
