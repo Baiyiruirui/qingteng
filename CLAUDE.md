@@ -47,7 +47,7 @@
 | Week 2 Day 4 | ✅ | 中期 Memory 学习画像 + system prompt 注入 | `4d42b85` |
 | Week 2 Day 5 | ✅ | 长期 Memory pgvector RAG + SiliconFlow embedding | `8047605` |
 | Week 2 | ✅ | 三层 Memory 全通 + RAG grounding 修复 | `2f1f542` |
-| Week 3 Day 1 | ✅ | 对话模式架构 + immersion_scripts 表 + 诗库页 + session 路由 | - |
+| Week 3 Day 1 | ✅ | 对话模式架构 + immersion_scripts 表 + 诗库页 + session 路由 | `c2b6ff0` |
 | Week 3 | ⏳ | 诗境沉浸 + 协同创作 MVP | - |
 | Week 4 | ⏳ | Whisper 朗读 + 错题本/复习 | - |
 | Week 5 | ⏳ | Eval 50 题 + Langfuse + 美术 | - |
