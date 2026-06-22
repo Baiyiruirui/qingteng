@@ -4,6 +4,9 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
+// Poems that have v2 blueprint-driven quiz questions
+const QUIZ_POEM_IDS = new Set(['TANG_001', 'TANG_023', 'TANG_042'])
+
 type Poem = {
   id: string
   title: string
@@ -100,6 +103,15 @@ export default function PoemsClient({ userName, poems }: Props) {
 
               {/* Buttons */}
               <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+                {QUIZ_POEM_IDS.has(poem.id) && (
+                  <Link
+                    href={`/quiz/${poem.id}`}
+                    className="text-xs px-3 py-1.5 rounded-lg font-medium"
+                    style={{ background: '#7c6b4f', color: '#fff' }}
+                  >
+                    青藤考你
+                  </Link>
+                )}
                 {poem.hasScript ? (
                   <button
                     onClick={() => startMode('roleplay', poem.id)}
