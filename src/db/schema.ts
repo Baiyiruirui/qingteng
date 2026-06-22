@@ -71,6 +71,21 @@ export const immersionScripts = pgTable('immersion_scripts', {
   createdAt: timestamp('created_at').defaultNow(),
 })
 
+export const quizQuestions = pgTable('quiz_questions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  poemId: text('poem_id').notNull().references(() => poems.id),
+  type: text('type').notNull(), // mcq | fill | translate | appreciate
+  stem: text('stem').notNull(),
+  options: jsonb('options').$type<string[]>(),
+  answer: text('answer').notNull(),
+  explanation: text('explanation').notNull(),
+  evidenceLines: jsonb('evidence_lines').$type<string[]>().notNull(),
+  difficulty: text('difficulty').notNull(),
+  qualityScore: real('quality_score'),
+  promptVersion: text('prompt_version'),
+  createdAt: timestamp('created_at').defaultNow(),
+})
+
 export const memories = pgTable('memories', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: uuid('user_id').notNull().references(() => users.id),
