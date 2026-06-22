@@ -39,6 +39,17 @@
 
 对话场景(青藤讲解)的知识幻觉待 Week 5 RAG + Eval 继续处理。
 
+## 实测数据（Week 3 Day 3 预生成 36 道）
+
+3 首诗 × 4 题型 × 3 难度 = 36 道，全部成功生成：
+- evidenceValid=true：34 道（94.4%）
+- evidenceValid=false：2 道（5.6%）
+  - 静夜思 · mcq · 易：模型将释义文字（"释：把月光比作白霜"）当作原诗句引用，非幻觉但匹配规则不通过
+  - 登高 · translate · 难：evidenceLines 混入解释性文字，被去标点匹配拦截
+- generateObject→generateText fallback 触发 1 次（qualityScore 字段缺失）
+
+《登高》赏析题（3 道）未出现"八悲"典故误植，grounding 有效。
+
 ## 是否加入 eval 黄金集
 
 - [x] 加入 `src/ai/evals/golden-50.json`

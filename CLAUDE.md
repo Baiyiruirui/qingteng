@@ -49,7 +49,7 @@
 | Week 2 | ✅ | 三层 Memory 全通 + RAG grounding 修复 | `2f1f542` |
 | Week 3 Day 1 | ✅ | 对话模式架构 + immersion_scripts 表 + 诗库页 + session 路由 | `c2b6ff0` |
 | Week 3 Day 2 | ✅ | roleplay 沉浸对话：immersion prompt + opening + chat API + ImmersionClient UI | `fda6811` |
-| Week 3 Day 3 | ✅ | 出题引擎 grounding：evidenceValid 列 + 预生成脚本 + list API + 验证页 | `(本次)` |
+| Week 3 Day 3 | ✅ | 出题引擎 grounding：evidenceValid 列 + 预生成脚本(36 道入库) + list API + 验证页 | `610073f` |
 | Week 3 | ⏳ | 诗境沉浸 + 青藤考你 MVP | - |
 | Week 4 | ⏳ | Whisper 朗读 + 错题本/复习 | - |
 | Week 5 | ⏳ | Eval 50 题 + Langfuse + 美术 | - |
