@@ -1,6 +1,6 @@
 import 'server-only'
 import { generateText } from 'ai'
-import { cosineDistance, desc, and, eq, sql } from 'drizzle-orm'
+import { cosineDistance, desc, and, eq, ne, sql } from 'drizzle-orm'
 import { route } from '@/ai/router'
 import { db } from '@/db'
 import { memories } from '@/db/schema'
@@ -11,11 +11,13 @@ type ExtractedMemory = { content: string; kind: string }
 
 export type RecalledMemory = { content: string; source: string | null; similarity: number }
 
-const SIMILARITY_THRESHOLD = 0.4
+// Preference memories always surface if remotely related — they're hard constraints
+const PREF_THRESHOLD = 0.15
+// Standard threshold for other memory types
+const STD_THRESHOLD = 0.4
 const RECALL_LIMIT = 3
 
 function parseExtracted(raw: string): ExtractedMemory[] {
-  // Strip markdown code fences if model wraps output anyway
   const clean = raw
     .replace(/^```(?:json)?\s*/i, '')
     .replace(/\s*```$/i, '')
@@ -58,23 +60,59 @@ export async function recall(
 ): Promise<RecalledMemory[]> {
   const queryVector = await embed(queryText)
 
-  const similarity = sql<number>`1 - (${cosineDistance(memories.embedding, queryVector)})`
+  // Two-phase recall: preference memories at lower threshold, others at standard
+  const [prefRows, otherRows] = await Promise.all([
+    db
+      .select({
+        content: memories.content,
+        source: memories.source,
+        similarity: sql<number>`1 - (${cosineDistance(memories.embedding, queryVector)})`,
+      })
+      .from(memories)
+      .where(
+        and(
+          eq(memories.userId, userId),
+          eq(memories.source, 'preference'),
+          sql`1 - (${cosineDistance(memories.embedding, queryVector)}) > ${PREF_THRESHOLD}`,
+        ),
+      )
+      .orderBy(desc(sql<number>`1 - (${cosineDistance(memories.embedding, queryVector)})`))
+      .limit(2),
 
-  const rows = await db
-    .select({ content: memories.content, source: memories.source, similarity })
-    .from(memories)
-    .where(
-      and(
-        eq(memories.userId, userId),
-        sql`1 - (${cosineDistance(memories.embedding, queryVector)}) > ${SIMILARITY_THRESHOLD}`,
-      ),
-    )
-    .orderBy(desc(similarity))
-    .limit(limit)
+    db
+      .select({
+        content: memories.content,
+        source: memories.source,
+        similarity: sql<number>`1 - (${cosineDistance(memories.embedding, queryVector)})`,
+      })
+      .from(memories)
+      .where(
+        and(
+          eq(memories.userId, userId),
+          ne(memories.source, 'preference'),
+          sql`1 - (${cosineDistance(memories.embedding, queryVector)}) > ${STD_THRESHOLD}`,
+        ),
+      )
+      .orderBy(desc(sql<number>`1 - (${cosineDistance(memories.embedding, queryVector)})`))
+      .limit(limit),
+  ])
 
-  return rows.map(r => ({
-    content: r.content,
-    source: r.source,
-    similarity: r.similarity,
-  }))
+  // Preferences first, then others — dedup by content
+  const seen = new Set<string>()
+  const result: RecalledMemory[] = []
+  for (const row of [...prefRows, ...otherRows]) {
+    if (!seen.has(row.content)) {
+      seen.add(row.content)
+      result.push({ content: row.content, source: row.source, similarity: row.similarity })
+    }
+  }
+
+  console.log(
+    `[long-term] recall | user:${userId.slice(0, 8)} | query:"${queryText.slice(0, 40)}" |`,
+    result.length === 0
+      ? 'no results'
+      : result.map(m => `[${m.source}] ${m.content.slice(0, 35)}`).join(' // '),
+  )
+
+  return result
 }
