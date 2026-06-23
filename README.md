@@ -3,8 +3,10 @@
 > 一个有记忆、会陪你长大的 AI 诗友。
 > An AI-native classical Chinese poetry learning companion with persistent memory.
 
-![Status](https://img.shields.io/badge/status-in_development-orange)
-![Stack](https://img.shields.io/badge/stack-Next.js_15-black)
+🔗 **Live Demo**: https://qingteng-ecru.vercel.app
+
+![Status](https://img.shields.io/badge/status-deployed-brightgreen)
+![Stack](https://img.shields.io/badge/stack-Next.js_16-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -111,16 +113,16 @@ AI    Vercel AI SDK
 
 ## 项目进度
 
-> 6 周开发计划，当前 **Week 1**。完整 Roadmap 见 [Project Board](../../projects)。
+> 6 周开发计划，当前 **Week 3 已完成并上线**。完整 Roadmap 见 [Project Board](../../projects)。
 
 | 周次 | 主题 | 状态 |
 |---|---|---|
 | 1 | 基建 + 140 首诗数据迁移 | ✅ 完成 |
 | 2 | 角色对话核心 + 三层 Memory | ✅ 完成 |
-| 3 | 诗境沉浸 + 青藤考你（grounding 出题） | 🚧 进行中 — 对话模式架构 + 诗境沉浸 + 出题引擎 grounding 已完成 |
+| 3 | 诗境沉浸 + 青藤考你（grounding 出题） | ✅ 完成 — 已部署上线 qingteng-ecru.vercel.app |
 | 4 | Whisper 朗读评分 + 错题本/复习 | ⏳ |
 | 5 | Eval 黄金集 + Langfuse 接入 + 美术终稿 | ⏳ |
-| 6 | Vercel 上线 + 3min Demo 视频 + 文档 | ⏳ |
+| 6 | 3min Demo 视频 + 文档 | ⏳ |
 
 详细方案见 [PROJECT_PLAN.md](./PROJECT_PLAN.md)。
 

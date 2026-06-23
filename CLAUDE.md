@@ -10,7 +10,8 @@
 - **名称**:青藤(Qingteng)
 - **定位**:面向中学生的对话式古诗词学习产品,有持久 Memory 的 AI 诗友
 - **目标**:求职作品集项目(AI 应用工程师方向)
-- **当前状态**:Week 3 进行中,已完成对话模式架构 + 诗境沉浸 + 出题引擎,正在做青藤考你(出题模块预生成)
+- **当前状态**:Week 3 完成并已部署上线。Week 4 待开始(Whisper 朗读 + 错题本复习)
+- **线上地址**:https://qingteng-ecru.vercel.app
 - **GitHub**:https://github.com/Baiyiruirui/qingteng
 - **本地路径**:`D:\workspace\projects\qingteng`(Windows + PowerShell)
 
@@ -53,9 +54,10 @@
 | Week 3 Day 3 修订 | ✅ | 考点蓝图驱动 v2 出题：quizBlueprints 表 + 蓝图生成器 + 20 道 v2 题(100% evidenceValid) | `a635c8d` |
 | Week 3 Day 4 | ✅ | 青藤考你 MVP：scoringPoints + LLM-as-judge + quiz UI + wrong book | `91c7b32` |
 | Week 3 | ✅ | 诗境沉浸 + 青藤考你 MVP | `91c7b32` |
+| 部署上线 | ✅ | Vercel 上线 qingteng-ecru.vercel.app；Next.js 16 proxy 兼容；CI/CD 踩坑记录 | `64bc816` |
 | Week 4 | ⏳ | Whisper 朗读 + 错题本/复习 | - |
 | Week 5 | ⏳ | Eval 50 题 + Langfuse + 美术 | - |
-| Week 6 | ⏳ | Vercel 部署 + Demo 视频 + 文档 | - |
+| Week 6 | ⏳ | Demo 视频 + 文档收尾 | - |
 
 **完成一个 Day 后必须更新这张表**(把 ⏳ 改 ✅,填 commit hash)。
 
