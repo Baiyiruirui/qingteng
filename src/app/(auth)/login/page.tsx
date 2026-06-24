@@ -3,9 +3,9 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { SealStamp } from '@/components/SealStamp'
-import { inkFadeIn } from '@/lib/motion'
+import { Seal, CornerMark } from '@/components/Seal'
+import { VerticalPoem } from '@/components/VerticalPoem'
+import { jingYeSi } from '@/lib/poems'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -38,77 +38,168 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-qt-paper px-4">
-      <motion.div
-        variants={inkFadeIn}
-        initial="hidden"
-        animate="visible"
-        className="w-full max-w-sm"
-      >
-        {/* 朱砂印章 */}
-        <div className="flex justify-center mb-7">
-          <SealStamp size={52} tilt />
+    <main className="relative min-h-dvh w-full overflow-hidden bg-paper">
+      {/* 宣纸纤维纹理 */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0 opacity-60 mix-blend-multiply"
+        style={{ backgroundImage: 'url(/paper-texture.png)', backgroundSize: '480px 480px' }}
+      />
+
+      {/* 水墨主视觉（藤蔓轻摆） */}
+      <div
+        aria-hidden="true"
+        className="animate-vine-sway pointer-events-none absolute inset-0 z-0 opacity-90"
+        style={{
+          backgroundImage: 'url(/ink-scene.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'left center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      />
+
+      {/* 暖月光晕 */}
+      <div
+        aria-hidden="true"
+        className="animate-moon-breathe pointer-events-none absolute right-[14%] top-[12%] z-0 h-44 w-44 rounded-full blur-2xl"
+        style={{ background: 'radial-gradient(circle, rgba(232,201,160,0.7) 0%, rgba(232,201,160,0) 70%)' }}
+      />
+
+      {/* 内容层 */}
+      <div className="relative z-10 mx-auto flex min-h-dvh max-w-6xl flex-col items-center justify-center gap-12 px-6 py-12 lg:flex-row lg:justify-between lg:gap-8">
+        {/* 左侧竖排诗（仅大屏） */}
+        <div className="hidden lg:block">
+          <VerticalPoem poem={jingYeSi} />
         </div>
 
-        {/* 卡片 */}
-        <div
-          className="rounded-2xl px-8 py-10"
-          style={{
-            background: 'rgba(255,255,255,0.72)',
-            backdropFilter: 'blur(12px)',
-            boxShadow: '0 4px 32px rgba(46,58,52,0.07), 0 0 0 0.5px #D8CFBC',
-          }}
-        >
-          <h1 className="font-serif text-[2rem] tracking-[0.22em] text-center text-qt-ink mb-1.5">
-            回来了
-          </h1>
-          <p className="text-center text-sm text-qt-ink-light mb-8 tracking-wide">
-            青藤在这里
-          </p>
-
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <input
-              className="w-full rounded-lg border px-4 py-3 text-sm outline-none transition-colors bg-qt-paper-alt text-qt-ink border-qt-border placeholder:text-qt-ink-light focus:border-qt-green"
-              placeholder="你的名字"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              autoFocus
-              autoComplete="username"
-            />
-            <input
-              type="password"
-              className="w-full rounded-lg border px-4 py-3 text-sm outline-none transition-colors bg-qt-paper-alt text-qt-ink border-qt-border placeholder:text-qt-ink-light focus:border-qt-green"
-              placeholder="密码"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              autoComplete="current-password"
+        {/* 右侧登录卡片 */}
+        <div className="animate-ink-rise relative w-full max-w-95" style={{ animationDelay: '0.25s' }}>
+          <div
+            className="relative px-9 py-10"
+            style={{
+              backgroundColor: 'rgba(249,245,236,0.94)',
+              boxShadow:
+                '0 1px 0 rgba(255,255,255,0.6) inset, 0 0 0 1px rgba(216,207,188,0.45), 0 18px 50px -24px rgba(46,58,52,0.30)',
+            }}
+          >
+            {/* 顶部朱砂渐变线 */}
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 top-0 h-px"
+              style={{
+                background:
+                  'linear-gradient(90deg, transparent, rgba(192,98,63,0.35) 20%, rgba(192,98,63,0.35) 80%, transparent)',
+              }}
             />
 
-            {error && (
-              <p className="text-sm text-qt-vermilion opacity-90">{error}</p>
-            )}
+            {/* 四角回纹 */}
+            <CornerMark position="tl" className="m-3 text-jade/45" />
+            <CornerMark position="tr" className="m-3 text-jade/45" />
+            <CornerMark position="bl" className="m-3 text-jade/45" />
+            <CornerMark position="br" className="m-3 text-jade/45" />
 
-            <button
-              type="submit"
-              disabled={loading || !name || !password}
-              className="w-full py-3 rounded-lg font-serif tracking-[0.2em] text-sm transition-opacity disabled:opacity-40 mt-1"
-              style={{ background: 'var(--qt-ink-btn)', color: 'var(--qt-paper-alt)' }}
-            >
-              {loading ? '进入中…' : '进来'}
-            </button>
-          </form>
+            {/* 品牌 */}
+            <div className="mb-7 flex items-center gap-3">
+              <Seal char="藤" size={42} />
+              <div>
+                <p className="font-serif text-[30px] font-semibold leading-none text-ink">青藤</p>
+                <p className="mt-1.5 font-serif text-xs tracking-[0.2em] text-ink-mid">
+                  与一位 AI 诗友，一起读诗
+                </p>
+              </div>
+            </div>
 
-          <p className="text-center text-sm mt-7 text-qt-ink-light">
-            第一次来？{' '}
-            <Link
-              href="/register"
-              className="text-qt-vermilion hover:opacity-70 transition-opacity"
-            >
-              注册
-            </Link>
-          </p>
+            {/* 副标题 */}
+            <div className="mb-6">
+              <h1 className="font-serif text-[22px] text-ink">回来了</h1>
+              <p className="mt-1 font-serif text-sm text-ink-faint">青藤在这里等你</p>
+            </div>
+
+            {/* 表单 */}
+            <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+              <InkField
+                label="名字"
+                placeholder="你的名字"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                autoFocus
+                autoComplete="username"
+              />
+              <InkField
+                label="密码"
+                type="password"
+                placeholder="你的密码"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                autoComplete="current-password"
+              />
+
+              {error && <p className="text-sm text-cinnabar opacity-90">{error}</p>}
+
+              <button
+                type="submit"
+                disabled={loading || !name || !password}
+                className="mt-2 w-full rounded-lg border border-ink/15 py-3 font-serif text-[15px] tracking-[3px] transition-all hover:brightness-110 hover:shadow-md active:scale-[0.99] disabled:opacity-40"
+                style={{ background: '#3A4742', color: '#F2EDE0' }}
+              >
+                {loading ? '进入中…' : '进来'}
+              </button>
+            </form>
+
+            {/* 去注册 */}
+            <p className="mt-6 text-center font-serif text-sm text-ink-mid">
+              第一次来？{' '}
+              <Link
+                href="/register"
+                className="font-medium text-cinnabar underline-offset-4 transition-colors hover:underline"
+              >
+                注册
+              </Link>
+            </p>
+          </div>
         </div>
-      </motion.div>
-    </div>
+      </div>
+
+      {/* 移动端底部诗句 */}
+      <p className="animate-ink-rise absolute bottom-6 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap text-center font-serif text-sm text-ink-faint lg:hidden">
+        {jingYeSi.lines[0]}，{jingYeSi.lines[1]}
+      </p>
+    </main>
+  )
+}
+
+function InkField({
+  label,
+  type = 'text',
+  placeholder,
+  value,
+  onChange,
+  autoFocus,
+  autoComplete,
+}: {
+  label: string
+  type?: string
+  placeholder?: string
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  autoFocus?: boolean
+  autoComplete?: string
+}) {
+  return (
+    <label className="group flex flex-col gap-1.5">
+      <span className="font-serif text-xs tracking-wider text-ink-mid">{label}</span>
+      <div className="relative">
+        <input
+          type={type}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          autoFocus={autoFocus}
+          autoComplete={autoComplete}
+          className="w-full rounded-lg border border-edge bg-paper/60 px-3.5 py-2.5 font-sans text-sm text-ink outline-none transition-colors placeholder:text-ink-faint/70 focus:border-jade focus:bg-paper"
+        />
+        <span className="pointer-events-none absolute -bottom-px left-1/2 h-px w-0 -translate-x-1/2 bg-jade transition-all duration-300 group-focus-within:w-[calc(100%-12px)]" />
+      </div>
+    </label>
   )
 }

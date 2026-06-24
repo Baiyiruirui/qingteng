@@ -85,6 +85,17 @@
   --color-qt-ink-btn:     #3A4742;
   --color-qt-earth:       #7C6B4F;
 
+  /* v0 短名别名（与 qt-* 等值，供登录/注册页组件使用） */
+  --color-paper:        #F7F4EC;
+  --color-paper-block:  #F2EDE0;
+  --color-ink:          #2E3A34;
+  --color-ink-mid:      #5E6E68;
+  --color-ink-faint:    #9A9384;
+  --color-edge:         #D8CFBC;
+  --color-jade:         #6E8B7E;
+  --color-cinnabar:     #C0623F;
+  --color-moon:         #E8C9A0;
+
   /* 字体 */
   --font-sans:  var(--font-geist-sans), Arial, Helvetica, sans-serif;
   --font-mono:  var(--font-geist-mono), monospace;
@@ -130,4 +141,40 @@
 
 .animate-ink-fade-in-delay {
   animation: ink-fade-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+
+/* 登录/注册页水墨动效 */
+@keyframes ink-rise {
+  from { opacity: 0; transform: translateY(16px); filter: blur(6px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+}
+.animate-ink-rise {
+  opacity: 0;
+  animation: ink-rise 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes moon-breathe {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50%       { opacity: 0.85; transform: scale(1.04); }
+}
+.animate-moon-breathe {
+  animation: moon-breathe 9s ease-in-out infinite;
+}
+
+@keyframes vine-sway {
+  0%, 100% { transform: rotate(-0.6deg) translateY(0); }
+  50%       { transform: rotate(0.6deg) translateY(-4px); }
+}
+.animate-vine-sway {
+  transform-origin: top center;
+  animation: vine-sway 11s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ink-rise, .animate-moon-breathe, .animate-vine-sway {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
 }

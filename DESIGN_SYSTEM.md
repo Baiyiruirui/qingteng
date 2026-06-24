@@ -86,6 +86,15 @@
 - hover:颜色/透明度的柔和过渡,不要位移跳动
 - 用 Framer Motion 时统一封装一个 `inkFadeIn` variant 复用
 
+### 已定义动效 CSS 类（globals.css）
+
+| 类名 | 效果 | 场景 |
+|---|---|---|
+| `animate-ink-fade-in` | opacity 0→1 + translateY 10px，0.5s | 通用入场（服务端组件） |
+| `animate-ink-rise` | opacity 0→1 + blur 6px→0 + translateY 16px，1.1s | 登录页元素逐个入场 |
+| `animate-moon-breathe` | opacity + scale 极缓呼吸，9s 循环 | 月晕光效 |
+| `animate-vine-sway` | rotate ±0.6° + translateY，11s 循环 | 水墨藤蔓图层 |
+
 ---
 
 ## 5. 宣纸纹理质感层
@@ -105,16 +114,29 @@
 </svg>
 ```
 
+### 登录/注册页专属：水墨意境图层（已集成）
+
+登录/注册页采用三层叠加，营造宣纸水墨意境：
+
+| 图层 | 文件 | 处理方式 |
+|---|---|---|
+| 宣纸纤维纹理 | `public/paper-texture.png` | `opacity:0.6 + mix-blend-multiply`，tile 480px |
+| 水墨主视觉（藤蔓+远山） | `public/ink-scene.png` | `opacity:0.9`，cover 铺满，`animate-vine-sway`(11s) |
+| 暖月光晕 | 纯 CSS radial-gradient | `animate-moon-breathe`(9s)，右上角 |
+
+三层之上是内容层（`z-10`）：左侧竖排诗 + 右侧卡片。
+
 ---
 
 ## 6. 标志性符号 · 朱砂印章
 
 青藤的视觉记忆点 = **一枚朱砂"青藤"印章**。反复出现形成记忆:
-- Logo 旁(已有雏形)
+- Logo 旁、登录/注册卡片头部（已集成）
 - 加载/空状态
 - 做题全对、完成沉浸等"成就时刻"盖一个印
-- 印章样式:朱砂 `#C0623F`,方形篆刻感,可用 SVG 绘制("青藤"或单字"藤")
-- 做一个可复用的 `<SealStamp>` 组件,不同场景调用
+- 印章样式:朱砂 `#C0623F`，方形圆角（7px），内描边白框，radial-gradient 模拟做旧斑驳
+- 两个组件：`<Seal char="藤" size={42} />`（精细版，登录页）/ `<SealStamp>`（简版，其他页）
+- `<CornerMark position="tl|tr|bl|br">` — 四角回纹 SVG，用于卡片装饰
 
 ---
 
