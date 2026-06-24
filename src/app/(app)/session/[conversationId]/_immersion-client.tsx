@@ -52,11 +52,9 @@ export default function ImmersionClient({
     messages: initialMessages,
   })
 
-  // Fetch immersion opening on mount (only if conversation is empty)
   useEffect(() => {
     if (initialMessages.length > 0 || openingFetched.current) return
     openingFetched.current = true
-
     setOpeningLoading(true)
     fetch('/api/session/immersion/opening', {
       method: 'POST',
@@ -90,68 +88,59 @@ export default function ImmersionClient({
     setInput('')
   }
 
-  // Extract the role name for display (e.g., "你是李白" → "李白")
   const roleDisplay = role.replace(/^你是/, '').split(',')[0].trim()
 
   return (
-    <div
-      className="flex flex-col min-h-screen"
-      style={{ background: '#f2ece0', color: '#1a1a1a' }}
-    >
+    <div className="flex flex-col min-h-screen bg-qt-paper-alt text-qt-ink">
       {/* Header */}
       <header
-        className="flex items-center justify-between px-6 py-4 border-b"
-        style={{ borderColor: '#d8d0c0', background: '#ece5d4' }}
+        className="flex items-center justify-between px-6 py-4 border-b border-qt-border"
+        style={{ background: 'rgba(242,237,224,0.95)', backdropFilter: 'blur(8px)', position: 'sticky', top: 0, zIndex: 10 }}
       >
-        {/* Left: poem text toggle */}
         <div className="flex-1">
           <button
             onClick={() => setShowPoem(v => !v)}
-            className="text-xs px-2.5 py-1 rounded-lg border transition-colors"
-            style={{ borderColor: '#c8c0b0', color: '#6a6055', background: 'transparent' }}
+            className="text-xs px-2.5 py-1 rounded-lg border border-qt-border text-qt-ink-mid transition-colors hover:bg-qt-paper"
+            style={{ background: 'transparent' }}
           >
             {showPoem ? '收起原文' : '查看原文'}
           </button>
         </div>
 
-        {/* Center: title */}
         <div className="text-center">
-          <h1 className="text-xl font-serif tracking-widest" style={{ color: '#1a1a1a' }}>
+          <h1 className="font-serif text-xl tracking-widest text-qt-ink">
             沉浸 · {poemTitle}
           </h1>
-          <p className="text-xs mt-0.5" style={{ color: '#7a6e5f' }}>
+          <p className="text-xs mt-0.5 text-qt-ink-mid">
             {poemAuthor} · 你是{roleDisplay}
           </p>
         </div>
 
-        {/* Right: user + exit */}
         <div className="flex-1 flex justify-end items-center gap-3">
-          <span className="text-xs" style={{ color: '#7a6e5f' }}>
-            {userName}
-          </span>
+          <span className="text-xs text-qt-ink-light">{userName}</span>
           <button
             onClick={() => router.push('/chat')}
-            className="text-xs px-2.5 py-1 rounded-lg border transition-colors"
-            style={{ borderColor: '#c8c0b0', color: '#6a6055', background: 'transparent' }}
+            className="text-xs px-2.5 py-1 rounded-lg border border-qt-border text-qt-ink-mid transition-colors hover:bg-qt-paper"
+            style={{ background: 'transparent' }}
           >
             结束沉浸
           </button>
         </div>
       </header>
 
-      {/* Poem text panel (collapsible) */}
+      {/* 原文面板（可收折） */}
       {showPoem && (
         <div
-          className="px-6 py-4 border-b"
-          style={{ background: '#e8e0cc', borderColor: '#d8d0c0' }}
+          className="px-6 py-4 border-b border-qt-border"
+          style={{ background: 'rgba(232,224,204,0.8)' }}
         >
-          <div className="mx-auto max-w-[720px]">
-            <p className="text-xs mb-2 font-medium" style={{ color: '#7a6e5f' }}>
+          <div className="mx-auto max-w-180">
+            <p className="text-xs mb-2 font-medium text-qt-ink-mid">
               《{poemTitle}》{poemAuthor}
             </p>
             <div className="space-y-1">
               {poemLines.map((line, i) => (
-                <p key={i} className="text-sm font-serif tracking-wider" style={{ color: '#3a3028' }}>
+                <p key={i} className="text-sm font-serif tracking-wider text-qt-ink">
                   {line}
                 </p>
               ))}
@@ -160,30 +149,25 @@ export default function ImmersionClient({
         </div>
       )}
 
-      {/* Messages */}
+      {/* 消息区 */}
       <main className="flex-1 overflow-y-auto py-8">
-        <div className="mx-auto max-w-[720px] px-4 space-y-8">
+        <div className="mx-auto max-w-180 px-4 space-y-8">
           {openingLoading && (
-            <p
-              className="text-center font-serif mt-16 opacity-40"
-              style={{ color: '#3a3028' }}
-            >
+            <p className="text-center font-serif mt-16 opacity-40 text-qt-ink-light tracking-widest">
               青藤正在把你带入诗的情境…
             </p>
           )}
 
           {messages.map(m => {
-            const text = getTextContent(
-              m.parts as Array<{ type: string; text?: string }>,
-            )
+            const text = getTextContent(m.parts as Array<{ type: string; text?: string }>)
             const isUser = m.role === 'user'
 
             if (isUser) {
               return (
                 <div key={m.id} className="flex justify-end">
                   <div
-                    className="max-w-[75%] rounded-2xl rounded-br-sm px-4 py-3 text-sm leading-relaxed"
-                    style={{ background: '#d8cdb8', color: '#1a1a1a' }}
+                    className="max-w-[75%] rounded-2xl rounded-br-sm px-4 py-3 text-sm leading-relaxed text-qt-ink"
+                    style={{ background: 'var(--qt-border)' }}
                   >
                     {text}
                   </div>
@@ -194,21 +178,18 @@ export default function ImmersionClient({
             return (
               <div key={m.id} className="flex items-start gap-3">
                 <div
-                  className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-serif font-medium text-white select-none"
-                  style={{ background: '#7a6e5f' }}
+                  className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-serif font-medium select-none"
+                  style={{ background: 'var(--qt-ink-mid)', color: '#fff' }}
                 >
                   藤
                 </div>
-                <div
-                  className="flex-1 text-sm leading-relaxed pt-1 whitespace-pre-wrap"
-                  style={{ color: '#2a2218' }}
-                >
+                <div className="flex-1 text-sm leading-relaxed pt-1 whitespace-pre-wrap text-qt-ink">
                   {text}
                   {status === 'streaming' &&
                     m.id === messages[messages.length - 1]?.id && (
                       <span
                         className="inline-block w-0.5 h-4 ml-0.5 animate-pulse align-middle"
-                        style={{ background: '#7a6e5f' }}
+                        style={{ background: 'var(--qt-ink-mid)' }}
                       />
                     )}
                 </div>
@@ -220,22 +201,18 @@ export default function ImmersionClient({
         </div>
       </main>
 
-      {/* Input */}
+      {/* 输入框 */}
       <footer
-        className="sticky bottom-0 border-t py-4"
-        style={{ background: '#f2ece0', borderColor: '#d8d0c0' }}
+        className="sticky bottom-0 border-t border-qt-border py-4"
+        style={{ background: 'rgba(242,237,224,0.95)', backdropFilter: 'blur(8px)' }}
       >
         <form
           onSubmit={handleSubmit}
-          className="mx-auto max-w-[720px] px-4 flex gap-3 items-end"
+          className="mx-auto max-w-180 px-4 flex gap-3 items-end"
         >
           <input
-            className="flex-1 rounded-xl border px-4 py-3 text-sm outline-none transition-colors"
-            style={{
-              borderColor: '#c8c0b0',
-              background: '#ece5d4',
-              color: '#1a1a1a',
-            }}
+            className="flex-1 rounded-xl border border-qt-border px-4 py-3 text-sm outline-none transition-colors text-qt-ink placeholder:text-qt-ink-light focus:border-qt-ink-mid"
+            style={{ background: 'var(--qt-paper)' }}
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => {
@@ -244,15 +221,15 @@ export default function ImmersionClient({
                 handleSubmit(e as unknown as React.FormEvent)
               }
             }}
-            placeholder="说说你看见了什么,感受到什么..."
+            placeholder="说说你看见了什么，感受到什么…"
             disabled={status !== 'ready'}
             autoFocus
           />
           <button
             type="submit"
             disabled={!input.trim() || status !== 'ready'}
-            className="flex-shrink-0 px-5 py-3 rounded-xl text-sm font-medium transition-opacity disabled:opacity-40"
-            style={{ background: '#5a5040', color: '#f5f0e8' }}
+            className="shrink-0 px-5 py-3 rounded-xl font-serif text-sm tracking-[0.12em] transition-opacity disabled:opacity-40"
+            style={{ background: 'var(--qt-ink-btn)', color: 'var(--qt-paper-alt)' }}
           >
             回应
           </button>

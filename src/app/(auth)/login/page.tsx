@@ -3,6 +3,9 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
+import { SealStamp } from '@/components/SealStamp'
+import { inkFadeIn } from '@/lib/motion'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -28,74 +31,84 @@ export default function LoginPage() {
       }
       router.push('/chat')
     } catch {
-      setError('网络错误,请重试')
+      setError('网络错误，请重试')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center"
-      style={{ background: '#fafaf7' }}
-    >
-      <div
-        className="w-full max-w-[400px] mx-4 rounded-2xl px-8 py-10"
-        style={{ background: '#fff', boxShadow: '0 2px 16px 0 rgba(0,0,0,0.06)' }}
+    <div className="min-h-screen flex items-center justify-center bg-qt-paper px-4">
+      <motion.div
+        variants={inkFadeIn}
+        initial="hidden"
+        animate="visible"
+        className="w-full max-w-sm"
       >
-        <h1
-          className="text-4xl font-serif tracking-widest text-center mb-1"
-          style={{ color: '#1a1a1a' }}
+        {/* 朱砂印章 */}
+        <div className="flex justify-center mb-7">
+          <SealStamp size={52} tilt />
+        </div>
+
+        {/* 卡片 */}
+        <div
+          className="rounded-2xl px-8 py-10"
+          style={{
+            background: 'rgba(255,255,255,0.72)',
+            backdropFilter: 'blur(12px)',
+            boxShadow: '0 4px 32px rgba(46,58,52,0.07), 0 0 0 0.5px #D8CFBC',
+          }}
         >
-          回来了
-        </h1>
-        <p className="text-center text-sm mb-8" style={{ color: '#8a8a8a' }}>
-          青藤在这里
-        </p>
+          <h1 className="font-serif text-[2rem] tracking-[0.22em] text-center text-qt-ink mb-1.5">
+            回来了
+          </h1>
+          <p className="text-center text-sm text-qt-ink-light mb-8 tracking-wide">
+            青藤在这里
+          </p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <input
-            className="w-full rounded-xl border px-4 py-3 text-sm outline-none transition-colors"
-            style={{ borderColor: '#d4cfc6', background: '#fafaf7', color: '#1a1a1a' }}
-            placeholder="你的名字"
-            value={name}
-            onChange={e => setName(e.target.value)}
-            autoFocus
-            autoComplete="username"
-          />
-          <input
-            type="password"
-            className="w-full rounded-xl border px-4 py-3 text-sm outline-none transition-colors"
-            style={{ borderColor: '#d4cfc6', background: '#fafaf7', color: '#1a1a1a' }}
-            placeholder="密码"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            autoComplete="current-password"
-          />
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <input
+              className="w-full rounded-lg border px-4 py-3 text-sm outline-none transition-colors bg-qt-paper-alt text-qt-ink border-qt-border placeholder:text-qt-ink-light focus:border-qt-green"
+              placeholder="你的名字"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              autoFocus
+              autoComplete="username"
+            />
+            <input
+              type="password"
+              className="w-full rounded-lg border px-4 py-3 text-sm outline-none transition-colors bg-qt-paper-alt text-qt-ink border-qt-border placeholder:text-qt-ink-light focus:border-qt-green"
+              placeholder="密码"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              autoComplete="current-password"
+            />
 
-          {error && (
-            <p className="text-sm" style={{ color: '#c0392b' }}>
-              {error}
-            </p>
-          )}
+            {error && (
+              <p className="text-sm text-qt-vermilion opacity-90">{error}</p>
+            )}
 
-          <button
-            type="submit"
-            disabled={loading || !name || !password}
-            className="w-full py-3 rounded-xl text-sm font-medium transition-opacity disabled:opacity-40"
-            style={{ background: '#1a1a1a', color: '#fafaf7' }}
-          >
-            {loading ? '进入中…' : '进来'}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={loading || !name || !password}
+              className="w-full py-3 rounded-lg font-serif tracking-[0.2em] text-sm transition-opacity disabled:opacity-40 mt-1"
+              style={{ background: 'var(--qt-ink-btn)', color: 'var(--qt-paper-alt)' }}
+            >
+              {loading ? '进入中…' : '进来'}
+            </button>
+          </form>
 
-        <p className="text-center text-sm mt-6" style={{ color: '#8a8a8a' }}>
-          第一次来?{' '}
-          <Link href="/register" className="underline" style={{ color: '#5e8b7e' }}>
-            注册
-          </Link>
-        </p>
-      </div>
+          <p className="text-center text-sm mt-7 text-qt-ink-light">
+            第一次来？{' '}
+            <Link
+              href="/register"
+              className="text-qt-vermilion hover:opacity-70 transition-opacity"
+            >
+              注册
+            </Link>
+          </p>
+        </div>
+      </motion.div>
     </div>
   )
 }
