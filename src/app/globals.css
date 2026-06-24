@@ -23,6 +23,12 @@
     /* 旧题目土褐色 */
     --qt-earth:       #7C6B4F;
 
+    /* 语义 token：登录/注册卡片 + 月晕 + 标签 */
+    --color-card-overlay:        rgba(249, 245, 236, 0.94);
+    --color-moon-glow:           rgba(232, 201, 160, 0.7);
+    --color-tag-immersive-bg:    #E8F4F0;
+    --color-tag-immersive-text:  #3D8C78;
+
     /* shadcn UI 变量 → 宣纸调 */
     --background:              46 28% 94%;
     --foreground:              155 13% 21%;

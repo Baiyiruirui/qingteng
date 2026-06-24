@@ -138,7 +138,7 @@ export default function PoemsClient({ userName, poems }: Props) {
                   {poem.hasScript && (
                     <span
                       className="text-xs px-1.5 py-0.5 rounded-full"
-                      style={{ background: '#e8f4f0', color: '#3d8c78' }}
+                      style={{ background: 'var(--color-tag-immersive-bg)', color: 'var(--color-tag-immersive-text)' }}
                     >
                       可沉浸
                     </span>

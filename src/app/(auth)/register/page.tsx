@@ -62,7 +62,7 @@ export default function RegisterPage() {
       <div
         aria-hidden="true"
         className="animate-moon-breathe pointer-events-none absolute right-[14%] top-[12%] z-0 h-44 w-44 rounded-full blur-2xl"
-        style={{ background: 'radial-gradient(circle, rgba(232,201,160,0.7) 0%, rgba(232,201,160,0) 70%)' }}
+        style={{ background: 'radial-gradient(circle, var(--color-moon-glow) 0%, rgba(232,201,160,0) 70%)' }}
       />
 
       {/* 内容层 */}
@@ -77,7 +77,7 @@ export default function RegisterPage() {
           <div
             className="relative px-9 py-10"
             style={{
-              backgroundColor: 'rgba(249,245,236,0.94)',
+              backgroundColor: 'var(--color-card-overlay)',
               boxShadow:
                 '0 1px 0 rgba(255,255,255,0.6) inset, 0 0 0 1px rgba(216,207,188,0.45), 0 18px 50px -24px rgba(46,58,52,0.30)',
             }}
@@ -141,7 +141,7 @@ export default function RegisterPage() {
                 type="submit"
                 disabled={loading || !name || password.length < 6}
                 className="mt-2 w-full rounded-lg border border-ink/15 py-3 font-serif text-[15px] tracking-[3px] transition-all hover:brightness-110 hover:shadow-md active:scale-[0.99] disabled:opacity-40"
-                style={{ background: '#3A4742', color: '#F2EDE0' }}
+                style={{ background: 'var(--qt-ink-btn)', color: 'var(--qt-paper-alt)' }}
               >
                 {loading ? '注册中…' : '开始'}
               </button>
