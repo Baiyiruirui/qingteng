@@ -43,3 +43,6 @@ next-env.d.ts
 
 # local temp
 /.tmp
+
+# ui-ux-pro-max design skill (本地设计辅助工具，随时 uipro init 可重装，不入库)
+.claude/skills/
