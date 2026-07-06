@@ -10,7 +10,8 @@
 - **名称**:青藤(Qingteng)
 - **定位**:面向中学生的对话式古诗词学习产品,有持久 Memory 的 AI 诗友
 - **目标**:求职作品集项目(AI 应用工程师方向)
-- **当前状态**:Week 3 完成并已部署上线。Week 4 待开始(Whisper 朗读 + 错题本复习)
+- **当前状态**:后半程按 CHARTER.md 执行。Phase A 美术做透进行中(登录/注册页已完成,诗库/聊天页精修中)
+- **章程**:后半程目标/范围/节奏见 CHARTER.md,与本文件冲突以 CHARTER.md 为准
 - **线上地址**:https://qingteng-ecru.vercel.app
 - **GitHub**:https://github.com/Baiyiruirui/qingteng
 - **本地路径**:`D:\workspace\projects\qingteng`(Windows + PowerShell)
@@ -55,9 +56,14 @@
 | Week 3 Day 4 | ✅ | 青藤考你 MVP：scoringPoints + LLM-as-judge + quiz UI + wrong book | `91c7b32` |
 | Week 3 | ✅ | 诗境沉浸 + 青藤考你 MVP | `91c7b32` |
 | 部署上线 | ✅ | Vercel 上线 qingteng-ecru.vercel.app；Next.js 16 proxy 兼容；CI/CD 踩坑记录 | `64bc816` |
-| Week 4 | ⏳ | Whisper 朗读 + 错题本/复习 | - |
-| Week 5 | ⏳ | Eval 50 题 + Langfuse + 美术 | - |
-| Week 6 | ⏳ | Demo 视频 + 文档收尾 | - |
+| 美术 Phase A-1 | 🔨 | 诗库页 + 聊天页精修 + 颜色命名统一 | - |
+| 美术 Phase A-2 | ⏳ | 做题/沉浸定妆 + 3 首意境图 + 视觉走查 | - |
+| Phase B | ⏳ | Langfuse 接入 + 50 题黄金集 + eval runner + 基线报告 | - |
+| Phase C1 | ⏳ | 难度自适应出题 + 错题专项复习 | - |
+| Phase C2 | ⏳ | Whisper 朗读评分(前置:OpenAI key + R2) | - |
+| Phase C3 | ⏳ | 语义诗词搜索 | - |
+| Phase D | ⏳ | 优化提纲 P0 清偿(CHARTER.md 第五节) | - |
+| Phase E | ⏳ | Demo 视频 + README 终稿 + key 轮换 | - |
 
 **完成一个 Day 后必须更新这张表**(把 ⏳ 改 ✅,填 commit hash)。
 
@@ -126,6 +132,15 @@ pnpm config set registry https://registry.npmmirror.com
 遇到产品方向、功能取舍、技术选型的岔路时,**先列 2-3 个方案 + 建议,等用户确认**,不要自作主张推进。
 可以自行决定的:变量命名、UI 细节、辅助函数实现。
 必须问用户的:新功能的交互设计、可能影响数据的操作、第三方服务/依赖引入。
+
+### 8. Eval 红线(Phase B 之后生效)
+
+凡改动 src/ai/prompts/ 下任何文件,必须跑 pnpm eval,并在 commit message 里注明结果。
+例:feat: tighten judge prompt (eval 92%→96%)
+
+### 9. 范围冻结
+
+新功能想法记入 notes/backlog.md,本周期(至 2026-08-30)不实施。砍单顺序见 CHARTER.md 第三节,触发时直接执行。
 
 ---
 
