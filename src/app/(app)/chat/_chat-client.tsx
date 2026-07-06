@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { UIMessage } from 'ai'
 import { inkFadeIn } from '@/lib/motion'
+import { ShanshuiBanner } from '@/components/ShanshuiBanner'
 
 function getTextContent(parts: Array<{ type: string; text?: string }>) {
   return parts
@@ -145,9 +146,12 @@ export default function ChatClient({
         </div>
       </header>
 
+      {/* 山水页眉横幅 */}
+      <ShanshuiBanner />
+
       {/* 「青藤记得你」记忆卡片：把三层 Memory 可视化（仅日常对话，常驻 header 下方） */}
       {isDailyChat && (
-        <div className="mx-auto w-full max-w-180 px-4 pt-4">
+        <div className="mx-auto -mt-8 w-full max-w-180 px-4">
           <MemoryCard />
         </div>
       )}

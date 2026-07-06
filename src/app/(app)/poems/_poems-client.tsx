@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { inkFadeIn, inkFadeInStagger } from '@/lib/motion'
+import { ShanshuiBanner } from '@/components/ShanshuiBanner'
 
 const QUIZ_POEM_IDS = new Set(['TANG_001', 'TANG_023', 'TANG_042'])
 
@@ -72,9 +73,9 @@ export default function PoemsClient({ userName, poems }: Props) {
   })
 
   return (
-    <div className="min-h-screen bg-paper text-ink">
+    <div className="relative min-h-screen bg-paper text-ink">
       {/* 磨砂 Header */}
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-edge bg-paper/90 px-6 py-5 backdrop-blur">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-edge bg-paper/80 px-6 py-5 backdrop-blur">
         <Link href="/chat" className="text-sm text-ink-faint transition-colors hover:text-ink">
           ← 对话
         </Link>
@@ -82,7 +83,10 @@ export default function PoemsClient({ userName, poems }: Props) {
         <span className="text-sm text-ink-faint">你好，{userName}</span>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-8">
+      {/* 山水页眉横幅 */}
+      <ShanshuiBanner />
+
+      <main className="relative z-10 mx-auto -mt-10 max-w-5xl px-4 pb-8">
         {/* 搜索栏（对标登录页 InkField） */}
         <div className="mb-5 flex items-center gap-3">
           <label className="group relative flex-1">
