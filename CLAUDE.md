@@ -27,6 +27,7 @@
 - 数据:PostgreSQL (Neon) + pgvector + Upstash Redis(Week 2 接入)+ R2(后续)
 - AI:Vercel AI SDK + DeepSeek + Claude Haiku(后续)+ Whisper(Week 4);出题用 generateObject + Zod 结构化输出 + grounding(poem 数据注入 + evidenceLines 溯源校验)
 - 观测:Langfuse(Week 5)+ Sentry(Week 6)
+- 测试:Playwright smoke(Phase D 接入,2026-07-06 产品评审会批准的新依赖,主链路 e2e)
 - 部署:Vercel + Neon + Upstash
 
 **明确不做**:Hono、tRPC、mem0、PWA、CN/HK 双语、教师端、闯关地图 UI、生图、Docker。
