@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono, Noto_Serif_SC, Ma_Shan_Zheng } from 'next/font/google'
+import { Geist, Geist_Mono, Ma_Shan_Zheng } from 'next/font/google'
+import 'lxgw-wenkai-webfont/style.css'
 import './globals.css'
 
 const geistSans = Geist({
@@ -10,14 +11,6 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
-})
-
-const notoSerifSC = Noto_Serif_SC({
-  variable: '--font-noto-serif-sc',
-  subsets: ['latin'],
-  weight: ['400', '500'],
-  display: 'swap',
-  preload: false,
 })
 
 // 书法楷体：仅用于大标题/牌匾式文字（"诗笺书房"这类），正文禁用
@@ -42,7 +35,7 @@ export default function RootLayout({
   return (
     <html
       lang="zh-CN"
-      className={`${geistSans.variable} ${geistMono.variable} ${notoSerifSC.variable} ${maShanZheng.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${maShanZheng.variable} h-full antialiased`}
     >
       {/* 宣纸纹理层：极淡 SVG 噪点，fixed 最底层 */}
       <body className="min-h-full flex flex-col">

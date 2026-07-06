@@ -102,7 +102,7 @@ export default function ChatClient({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // 三层 Memory 上下文（日常模式才拉取，案头右栏 + 对话记忆卡共用）
+  // 三层 Memory 上下文（日常模式才拉取，信文 + 对话记忆卡共用）
   useEffect(() => {
     if (!isDailyChat) return
     fetch('/api/memory/context')
@@ -165,7 +165,7 @@ export default function ChatClient({
 
   const waiting = status === 'submitted'
 
-  // 案头札记文案 = 开场白（最后一条 assistant 消息）
+  // 案头信文 = 开场白（最后一条 assistant 消息）
   const lastAssistant = [...messages].reverse().find(m => m.role === 'assistant')
   const openingText = lastAssistant
     ? getTextContent(lastAssistant.parts as Array<{ type: string; text?: string }>)
@@ -333,7 +333,14 @@ export default function ChatClient({
   )
 }
 
-// ── 今日案头（对标示意图 1：札记 / 今日入诗 / 青藤记得 + 三入口） ──────────
+// ── 今日案头 · 方案 A「一封信」：信 + 今日入诗 + 三枚书签，无图标 ──────────
+
+/** 意境图（Owner 生成，public/yijing/） */
+const YIJING: Record<string, string> = {
+  TANG_001: '/yijing/yijing-jingyesi.webp',
+  TANG_023: '/yijing/yijing-jiuyuejiu.webp',
+  TANG_042: '/yijing/yijing-denggao.webp',
+}
 
 function DailyDesk({
   userName,
@@ -356,26 +363,54 @@ function DailyDesk({
   const memories = memCtx?.memories ?? []
   const hour = new Date().getHours()
   const greet = hour < 6 ? '夜深了' : hour < 12 ? '早上好' : hour < 18 ? '下午好' : '晚上好'
+
+  // 把三层记忆织成信里的一段话（不再是图标行）
+  const memParts: string[] = []
+  if (p?.recentPoems && p.recentPoems.length > 0) {
+    memParts.push(`你最近读了${p.recentPoems.slice(0, 2).map(t => `《${t}》`).join('、')}`)
+  }
+  if (p?.recentThemes && p.recentThemes.length > 0) {
+    memParts.push(`常在「${p.recentThemes[0]}」处停留`)
+  }
+  const memSentence = memParts.length > 0 ? memParts.join('，') + '。' : ''
+  const remembered = memories[0]
+    ? `我还记得——${memories[0].content.replace(/这位学生/g, '你').replace(/。$/, '')}。`
+    : ''
+  const nextStep = dailyPoem
+    ? p?.recentThemes?.[0]
+      ? `今天，不妨沿着「${p.recentThemes[0]}」，把这首《${dailyPoem.title}》读进去。`
+      : `今天，从这首《${dailyPoem.title}》开始吧。`
+    : ''
+
   const reason = p?.recentThemes?.[0]
     ? `因为你最近常聊「${p.recentThemes[0]}」`
     : '今天想和你一起读读它'
 
+  const yijingSrc = dailyPoem ? YIJING[dailyPoem.id] : undefined
+
   return (
-    <main className="relative mx-auto w-full max-w-6xl flex-1 px-4 pb-10 pt-8 lg:px-6">
+    <main className="relative mx-auto w-full max-w-6xl flex-1 px-4 pb-12 pt-8 lg:px-6">
+      {/* 垂藤（左缘，multiply 融进宣纸） */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/yijing/vine-left.webp"
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-14 -top-6 hidden w-80 select-none opacity-90 mix-blend-multiply lg:block"
+        style={{ maskImage: 'linear-gradient(to bottom, black 65%, transparent)' }}
+      />
+
       <motion.div
         variants={inkFadeInStagger}
         initial="hidden"
         animate="visible"
-        className="grid items-start gap-6 lg:grid-cols-[1fr_1.3fr_1fr]"
+        className="grid items-start gap-10 lg:grid-cols-[1fr_1.15fr]"
       >
-        {/* 左：今日青藤札记 */}
-        <motion.section variants={inkFadeIn} className="lg:pt-6">
-          <h2 className="flex items-center gap-2 font-kai text-2xl text-ink">
-            <LeafGlyph />
-            今日青藤札记
-          </h2>
-          <div className="mt-5 min-h-32 font-serif text-[15px] leading-loose text-ink">
-            <p className="mb-3">
+        {/* 左：青藤的信 */}
+        <motion.section variants={inkFadeIn} className="relative lg:pl-28 lg:pt-8">
+          <h2 className="font-kai text-[26px] text-ink">今日青藤札记</h2>
+          <div className="mt-6 space-y-4 font-serif text-[16px] leading-loose text-ink">
+            <p>
               {userName}，{greet}。
             </p>
             {openingLoading ? (
@@ -388,69 +423,89 @@ function DailyDesk({
                 {openingText ?? '青藤在这里等你。随便聊聊——今天读的诗、卡住的题，或只是心情。'}
               </p>
             )}
+            {(memSentence || remembered) && (
+              <p>
+                {memSentence}
+                {remembered}
+              </p>
+            )}
+            {nextStep && <p>{nextStep}</p>}
           </div>
-          <div className="mt-6 flex items-center gap-2">
-            <span className="h-px w-8 bg-edge" />
-            <span className="font-serif text-sm text-ink-mid">青藤</span>
-            <Seal char="藤" size={20} />
+          <div className="mt-7 flex items-center justify-end gap-2 lg:pr-4">
+            <span className="font-kai text-lg text-ink-mid">青藤</span>
+            <Seal char="藤" size={22} />
           </div>
         </motion.section>
 
-        {/* 中：今日入诗 */}
+        {/* 右：今日入诗（顶部嵌意境图） */}
         <motion.section variants={inkFadeIn}>
           {dailyPoem ? (
-            <div className="relative overflow-hidden rounded-2xl border border-edge bg-paper-block/70 px-8 pb-8 pt-7 shadow-[0_28px_70px_-36px_rgba(46,58,52,0.45),0_1px_0_rgba(255,255,255,0.7)_inset]">
-              {/* 暖月光晕 */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute -right-8 top-2 h-36 w-36 rounded-full blur-xl"
-                style={{
-                  background:
-                    'radial-gradient(circle, rgba(232,201,160,0.55) 0%, rgba(232,201,160,0) 70%)',
-                }}
-              />
-              <p className="flex items-center gap-1.5 font-serif text-sm tracking-[0.25em] text-jade">
-                <span className="inline-block h-2 w-2 rounded-full border border-jade" />
-                今日入诗
-              </p>
-              <h3 className="mt-5 text-center font-kai text-[34px] leading-tight text-ink">
-                《{dailyPoem.title}》
-              </h3>
-              <p className="mt-1 text-center font-serif text-sm text-ink-mid">
-                {dailyPoem.dynasty ? `${dailyPoem.dynasty} · ` : ''}
-                {dailyPoem.author}
-              </p>
-              <span className="mx-auto mt-3 block h-0.5 w-10 rounded bg-cinnabar/60" />
-              <div className="mt-5 space-y-3">
-                {dailyPoem.lines.map((ln, i) => (
-                  <p
-                    key={i}
-                    className="text-center font-serif text-[19px] tracking-[0.3em] text-ink"
-                  >
-                    {ln}
+            <div className="relative overflow-hidden rounded-2xl border border-edge bg-paper-block/70 shadow-[0_28px_70px_-36px_rgba(46,58,52,0.45),0_1px_0_rgba(255,255,255,0.7)_inset]">
+              {yijingSrc && (
+                <div className="relative">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={yijingSrc}
+                    alt={`《${dailyPoem.title}》意境图`}
+                    className="aspect-[16/9] w-full object-cover object-top"
+                  />
+                  {/* 图底烘染，融进纸卡 */}
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-x-0 bottom-0 h-16"
+                    style={{
+                      background: 'linear-gradient(to top, rgba(242,237,224,0.95), transparent)',
+                    }}
+                  />
+                  <p className="absolute left-6 top-5 flex items-center gap-1.5 font-serif text-sm tracking-[0.25em] text-ink/80">
+                    <span className="inline-block h-2 w-2 rounded-full border border-ink/60" />
+                    今日入诗
                   </p>
-                ))}
-              </div>
-              <p className="mt-5 flex items-center justify-center gap-1.5 text-xs text-jade">
-                <LeafGlyph small />
-                {reason}
-              </p>
-              <div className="mt-6 flex items-center justify-center gap-3">
-                <button
-                  onClick={() => onStartMode('roleplay', dailyPoem.id)}
-                  disabled={modeLoading !== null}
-                  className="cursor-pointer rounded-lg bg-jade px-6 py-2.5 font-serif text-[15px] tracking-[0.15em] text-white transition-all duration-200 hover:brightness-105 hover:shadow-md active:scale-[0.98] disabled:opacity-40"
-                >
-                  {modeLoading === `roleplay-${dailyPoem.id}` ? '入境中…' : '入诗境 ›'}
-                </button>
-                {dailyPoem.hasQuiz && (
-                  <Link
-                    href={`/quiz/${dailyPoem.id}`}
-                    className="cursor-pointer rounded-lg border border-jade/60 px-6 py-2.5 font-serif text-[15px] tracking-[0.15em] text-jade transition-all duration-200 hover:bg-jade/10 active:scale-[0.98]"
-                  >
-                    青藤考你 ›
-                  </Link>
+                </div>
+              )}
+              <div className="px-8 pb-8 pt-3">
+                {!yijingSrc && (
+                  <p className="flex items-center gap-1.5 pt-3 font-serif text-sm tracking-[0.25em] text-jade">
+                    <span className="inline-block h-2 w-2 rounded-full border border-jade" />
+                    今日入诗
+                  </p>
                 )}
+                <h3 className="mt-2 text-center font-kai text-[32px] leading-tight text-ink">
+                  《{dailyPoem.title}》
+                </h3>
+                <p className="mt-1 text-center font-serif text-sm text-ink-mid">
+                  {dailyPoem.dynasty ? `${dailyPoem.dynasty} · ` : ''}
+                  {dailyPoem.author}
+                </p>
+                <span className="mx-auto mt-3 block h-0.5 w-10 rounded bg-cinnabar/60" />
+                <div className="mt-4 space-y-2.5">
+                  {dailyPoem.lines.map((ln, i) => (
+                    <p
+                      key={i}
+                      className="text-center font-serif text-[18px] tracking-[0.28em] text-ink"
+                    >
+                      {ln}
+                    </p>
+                  ))}
+                </div>
+                <p className="mt-4 text-center text-xs text-jade">{reason}</p>
+                <div className="mt-5 flex items-center justify-center gap-3">
+                  <button
+                    onClick={() => onStartMode('roleplay', dailyPoem.id)}
+                    disabled={modeLoading !== null}
+                    className="cursor-pointer rounded-lg bg-jade px-6 py-2.5 font-serif text-[15px] tracking-[0.15em] text-white transition-all duration-200 hover:brightness-105 hover:shadow-md active:scale-[0.98] disabled:opacity-40"
+                  >
+                    {modeLoading === `roleplay-${dailyPoem.id}` ? '入境中…' : '入诗境 ›'}
+                  </button>
+                  {dailyPoem.hasQuiz && (
+                    <Link
+                      href={`/quiz/${dailyPoem.id}`}
+                      className="cursor-pointer rounded-lg border border-jade/60 px-6 py-2.5 font-serif text-[15px] tracking-[0.15em] text-jade transition-all duration-200 hover:bg-jade/10 active:scale-[0.98]"
+                    >
+                      青藤考你 ›
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
           ) : (
@@ -459,84 +514,24 @@ function DailyDesk({
             </div>
           )}
         </motion.section>
-
-        {/* 右：青藤记得 */}
-        <motion.aside variants={inkFadeIn} className="lg:pt-6">
-          <h2 className="flex items-center gap-2 font-kai text-2xl text-ink">
-            <MemGlyph />
-            青藤记得
-          </h2>
-          <div className="mt-5 space-y-5">
-            {p && p.recentPoems.length > 0 ? (
-              <DeskMemRow
-                icon={<BookGlyph />}
-                title="最近读过"
-                body={p.recentPoems.slice(0, 2).map(t => `《${t}》`).join(' ')}
-                sub={p.activeDays7 > 0 ? `近 7 天来了 ${p.activeDays7} 天` : undefined}
-              />
-            ) : (
-              <DeskMemRow
-                icon={<BookGlyph />}
-                title="初次见面"
-                body="聊过之后，青藤就会记得你读过的诗。"
-              />
-            )}
-
-            {p && p.recentThemes.length > 0 && (
-              <DeskMemRow
-                icon={<ThemeGlyph />}
-                title="常聊的意象"
-                body={p.recentThemes.slice(0, 3).join(' · ')}
-                sub="多次停留"
-              />
-            )}
-
-            {memories.length > 0 && (
-              <DeskMemRow
-                icon={<HeartGlyph />}
-                title="记在心里"
-                body={memories[0].content}
-                sub={memories[1]?.content}
-              />
-            )}
-
-            <DeskMemRow
-              icon={<StepGlyph />}
-              title="下一步"
-              body={
-                p?.recentThemes?.[0]
-                  ? `沿着「${p.recentThemes[0]}」，把今日这首读进去`
-                  : '从今日入诗开始，读一首、聊几句'
-              }
-              sub="建议今日完成"
-            />
-          </div>
-        </motion.aside>
       </motion.div>
 
-      {/* 底部三入口 */}
+      {/* 三枚书签（竖排签条，替代图标条） */}
       <motion.div
         variants={inkFadeInStagger}
         initial="hidden"
         animate="visible"
-        className="mt-10 grid gap-3 sm:grid-cols-3"
+        className="mt-12 flex items-start justify-center gap-7 sm:gap-10"
       >
-        <DeskStrip
-          char="读"
-          title="读一首"
-          desc="沉浸式读诗，感受语言与意境"
-          href="/poems"
-        />
-        <DeskStrip
-          char="练"
-          title="练一题"
-          desc="精选题目，巩固理解与方法"
+        <DeskTab label="读一首" tone="cinnabar" href="/poems" />
+        <DeskTab
+          label="练一题"
+          tone="jade"
           href={dailyPoem?.hasQuiz ? `/quiz/${dailyPoem.id}` : '/poems'}
         />
-        <DeskStrip
-          char="写"
-          title="写两句"
-          desc="从诗中取法，写下你的两句"
+        <DeskTab
+          label="写两句"
+          tone="earth"
           onClick={dailyPoem ? () => onStartMode('creative', dailyPoem.id) : undefined}
           href={dailyPoem ? undefined : '/poems'}
           loading={dailyPoem ? modeLoading === `creative-${dailyPoem.id}` : false}
@@ -546,67 +541,49 @@ function DailyDesk({
   )
 }
 
-function DeskMemRow({
-  icon,
-  title,
-  body,
-  sub,
-}: {
-  icon: React.ReactNode
-  title: string
-  body: string
-  sub?: string
-}) {
-  return (
-    <div className="flex items-start gap-3 border-b border-edge/50 pb-4 last:border-b-0">
-      <span className="mt-0.5 grid h-10 w-10 shrink-0 place-items-center rounded-full bg-paper-block text-jade">
-        {icon}
-      </span>
-      <div className="min-w-0">
-        <p className="font-serif text-[15px] font-medium text-ink">{title}</p>
-        <p className="mt-0.5 line-clamp-2 text-sm leading-relaxed text-ink-mid">{body}</p>
-        {sub && <p className="mt-1 line-clamp-1 text-xs text-ink-faint">{sub}</p>}
-      </div>
-    </div>
-  )
+const TAB_TONE: Record<string, string> = {
+  cinnabar: '#C0623F',
+  jade: '#6E8B7E',
+  earth: '#7C6B4F',
 }
 
-function DeskStrip({
-  char,
-  title,
-  desc,
+/** 竖排书签签条 */
+function DeskTab({
+  label,
+  tone,
   href,
   onClick,
   loading,
 }: {
-  char: string
-  title: string
-  desc: string
+  label: string
+  tone: keyof typeof TAB_TONE
   href?: string
   onClick?: () => void
   loading?: boolean
 }) {
   const inner = (
-    <>
-      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border-[1.5px] border-jade/60 font-kai text-xl text-jade">
-        {char}
+    <span
+      className="flex h-44 w-14 flex-col items-center rounded-b-xl border border-edge/80 bg-white/55 pt-4 shadow-[0_10px_24px_-16px_rgba(46,58,52,0.4)] backdrop-blur-[2px] transition-all duration-200 group-hover:-translate-y-1 group-hover:bg-white/80 group-hover:shadow-[0_16px_32px_-16px_rgba(46,58,52,0.5)]"
+      style={{ borderTop: `4px solid ${TAB_TONE[tone]}` }}
+    >
+      <span
+        className="font-kai text-xl text-ink"
+        style={{ writingMode: 'vertical-rl', letterSpacing: '0.35em' }}
+      >
+        {loading ? '进入中' : label}
       </span>
-      <span className="min-w-0 flex-1">
-        <span className="block font-kai text-xl text-ink">{loading ? '进入中…' : title}</span>
-        <span className="mt-0.5 block truncate text-xs text-ink-faint">{desc}</span>
-      </span>
-      <span aria-hidden="true" className="text-ink-faint">
-        ›
-      </span>
-    </>
+    </span>
   )
-  const cls =
-    'group flex w-full cursor-pointer items-center gap-4 rounded-xl border border-edge/70 bg-white/50 px-5 py-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-edge hover:bg-white/75 hover:shadow-[0_14px_34px_-20px_rgba(46,58,52,0.4)]'
 
   if (onClick) {
     return (
       <motion.div variants={inkFadeIn}>
-        <button onClick={onClick} disabled={loading} className={cls + ' disabled:opacity-50'}>
+        <button
+          onClick={onClick}
+          disabled={loading}
+          aria-label={label}
+          className="group cursor-pointer disabled:opacity-50"
+        >
           {inner}
         </button>
       </motion.div>
@@ -614,95 +591,10 @@ function DeskStrip({
   }
   return (
     <motion.div variants={inkFadeIn}>
-      <Link href={href ?? '/poems'} className={cls}>
+      <Link href={href ?? '/poems'} aria-label={label} className="group cursor-pointer">
         {inner}
       </Link>
     </motion.div>
-  )
-}
-
-// ── 极简线性字形（1.5px 描边，统一风格，不用 emoji） ──────────────────
-
-function LeafGlyph({ small }: { small?: boolean }) {
-  const s = small ? 12 : 18
-  return (
-    <svg width={s} height={s} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M5 19C5 12 9 5 19 4c1 10-6 14-13 14"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <path d="M5 19c3-5 7-9 11-11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function MemGlyph() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 21s-7-4.5-9-9c-1.2-2.8.6-6 3.8-6 2 0 3.4 1 4.2 2.4H11c.8-1.4 2.2-2.4 4.2-2.4 3.2 0 5 3.2 3.8 6-2 4.5-9 9-9 9h2z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function BookGlyph() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-      <path d="M20 18v3H6.5A2.5 2.5 0 0 1 4 18.5" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  )
-}
-
-function ThemeGlyph() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="12" r="3.5" stroke="currentColor" strokeWidth="1.5" />
-      <path
-        d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-    </svg>
-  )
-}
-
-function HeartGlyph() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 20s-7.5-4.8-9.4-9.2C1.3 7.6 3.6 4.5 6.8 4.5c2 0 3.7 1.1 4.5 2.7h1.4c.8-1.6 2.5-2.7 4.5-2.7 3.2 0 5.5 3.1 4.2 6.3C19.5 15.2 12 20 12 20Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function StepGlyph() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M4 18c4 0 4-4 8-4s4 4 8 4M4 12c4 0 4-4 8-4"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <path d="M17 5.5 20 8l-3 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
   )
 }
 
