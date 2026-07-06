@@ -57,7 +57,7 @@
 | Week 3 Day 4 | ✅ | 青藤考你 MVP：scoringPoints + LLM-as-judge + quiz UI + wrong book | `91c7b32` |
 | Week 3 | ✅ | 诗境沉浸 + 青藤考你 MVP | `91c7b32` |
 | 部署上线 | ✅ | Vercel 上线 qingteng-ecru.vercel.app；Next.js 16 proxy 兼容；CI/CD 踩坑记录 | `64bc816` |
-| 美术 Phase A-1 | 🔨 | 诗库页精修(网格+朝代筛选+短名 token,`c67dc3e`)✅;聊天页精修 + 全局导航待做 | `c67dc3e` |
+| 美术 Phase A-1 | 🔨 | 诗库页精修(`c67dc3e`)✅;聊天页重设+「青藤记得你」Memory 可视化(`03875a5`)✅;全局导航 A1/A2 待做 | `03875a5` |
 | 美术 Phase A-2 | ⏳ | 做题/沉浸定妆 + 3 首意境图 + 视觉走查 | - |
 | Phase B | ⏳ | Langfuse 接入 + 50 题黄金集 + eval runner + 基线报告 | - |
 | Phase C1 | ⏳ | 难度自适应出题 + 错题专项复习 | - |
