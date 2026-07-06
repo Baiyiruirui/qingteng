@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono, Noto_Serif_SC } from 'next/font/google'
+import { Geist, Geist_Mono, Noto_Serif_SC, Ma_Shan_Zheng } from 'next/font/google'
 import './globals.css'
 
 const geistSans = Geist({
@@ -20,6 +20,15 @@ const notoSerifSC = Noto_Serif_SC({
   preload: false,
 })
 
+// 书法楷体：仅用于大标题/牌匾式文字（"诗笺书房"这类），正文禁用
+const maShanZheng = Ma_Shan_Zheng({
+  variable: '--font-ma-shan-zheng',
+  subsets: ['latin'],
+  weight: '400',
+  display: 'swap',
+  preload: false,
+})
+
 export const metadata: Metadata = {
   title: '青藤',
   description: '有记忆、会陪你长大的 AI 诗友',
@@ -33,7 +42,7 @@ export default function RootLayout({
   return (
     <html
       lang="zh-CN"
-      className={`${geistSans.variable} ${geistMono.variable} ${notoSerifSC.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${notoSerifSC.variable} ${maShanZheng.variable} h-full antialiased`}
     >
       {/* 宣纸纹理层：极淡 SVG 噪点，fixed 最底层 */}
       <body className="min-h-full flex flex-col">
