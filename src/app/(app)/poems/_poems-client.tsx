@@ -1,10 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { SealStamp } from '@/components/SealStamp'
 import { inkFadeIn, inkFadeInStagger } from '@/lib/motion'
 
 const QUIZ_POEM_IDS = new Set(['TANG_001', 'TANG_023', 'TANG_042'])
@@ -27,6 +26,16 @@ export default function PoemsClient({ userName, poems }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
   const [query, setQuery] = useState('')
+  const [dynasty, setDynasty] = useState<string | null>(null)
+
+  // 朝代筛选轴：从数据动态派生，保持诗库出现顺序
+  const dynasties = useMemo(() => {
+    const seen: string[] = []
+    for (const p of poems) {
+      if (p.dynasty && !seen.includes(p.dynasty)) seen.push(p.dynasty)
+    }
+    return seen
+  }, [poems])
 
   async function startMode(mode: 'roleplay' | 'creative', poemId: string) {
     const key = `${mode}-${poemId}`
@@ -51,51 +60,65 @@ export default function PoemsClient({ userName, poems }: Props) {
     }
   }
 
-  const filtered = query.trim()
-    ? poems.filter(
-        p =>
-          p.title.includes(query.trim()) ||
-          p.author.includes(query.trim()) ||
-          (p.dynasty ?? '').includes(query.trim()),
-      )
-    : poems
+  const q = query.trim()
+  const filtered = poems.filter(p => {
+    const matchQuery =
+      !q ||
+      p.title.includes(q) ||
+      p.author.includes(q) ||
+      (p.dynasty ?? '').includes(q)
+    const matchDynasty = !dynasty || p.dynasty === dynasty
+    return matchQuery && matchDynasty
+  })
 
   return (
-    <div className="min-h-screen bg-qt-paper text-qt-ink">
-      {/* Header */}
-      <header
-        className="flex items-center justify-between px-6 py-5 border-b border-qt-border"
-        style={{ background: 'rgba(247,244,236,0.92)', backdropFilter: 'blur(8px)', position: 'sticky', top: 0, zIndex: 10 }}
-      >
-        <Link href="/chat" className="text-sm text-qt-ink-light hover:text-qt-ink transition-colors">
+    <div className="min-h-screen bg-paper text-ink">
+      {/* 磨砂 Header */}
+      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-edge bg-paper/90 px-6 py-5 backdrop-blur">
+        <Link href="/chat" className="text-sm text-ink-faint transition-colors hover:text-ink">
           ← 对话
         </Link>
-        <h1 className="font-serif text-2xl tracking-[0.18em] text-qt-ink">诗库</h1>
-        <span className="text-sm text-qt-ink-light">你好，{userName}</span>
+        <h1 className="font-serif text-2xl tracking-[0.18em] text-ink">诗库</h1>
+        <span className="text-sm text-ink-faint">你好，{userName}</span>
       </header>
 
-      <main className="mx-auto max-w-3xl px-4 py-8">
-        {/* 搜索栏 */}
-        <div className="mb-6 flex items-center gap-3">
-          <input
-            type="text"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder="搜题目、作者、朝代…"
-            className="flex-1 rounded-lg border border-qt-border bg-qt-paper-alt px-4 py-2.5 text-sm text-qt-ink placeholder:text-qt-ink-light outline-none focus:border-qt-green transition-colors"
-          />
+      <main className="mx-auto max-w-5xl px-4 py-8">
+        {/* 搜索栏（对标登录页 InkField） */}
+        <div className="mb-5 flex items-center gap-3">
+          <label className="group relative flex-1">
+            <input
+              type="text"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="搜题目、作者、朝代…"
+              className="w-full rounded-lg border border-edge bg-paper/60 px-4 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-ink-faint/70 focus:border-jade focus:bg-paper"
+            />
+            <span className="pointer-events-none absolute -bottom-px left-1/2 h-px w-0 -translate-x-1/2 bg-jade transition-all duration-300 group-focus-within:w-[calc(100%-16px)]" />
+          </label>
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="text-xs text-qt-ink-light hover:text-qt-ink transition-colors"
+              className="text-xs text-ink-faint transition-colors hover:text-ink"
             >
               清空
             </button>
           )}
         </div>
 
-        <p className="text-xs text-qt-ink-light mb-6">
-          {query
+        {/* 朝代筛选条 */}
+        <div className="mb-5 flex flex-wrap items-center gap-2">
+          <FilterChip active={dynasty === null} onClick={() => setDynasty(null)}>
+            全部
+          </FilterChip>
+          {dynasties.map(d => (
+            <FilterChip key={d} active={dynasty === d} onClick={() => setDynasty(d)}>
+              {d}
+            </FilterChip>
+          ))}
+        </div>
+
+        <p className="mb-6 text-xs text-ink-faint">
+          {q || dynasty
             ? `找到 ${filtered.length} 首`
             : `共 ${poems.length} 首 · 标注「可沉浸」的诗支持角色扮演模式`}
         </p>
@@ -106,57 +129,56 @@ export default function PoemsClient({ userName, poems }: Props) {
             variants={inkFadeIn}
             initial="hidden"
             animate="visible"
-            className="text-center py-24"
+            className="py-24 text-center"
           >
-            <p className="font-serif text-qt-ink-light tracking-widest text-lg">
-              未寻得此诗
-            </p>
-            <p className="text-sm text-qt-ink-light opacity-60 mt-2">
-              换个词试试？
-            </p>
+            <p className="font-serif text-lg tracking-widest text-ink-faint">未寻得此诗</p>
+            <p className="mt-2 text-sm text-ink-faint opacity-60">换个词试试？</p>
           </motion.div>
         )}
 
-        {/* 诗列表 */}
+        {/* 诗卡片网格 */}
         <motion.div
+          key={`${q}-${dynasty ?? 'all'}`}
           variants={inkFadeInStagger}
           initial="hidden"
           animate="visible"
-          className="space-y-2.5"
+          className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
         >
           {filtered.map(poem => (
             <motion.div
               key={poem.id}
               variants={inkFadeIn}
-              className="flex items-center justify-between py-4 px-5 rounded-xl border border-qt-border"
-              style={{ background: 'rgba(255,255,255,0.6)' }}
+              className="group flex flex-col rounded-xl border border-edge/60 bg-white/60 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-edge hover:bg-white/80 hover:shadow-[0_12px_30px_-18px_rgba(46,58,52,0.35)]"
             >
               {/* 诗信息 */}
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-serif text-base text-qt-ink">{poem.title}</span>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-serif text-lg text-ink">{poem.title}</span>
                   {poem.hasScript && (
                     <span
-                      className="text-xs px-1.5 py-0.5 rounded-full"
-                      style={{ background: 'var(--color-tag-immersive-bg)', color: 'var(--color-tag-immersive-text)' }}
+                      className="rounded-full px-1.5 py-0.5 text-xs"
+                      style={{
+                        background: 'var(--color-tag-immersive-bg)',
+                        color: 'var(--color-tag-immersive-text)',
+                      }}
                     >
                       可沉浸
                     </span>
                   )}
                 </div>
-                <p className="text-xs mt-0.5 text-qt-ink-light">
+                <p className="mt-1 text-xs text-ink-faint">
                   {poem.dynasty ?? ''} · {poem.author}
                   {poem.grade ? ` · ${poem.grade}` : ''}
                 </p>
               </div>
 
               {/* 操作按钮 */}
-              <div className="flex items-center gap-2 shrink-0 ml-4">
+              <div className="mt-4 flex flex-wrap items-center gap-2">
                 {QUIZ_POEM_IDS.has(poem.id) && (
                   <Link
                     href={`/quiz/${poem.id}`}
-                    className="text-xs px-3 py-1.5 rounded-lg font-medium transition-opacity hover:opacity-80"
-                    style={{ background: 'var(--qt-earth)', color: '#fff' }}
+                    className="rounded-lg px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-80"
+                    style={{ background: 'var(--qt-earth)' }}
                   >
                     青藤考你
                   </Link>
@@ -165,24 +187,19 @@ export default function PoemsClient({ userName, poems }: Props) {
                   <button
                     onClick={() => startMode('roleplay', poem.id)}
                     disabled={loading !== null}
-                    className="text-xs px-3 py-1.5 rounded-lg font-medium transition-opacity disabled:opacity-40 hover:opacity-80"
-                    style={{ background: 'var(--qt-green)', color: '#fff' }}
+                    className="rounded-lg bg-jade px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-80 disabled:opacity-40"
                   >
                     {loading === `roleplay-${poem.id}` ? '进入中…' : '进入沉浸'}
                   </button>
                 ) : (
-                  <span
-                    className="text-xs px-3 py-1.5 rounded-lg text-qt-ink-light"
-                    style={{ background: 'var(--qt-paper-alt)' }}
-                  >
+                  <span className="rounded-lg bg-paper-block px-3 py-1.5 text-xs text-ink-faint">
                     沉浸敬请期待
                   </span>
                 )}
                 <button
                   onClick={() => startMode('creative', poem.id)}
                   disabled={loading !== null}
-                  className="text-xs px-3 py-1.5 rounded-lg border border-qt-border text-qt-ink-mid font-medium transition-opacity disabled:opacity-40 hover:opacity-70"
-                  style={{ background: 'transparent' }}
+                  className="rounded-lg border border-edge bg-transparent px-3 py-1.5 text-xs font-medium text-ink-mid transition-opacity hover:opacity-70 disabled:opacity-40"
                 >
                   {loading === `creative-${poem.id}` ? '进入中…' : '一起写诗'}
                 </button>
@@ -192,5 +209,28 @@ export default function PoemsClient({ userName, poems }: Props) {
         </motion.div>
       </main>
     </div>
+  )
+}
+
+function FilterChip({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean
+  onClick: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={
+        active
+          ? 'rounded-full border border-jade bg-jade px-3.5 py-1 text-xs font-medium text-white transition-colors'
+          : 'rounded-full border border-edge bg-paper/60 px-3.5 py-1 text-xs text-ink-mid transition-colors hover:border-jade/60 hover:text-ink'
+      }
+    >
+      {children}
+    </button>
   )
 }
