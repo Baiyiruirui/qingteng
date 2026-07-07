@@ -48,6 +48,30 @@ JSON report: outputs/evals/eval-v0-2026-07-07T08-50-01-654Z.json
 
 结论: telemetry 接入不改变判题行为;新增同义兜底让 judge 后处理对 DeepSeek 输出波动更稳。
 
+## Eval v0.2 扩容
+
+2026-07-07 将 eval 从只覆盖判题扩成五类 checks:
+
+- 出题质量:20 个 v2 蓝图题逐题检查 form / pointType / qualityScore / evidenceValid / options / scoringPoints
+- 记忆召回:10 个长期记忆注入与防编造规则的确定性检查
+- 开场白质量:5 个 opening prompt 结构检查
+- 客观判题:12 个 correct/wrong 规则回归
+- 主观判题:10 个人工区间 completionRate 回归
+
+完整回归结果:
+
+```text
+Quiz quality: 20/20 (100%)
+Memory recall: 10/10 (100%)
+Opening quality: 5/5 (100%)
+Objective judge: 12/12 (100%)
+Subjective judge: 10/10 (100%)
+Overall: 57/57 (100%)
+JSON report: outputs/evals/eval-v0-2026-07-07T09-14-00-491Z.json
+```
+
+备注:v0.2 是 57 个 checks,不是严格 50 题。多出来的是保留原有 12 个客观判题 correct/wrong 回归,用于保护规则判题稳定性。
+
 ## 运行记录
 
 客观题基线已跑通:

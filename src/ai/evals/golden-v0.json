@@ -1,7 +1,7 @@
 {
-  "version": "eval-v0.1",
+  "version": "eval-v0.2",
   "createdAt": "2026-07-07",
-  "description": "首版 Eval 底座：用现有 20 道 v2 蓝图题评估客观题稳定性与 LLM-as-judge 主观题完成度。",
+  "description": "Eval v0.2：保留客观/主观判题回归，新增出题质量、记忆注入、开场白 prompt 低成本确定性检查。",
   "objectiveCases": [
     {
       "id": "obj-jys-fill-correct",
@@ -178,6 +178,136 @@
       "expectedCompletionMin": 0.75,
       "expectedCompletionMax": 1,
       "rationale": "完整命中对偶、叠字景象和情感寄托。"
+    }
+  ],
+  "quizQualityCases": [
+    { "id": "qq-jys-p1", "poemId": "TANG_001", "pointId": "p1", "expectedForm": "fill", "expectedPointType": "默写", "requireEvidenceValid": true, "minQualityScore": 0.7 },
+    { "id": "qq-jys-p2", "poemId": "TANG_001", "pointId": "p2", "expectedForm": "appreciate", "expectedPointType": "炼字", "requireEvidenceValid": true, "minQualityScore": 0.7, "requireScoringPoints": true },
+    { "id": "qq-jys-p3", "poemId": "TANG_001", "pointId": "p3", "expectedForm": "appreciate", "expectedPointType": "画面", "requireEvidenceValid": true, "minQualityScore": 0.7, "requireScoringPoints": true },
+    { "id": "qq-jys-p4", "poemId": "TANG_001", "pointId": "p4", "expectedForm": "appreciate", "expectedPointType": "情感", "requireEvidenceValid": true, "minQualityScore": 0.7, "requireScoringPoints": true },
+    { "id": "qq-jys-p5", "poemId": "TANG_001", "pointId": "p5", "expectedForm": "translate", "expectedPointType": "翻译", "requireEvidenceValid": true, "minQualityScore": 0.7, "requireScoringPoints": true },
+    { "id": "qq-jys-p6", "poemId": "TANG_001", "pointId": "p6", "expectedForm": "mcq", "expectedPointType": "综合选择", "requireEvidenceValid": true, "minQualityScore": 0.7, "requireOptions": true },
+    { "id": "qq-jyj-p1", "poemId": "TANG_023", "pointId": "p1", "expectedForm": "fill", "expectedPointType": "默写", "requireEvidenceValid": true, "minQualityScore": 0.7 },
+    { "id": "qq-jyj-p2", "poemId": "TANG_023", "pointId": "p2", "expectedForm": "appreciate", "expectedPointType": "炼字", "requireEvidenceValid": true, "minQualityScore": 0.7, "requireScoringPoints": true },
+    { "id": "qq-jyj-p3", "poemId": "TANG_023", "pointId": "p3", "expectedForm": "appreciate", "expectedPointType": "手法", "requireEvidenceValid": true, "minQualityScore": 0.7, "requireScoringPoints": true },
+    { "id": "qq-jyj-p4", "poemId": "TANG_023", "pointId": "p4", "expectedForm": "appreciate", "expectedPointType": "画面", "requireEvidenceValid": true, "minQualityScore": 0.7, "requireScoringPoints": true },
+    { "id": "qq-jyj-p5", "poemId": "TANG_023", "pointId": "p5", "expectedForm": "appreciate", "expectedPointType": "情感", "requireEvidenceValid": true, "minQualityScore": 0.7, "requireScoringPoints": true },
+    { "id": "qq-jyj-p6", "poemId": "TANG_023", "pointId": "p6", "expectedForm": "mcq", "expectedPointType": "综合选择", "requireEvidenceValid": true, "minQualityScore": 0.7, "requireOptions": true },
+    { "id": "qq-dg-p1", "poemId": "TANG_042", "pointId": "p1", "expectedForm": "fill", "expectedPointType": "默写", "requireEvidenceValid": true, "minQualityScore": 0.7 },
+    { "id": "qq-dg-p2", "poemId": "TANG_042", "pointId": "p2", "expectedForm": "appreciate", "expectedPointType": "画面", "requireEvidenceValid": true, "minQualityScore": 0.7, "requireScoringPoints": true },
+    { "id": "qq-dg-p3", "poemId": "TANG_042", "pointId": "p3", "expectedForm": "appreciate", "expectedPointType": "手法", "requireEvidenceValid": true, "minQualityScore": 0.7, "requireScoringPoints": true },
+    { "id": "qq-dg-p4", "poemId": "TANG_042", "pointId": "p4", "expectedForm": "appreciate", "expectedPointType": "炼字", "requireEvidenceValid": true, "minQualityScore": 0.7, "requireScoringPoints": true },
+    { "id": "qq-dg-p5", "poemId": "TANG_042", "pointId": "p5", "expectedForm": "appreciate", "expectedPointType": "情感", "requireEvidenceValid": true, "minQualityScore": 0.7, "requireScoringPoints": true },
+    { "id": "qq-dg-p6", "poemId": "TANG_042", "pointId": "p6", "expectedForm": "appreciate", "expectedPointType": "意象", "requireEvidenceValid": true, "minQualityScore": 0.7, "requireScoringPoints": true },
+    { "id": "qq-dg-p7", "poemId": "TANG_042", "pointId": "p7", "expectedForm": "translate", "expectedPointType": "翻译", "requireEvidenceValid": true, "minQualityScore": 0.7, "requireScoringPoints": true },
+    { "id": "qq-dg-p8", "poemId": "TANG_042", "pointId": "p8", "expectedForm": "mcq", "expectedPointType": "综合选择", "requireEvidenceValid": true, "minQualityScore": 0.7, "requireOptions": true }
+  ],
+  "memoryRecallCases": [
+    {
+      "id": "mem-preference-surfaces",
+      "memories": [{ "content": "这位学生喜欢李白的诗。", "source": "preference", "similarity": 0.84 }],
+      "expectedIncludes": ["他的长期偏好", "喜欢李白"],
+      "forbiddenIncludes": ["李白折菊之后你哭了"]
+    },
+    {
+      "id": "mem-emotion-surfaces",
+      "memories": [{ "content": "这位学生为《登高》里的孤独感动过。", "source": "emotion", "similarity": 0.77 }],
+      "expectedIncludes": ["近期的情绪状态", "《登高》里的孤独"]
+    },
+    {
+      "id": "mem-confusion-surfaces",
+      "memories": [{ "content": "这位学生读不懂诗里的意象。", "source": "confusion", "similarity": 0.71 }],
+      "expectedIncludes": ["遇到过的困惑", "读不懂诗里的意象"]
+    },
+    {
+      "id": "mem-personal-surfaces",
+      "memories": [{ "content": "这位学生下周要参加语文考试。", "source": "personal", "similarity": 0.68 }],
+      "expectedIncludes": ["分享过的个人片段", "语文考试"]
+    },
+    {
+      "id": "mem-other-still-rendered",
+      "memories": [{ "content": "这位学生最近在复习重阳节诗。", "source": "study", "similarity": 0.63 }],
+      "expectedIncludes": ["复习重阳节诗"]
+    },
+    {
+      "id": "mem-hard-rule-no-fabrication",
+      "memories": [{ "content": "这位学生喜欢豪放派。", "source": "preference", "similarity": 0.8 }],
+      "expectedIncludes": ["绝对不得编造", "只知道这五个字"]
+    },
+    {
+      "id": "mem-empty-no-context",
+      "memories": [],
+      "expectedIncludes": [],
+      "expectedEmpty": true
+    },
+    {
+      "id": "mem-multiple-kinds-ordered",
+      "memories": [
+        { "content": "这位学生喜欢杜甫。", "source": "preference", "similarity": 0.9 },
+        { "content": "这位学生对漂泊主题有共鸣。", "source": "emotion", "similarity": 0.74 }
+      ],
+      "expectedIncludes": ["喜欢杜甫", "对漂泊主题有共鸣", "推荐诗歌时"]
+    },
+    {
+      "id": "mem-preference-hard-constraint-copy",
+      "memories": [{ "content": "这位学生不喜欢单纯背诵。", "source": "preference", "similarity": 0.83 }],
+      "expectedIncludes": ["硬约束", "不喜欢单纯背诵"]
+    },
+    {
+      "id": "mem-strict-rule-abstract-not-event",
+      "memories": [{ "content": "这位学生喜欢李清照。", "source": "preference", "similarity": 0.82 }],
+      "expectedIncludes": ["抽象印象", "虚构的具体经历"]
+    }
+  ],
+  "openingQualityCases": [
+    {
+      "id": "open-new-user",
+      "userName": "小青",
+      "snapshot": null,
+      "expectedIncludes": ["第一次和你说话", "不要超过两句话"],
+      "forbiddenIncludes": ["上次"]
+    },
+    {
+      "id": "open-returning-poem-detail",
+      "userName": "小青",
+      "snapshot": {
+        "lastMessageAtOffsetMs": 3600000,
+        "recentMessages": [
+          { "role": "user", "content": "我刚读了《登高》，觉得里面的孤独很重。" },
+          { "role": "assistant", "content": "那种孤独确实沉郁。" }
+        ]
+      },
+      "expectedIncludes": ["《登高》", "孤独", "必须具体提到"]
+    },
+    {
+      "id": "open-anti-fabrication-rule",
+      "userName": "小青",
+      "snapshot": {
+        "lastMessageAtOffsetMs": 7200000,
+        "recentMessages": [{ "role": "user", "content": "我喜欢李白。" }]
+      },
+      "expectedIncludes": ["只能引用以上对话记录", "绝对不要自行补充"]
+    },
+    {
+      "id": "open-uses-role-labels",
+      "userName": "小青",
+      "snapshot": {
+        "lastMessageAtOffsetMs": 300000,
+        "recentMessages": [
+          { "role": "user", "content": "我总分不清意象和情感。" },
+          { "role": "assistant", "content": "我们可以慢慢拆。" }
+        ]
+      },
+      "expectedIncludes": ["小青: 我总分不清意象和情感", "青藤: 我们可以慢慢拆"]
+    },
+    {
+      "id": "open-not-generic",
+      "userName": "小青",
+      "snapshot": {
+        "lastMessageAtOffsetMs": 86400000,
+        "recentMessages": [{ "role": "user", "content": "我想练习《静夜思》的翻译。" }]
+      },
+      "expectedIncludes": ["不要用泛泛的氛围描写", "《静夜思》"]
     }
   ]
 }

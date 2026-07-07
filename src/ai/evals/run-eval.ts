@@ -7,14 +7,23 @@ import { judgeObjective, judgeSubjective } from '@/ai/quiz/judge'
 import { getPoemForQuiz } from '@/db/repositories/poems'
 import { db } from '@/db'
 import { quizQuestions } from '@/db/schema'
+import { renderMemoryContext } from '@/ai/memory/render-context'
+import { buildOpeningUserPrompt } from '@/ai/prompts/v1/opening-core'
 
 type Question = typeof quizQuestions.$inferSelect
+type EvalKind = 'objective' | 'subjective' | 'quiz_quality' | 'memory_recall' | 'opening_quality'
+type QualityCheck = {
+  name: string
+  passed: boolean
+  actual: unknown
+  expected: unknown
+}
 
 type CaseResult = {
   id: string
-  kind: 'objective' | 'subjective'
-  poemId: string
-  pointId: string
+  kind: EvalKind
+  poemId?: string
+  pointId?: string
   passed: boolean
   expected: unknown
   actual: unknown
@@ -166,9 +175,184 @@ async function runSubjectiveCases(): Promise<CaseResult[]> {
   return results
 }
 
+async function runQuizQualityCases(): Promise<CaseResult[]> {
+  const results: CaseResult[] = []
+
+  for (const testCase of golden.quizQualityCases) {
+    console.log(`[eval] quiz-quality ${testCase.id}`)
+    const question = await findQuestion(testCase.poemId, testCase.pointId)
+    const options = (question.options ?? []) as string[]
+    const scoringPoints = (question.scoringPoints ?? []) as string[]
+    const evidenceLines = (question.evidenceLines ?? []) as string[]
+
+    const checks: QualityCheck[] = [
+      {
+        name: 'form',
+        passed: question.type === testCase.expectedForm,
+        actual: question.type,
+        expected: testCase.expectedForm,
+      },
+      {
+        name: 'pointType',
+        passed: question.pointType === testCase.expectedPointType,
+        actual: question.pointType,
+        expected: testCase.expectedPointType,
+      },
+      {
+        name: 'qualityScore',
+        passed: Number(question.qualityScore ?? 0) >= testCase.minQualityScore,
+        actual: question.qualityScore,
+        expected: `>=${testCase.minQualityScore}`,
+      },
+      {
+        name: 'evidenceLines',
+        passed: evidenceLines.length > 0,
+        actual: evidenceLines.length,
+        expected: '>0',
+      },
+    ]
+
+    if (testCase.requireEvidenceValid) {
+      checks.push({
+        name: 'evidenceValid',
+        passed: question.evidenceValid === true,
+        actual: question.evidenceValid,
+        expected: true,
+      })
+    }
+
+    if (testCase.requireOptions) {
+      checks.push({
+        name: 'options',
+        passed: options.length === 4,
+        actual: options.length,
+        expected: 4,
+      })
+    }
+
+    if (testCase.requireScoringPoints) {
+      checks.push({
+        name: 'scoringPoints',
+        passed: scoringPoints.length >= 2,
+        actual: scoringPoints.length,
+        expected: '>=2',
+      })
+    }
+
+    results.push({
+      id: testCase.id,
+      kind: 'quiz_quality',
+      poemId: testCase.poemId,
+      pointId: testCase.pointId,
+      passed: checks.every(check => check.passed),
+      expected: {
+        form: testCase.expectedForm,
+        pointType: testCase.expectedPointType,
+        minQualityScore: testCase.minQualityScore,
+      },
+      actual: {
+        passedChecks: checks.filter(check => check.passed).length,
+        totalChecks: checks.length,
+        checks,
+      },
+    })
+  }
+
+  return results
+}
+
+function runMemoryRecallCases(): CaseResult[] {
+  const results: CaseResult[] = []
+
+  for (const testCase of golden.memoryRecallCases) {
+    console.log(`[eval] memory-recall ${testCase.id}`)
+    const rendered = renderMemoryContext(testCase.memories)
+    const includes = testCase.expectedIncludes.every(fragment => rendered.includes(fragment))
+    const excludes = (testCase.forbiddenIncludes ?? []).every(fragment => !rendered.includes(fragment))
+    const emptyOk = testCase.expectedEmpty ? rendered === '' : true
+
+    results.push({
+      id: testCase.id,
+      kind: 'memory_recall',
+      passed: includes && excludes && emptyOk,
+      expected: {
+        includes: testCase.expectedIncludes,
+        forbiddenIncludes: testCase.forbiddenIncludes ?? [],
+        expectedEmpty: testCase.expectedEmpty ?? false,
+      },
+      actual: {
+        outputChars: rendered.length,
+        missingIncludes: testCase.expectedIncludes.filter(fragment => !rendered.includes(fragment)),
+        forbiddenHits: (testCase.forbiddenIncludes ?? []).filter(fragment => rendered.includes(fragment)),
+        isEmpty: rendered === '',
+      },
+    })
+  }
+
+  return results
+}
+
+function runOpeningQualityCases(): CaseResult[] {
+  const results: CaseResult[] = []
+
+  for (const testCase of golden.openingQualityCases) {
+    console.log(`[eval] opening-quality ${testCase.id}`)
+    const snapshot = testCase.snapshot
+      ? {
+          lastMessageAt: Date.now() - testCase.snapshot.lastMessageAtOffsetMs,
+          recentMessages: testCase.snapshot.recentMessages,
+        }
+      : null
+    const prompt = buildOpeningUserPrompt({ userName: testCase.userName, snapshot })
+    const includes = testCase.expectedIncludes.every(fragment => prompt.includes(fragment))
+    const excludes = (testCase.forbiddenIncludes ?? []).every(fragment => !prompt.includes(fragment))
+
+    results.push({
+      id: testCase.id,
+      kind: 'opening_quality',
+      passed: includes && excludes,
+      expected: {
+        includes: testCase.expectedIncludes,
+        forbiddenIncludes: testCase.forbiddenIncludes ?? [],
+      },
+      actual: {
+        outputChars: prompt.length,
+        missingIncludes: testCase.expectedIncludes.filter(fragment => !prompt.includes(fragment)),
+        forbiddenHits: (testCase.forbiddenIncludes ?? []).filter(fragment => prompt.includes(fragment)),
+      },
+    })
+  }
+
+  return results
+}
+
 function pct(numerator: number, denominator: number): string {
   if (denominator === 0) return 'n/a'
   return `${Math.round((numerator / denominator) * 1000) / 10}%`
+}
+
+function passRate(rows: CaseResult[]): number | null {
+  if (rows.length === 0) return null
+  return rows.filter(row => row.passed).length / rows.length
+}
+
+function formatActual(row: CaseResult): string {
+  if (row.error) return `error=${row.error.slice(0, 80)}`
+  if (row.kind === 'objective') {
+    return `isCorrect=${(row.actual as { isCorrect: boolean }).isCorrect}`
+  }
+  if (row.kind === 'subjective') {
+    return `completion=${Math.round((row.actual as { completionRate: number }).completionRate * 100)}%`
+  }
+  if (row.kind === 'quiz_quality') {
+    const actual = row.actual as { passedChecks: number; totalChecks: number }
+    return `checks=${actual.passedChecks}/${actual.totalChecks}`
+  }
+  if (row.kind === 'memory_recall' || row.kind === 'opening_quality') {
+    const actual = row.actual as { outputChars: number; missingIncludes: string[]; forbiddenHits: string[] }
+    return `chars=${actual.outputChars} missing=${actual.missingIncludes.length} forbidden=${actual.forbiddenHits.length}`
+  }
+  return JSON.stringify(row.actual).slice(0, 80)
 }
 
 function printSection(title: string, rows: CaseResult[]) {
@@ -177,26 +361,36 @@ function printSection(title: string, rows: CaseResult[]) {
   console.log('status  case id                         actual')
   for (const row of rows) {
     const status = row.passed ? 'PASS ' : 'FAIL '
-    const actual =
-      row.error ? `error=${row.error.slice(0, 80)}` :
-      row.kind === 'objective'
-        ? `isCorrect=${(row.actual as { isCorrect: boolean }).isCorrect}`
-        : `completion=${Math.round((row.actual as { completionRate: number }).completionRate * 100)}%`
-    console.log(`${status}  ${row.id.padEnd(30)} ${actual}`)
+    console.log(`${status}  ${row.id.padEnd(30)} ${formatActual(row)}`)
   }
 }
 
 async function main() {
   const started = performance.now()
+  const quizQuality = await runQuizQualityCases()
+  const memoryRecall = runMemoryRecallCases()
+  const openingQuality = runOpeningQualityCases()
   const objective = await runObjectiveCases()
   const subjective = await runSubjectiveCases()
-  const results = [...objective, ...subjective]
+  const results = [
+    ...quizQuality,
+    ...memoryRecall,
+    ...openingQuality,
+    ...objective,
+    ...subjective,
+  ]
   const durationMs = Math.round(performance.now() - started)
 
   const objectivePassed = objective.filter(row => row.passed).length
   const subjectivePassed = subjective.filter(row => row.passed).length
+  const quizQualityPassed = quizQuality.filter(row => row.passed).length
+  const memoryRecallPassed = memoryRecall.filter(row => row.passed).length
+  const openingQualityPassed = openingQuality.filter(row => row.passed).length
   const totalPassed = results.filter(row => row.passed).length
 
+  printSection('Quiz quality', quizQuality)
+  printSection('Memory recall', memoryRecall)
+  printSection('Opening quality', openingQuality)
   printSection('Objective judge', objective)
   printSection('Subjective judge', subjective)
   console.log(`\nOverall: ${totalPassed}/${results.length} (${pct(totalPassed, results.length)})`)
@@ -207,20 +401,35 @@ async function main() {
     generatedAt: new Date().toISOString(),
     durationMs,
     summary: {
+      quizQuality: {
+        passed: quizQualityPassed,
+        total: quizQuality.length,
+        passRate: passRate(quizQuality),
+      },
+      memoryRecall: {
+        passed: memoryRecallPassed,
+        total: memoryRecall.length,
+        passRate: passRate(memoryRecall),
+      },
+      openingQuality: {
+        passed: openingQualityPassed,
+        total: openingQuality.length,
+        passRate: passRate(openingQuality),
+      },
       objective: {
         passed: objectivePassed,
         total: objective.length,
-        passRate: objectivePassed / objective.length,
+        passRate: passRate(objective),
       },
       subjective: {
         passed: subjectivePassed,
         total: subjective.length,
-        passRate: subjectivePassed / subjective.length,
+        passRate: passRate(subjective),
       },
       overall: {
         passed: totalPassed,
         total: results.length,
-        passRate: totalPassed / results.length,
+        passRate: passRate(results),
       },
     },
     results,
