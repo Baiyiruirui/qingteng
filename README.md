@@ -34,7 +34,7 @@
 | 学一首诗 | 看翻译 + 听朗读 + 做题 | **诗境沉浸** — AI 扮演诗中角色带你进入场景 |
 | 出题练习 | 通用题库，AI 即时出题 | **青藤考你** — 基于 grounding 防幻觉出题，evidenceLines 强制溯源 |
 | 写诗 | 没这个功能 | AI 协同创作，实时韵脚 + 对仗反馈 |
-| 朗读 | 录音对照原文 | Whisper 转写 + 拼音相似度评分 |
+| 朗读 | 录音对照原文 | 腾讯 ASR 转写 + 逐字对齐评分 |
 | 记忆 | 仅记录答题历史 | 三层 Memory（短期会话 / 中期画像 / 长期诗友记忆） |
 
 ---
@@ -57,7 +57,7 @@
 |---|---|---|
 | 角色对话 | Claude Haiku | 体验关键，要稳 |
 | 出题 / 批改 | DeepSeek Chat | 30x 成本优势，质量够用 |
-| 朗读评分 | Whisper API | 多模态必需 |
+| 朗读评分 | 腾讯 ASR | 国内可用，免费额度覆盖 demo |
 
 整体 token 成本预估降低 80% 而体验不降级。
 
@@ -102,7 +102,7 @@ LLM 出古诗题容易把典故安在错误的诗句上（案例：《登高》"
 数据  PostgreSQL (Neon) + pgvector + Upstash Redis + R2
 
 AI    Vercel AI SDK
-      DeepSeek · Claude Haiku · Whisper
+      DeepSeek · Claude Haiku · Tencent ASR
       自建 Memory + 多模型路由 + Prompt 版本化
 
 观测  Langfuse · Sentry · Vercel Analytics
@@ -122,7 +122,7 @@ AI    Vercel AI SDK
 | 3 | 诗境沉浸 + 青藤考你（grounding 出题） | ✅ 完成 — 已部署上线 qingteng-ecru.vercel.app |
 | Phase A | 美术与 demo 信息架构收口 | ✅ P0 完成 — 根路径、统一导航、公开 demo 防护、沉浸剧场化 |
 | Phase B | Eval 黄金集 + Langfuse 接入 + 基线报告 | ✅ Eval v0.2 + Langfuse 核心链路 |
-| Phase C | 自适应出题 / Whisper / 语义搜索 | 🔨 C1 已完成 — 自适应组卷 + 错题专项复习入口 + 学习进度页，Eval 62/62 |
+| Phase C | 自适应出题 / 朗读评分 / 语义搜索 | 🔨 C1 已完成；C2 腾讯 ASR 朗读评分已接入，待密钥真机验证 |
 | Phase E | 3min Demo 视频 + 文档 | ⏳ |
 
 详细方案见 [PROJECT_PLAN.md](./PROJECT_PLAN.md)。
@@ -169,6 +169,7 @@ pnpm dev
 - [DeepSeek](https://platform.deepseek.com) — 出题 / 批改
 - [Anthropic](https://console.anthropic.com) — 角色对话（可选，未配置时降级到 DeepSeek）
 - [Langfuse](https://cloud.langfuse.com) — LLM 观测（可选）
+- [腾讯云语音识别 ASR](https://cloud.tencent.com/product/asr) — 朗读转写与评分（可选）
 
 ---
 

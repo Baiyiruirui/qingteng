@@ -25,7 +25,7 @@
 - 前端:Next.js 16 App Router + TypeScript strict + Tailwind v4 + shadcn/ui + Zustand + TanStack Query
 - 服务:Next.js Server Actions / Route Handlers(不要单独搭 Hono/Express)
 - 数据:PostgreSQL (Neon) + pgvector + Upstash Redis(Week 2 接入)+ R2(后续)
-- AI:Vercel AI SDK + DeepSeek + Claude Haiku(后续)+ Whisper(Week 4);出题用 generateObject + Zod 结构化输出 + grounding(poem 数据注入 + evidenceLines 溯源校验)
+- AI:Vercel AI SDK + DeepSeek + Claude Haiku(后续)+ 腾讯 ASR(朗读评分);出题用 generateObject + Zod 结构化输出 + grounding(poem 数据注入 + evidenceLines 溯源校验)
 - 观测:Langfuse(Week 5)+ Sentry(Week 6)
 - 测试:Playwright smoke(Phase D 接入,2026-07-06 产品评审会批准的新依赖,主链路 e2e)
 - 部署:Vercel + Neon + Upstash
@@ -61,7 +61,7 @@
 | 美术 Phase A-2 | ⏳ | 视觉走查 + 做题页批注细节 + 文档/讲点补齐(可与 Phase B 并行) | - |
 | Phase B | 🔨 | Eval v0.2 已扩成 57 checks 并回归 57/57;Langfuse 已接入 chat/opening/quiz-generate/quiz-judge/memory-extract | - |
 | Phase C1 | ✅ | 自适应组卷 + 错题专项复习入口 + 学习进度页已落地;Eval 62/62 | - |
-| Phase C2 | ⏳ | Whisper 朗读评分(前置:OpenAI key + R2) | - |
+| Phase C2 | 🔨 | 腾讯 ASR 朗读评分：录音页 + 一句话识别 + 逐字对齐评分已接入;待真机密钥验证 | - |
 | Phase C3 | ⏳ | 语义诗词搜索 | - |
 | Phase D | ⏳ | 优化提纲 P0 清偿(CHARTER.md 第五节) | - |
 | Phase E | ⏳ | Demo 视频 + README 终稿 + key 轮换 | - |

@@ -172,6 +172,12 @@ export default function PoemsClient({ userName, poems }: Props) {
 
               {/* 操作按钮 */}
               <div className="mt-4 flex flex-wrap items-center gap-2">
+                <Link
+                  href={`/recite/${poem.id}`}
+                  className="rounded-lg border border-edge bg-paper/70 px-3 py-1.5 text-xs font-medium text-ink-mid transition-colors hover:bg-paper-block hover:text-ink"
+                >
+                  朗读
+                </Link>
                 {QUIZ_POEM_IDS.has(poem.id) && (
                   <Link
                     href={`/quiz/${poem.id}`}
