@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { BookOpenText, ClipboardCheck, MessageCircle } from 'lucide-react'
+import { BookOpenText, ClipboardCheck, MessageCircle, UserRound } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Seal } from '@/components/Seal'
 
@@ -10,6 +10,7 @@ const navItems = [
   { href: '/chat', label: '今日案头', icon: MessageCircle },
   { href: '/poems', label: '诗笺地图', icon: BookOpenText },
   { href: '/wrong', label: '待加强', icon: ClipboardCheck },
+  { href: '/profile', label: '我的', icon: UserRound },
 ]
 
 export function AppNav({

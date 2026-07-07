@@ -113,7 +113,7 @@ AI    Vercel AI SDK
 
 ## 项目进度
 
-> 6 周开发计划已完成 Week 1-3 并上线。当前后半程按 [CHARTER.md](./CHARTER.md) 推进，Phase A 的 P0 demo 落地缺口已收口，准备进入 Phase B（Eval + Langfuse）。
+> 6 周开发计划已完成 Week 1-3 并上线。当前后半程按 [CHARTER.md](./CHARTER.md) 推进，Phase B 已完成，Phase C1 自适应出题与学习画像可视化已落地。
 
 | 周次 | 主题 | 状态 |
 |---|---|---|
@@ -122,7 +122,7 @@ AI    Vercel AI SDK
 | 3 | 诗境沉浸 + 青藤考你（grounding 出题） | ✅ 完成 — 已部署上线 qingteng-ecru.vercel.app |
 | Phase A | 美术与 demo 信息架构收口 | ✅ P0 完成 — 根路径、统一导航、公开 demo 防护、沉浸剧场化 |
 | Phase B | Eval 黄金集 + Langfuse 接入 + 基线报告 | ✅ Eval v0.2 + Langfuse 核心链路 |
-| Phase C | 自适应出题 / Whisper / 语义搜索 | 🔨 自适应组卷 + 错题专项复习入口已落地，Eval 62/62 |
+| Phase C | 自适应出题 / Whisper / 语义搜索 | 🔨 C1 已完成 — 自适应组卷 + 错题专项复习入口 + 学习进度页，Eval 62/62 |
 | Phase E | 3min Demo 视频 + 文档 | ⏳ |
 
 详细方案见 [PROJECT_PLAN.md](./PROJECT_PLAN.md)。

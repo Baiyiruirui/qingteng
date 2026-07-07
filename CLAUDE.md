@@ -10,7 +10,7 @@
 - **名称**:青藤(Qingteng)
 - **定位**:面向中学生的对话式古诗词学习产品,有持久 Memory 的 AI 诗友
 - **目标**:求职作品集项目(AI 应用工程师方向)
-- **当前状态**:后半程按 CHARTER.md 执行。Phase A 的 P0 demo 落地缺口已收口(根路径、全局导航、公开 demo 防护、沉浸剧场化),准备进入 Phase B Eval + Langfuse
+- **当前状态**:后半程按 CHARTER.md 执行。Phase B 已完成,Phase C1 自适应组卷、错题专项复习入口和学习进度页已落地
 - **章程**:后半程目标/范围/节奏见 CHARTER.md,与本文件冲突以 CHARTER.md 为准
 - **线上地址**:https://qingteng-ecru.vercel.app
 - **GitHub**:https://github.com/Baiyiruirui/qingteng
@@ -60,7 +60,7 @@
 | 美术 Phase A-1 | ✅ | 诗库页精修(`c67dc3e`)✅;聊天页重设+「青藤记得你」Memory 可视化(`03875a5`)✅;根路径重定向 + 统一导航 + 公开 demo 防护 + 沉浸剧场化 | `3b759c2` |
 | 美术 Phase A-2 | ⏳ | 视觉走查 + 做题页批注细节 + 文档/讲点补齐(可与 Phase B 并行) | - |
 | Phase B | 🔨 | Eval v0.2 已扩成 57 checks 并回归 57/57;Langfuse 已接入 chat/opening/quiz-generate/quiz-judge/memory-extract | - |
-| Phase C1 | 🔨 | 自适应组卷 + 错题专项复习入口已落地;Eval 62/62;学习进度页待做 | - |
+| Phase C1 | ✅ | 自适应组卷 + 错题专项复习入口 + 学习进度页已落地;Eval 62/62 | - |
 | Phase C2 | ⏳ | Whisper 朗读评分(前置:OpenAI key + R2) | - |
 | Phase C3 | ⏳ | 语义诗词搜索 | - |
 | Phase D | ⏳ | 优化提纲 P0 清偿(CHARTER.md 第五节) | - |
