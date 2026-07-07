@@ -92,7 +92,7 @@ LLM 出古诗题容易把典故安在错误的诗句上（案例：《登高》"
 ## 技术栈
 
 ```
-前端  Next.js 15 (App Router) + TypeScript (strict)
+前端  Next.js 16 (App Router) + TypeScript (strict)
       Tailwind v4 + shadcn/ui + Framer Motion
       Zustand + TanStack Query
 
@@ -113,16 +113,17 @@ AI    Vercel AI SDK
 
 ## 项目进度
 
-> 6 周开发计划，当前 **Week 3 已完成并上线**。完整 Roadmap 见 [Project Board](../../projects)。
+> 6 周开发计划已完成 Week 1-3 并上线。当前后半程按 [CHARTER.md](./CHARTER.md) 推进，Phase A 的 P0 demo 落地缺口已收口，准备进入 Phase B（Eval + Langfuse）。
 
 | 周次 | 主题 | 状态 |
 |---|---|---|
 | 1 | 基建 + 140 首诗数据迁移 | ✅ 完成 |
 | 2 | 角色对话核心 + 三层 Memory | ✅ 完成 |
 | 3 | 诗境沉浸 + 青藤考你（grounding 出题） | ✅ 完成 — 已部署上线 qingteng-ecru.vercel.app |
-| 4 | Whisper 朗读评分 + 错题本/复习 | ⏳ |
-| 5 | Eval 黄金集 + Langfuse 接入 + 美术终稿 | ⏳ |
-| 6 | 3min Demo 视频 + 文档 | ⏳ |
+| Phase A | 美术与 demo 信息架构收口 | ✅ P0 完成 — 根路径、统一导航、公开 demo 防护、沉浸剧场化 |
+| Phase B | Eval 黄金集 + Langfuse 接入 + 基线报告 | ⏳ |
+| Phase C | 自适应出题 / Whisper / 语义搜索 | ⏳ |
+| Phase E | 3min Demo 视频 + 文档 | ⏳ |
 
 详细方案见 [PROJECT_PLAN.md](./PROJECT_PLAN.md)。
 
@@ -130,7 +131,7 @@ AI    Vercel AI SDK
 
 ## 数据基础
 
-100 首唐诗 + 26 首扩展篇目，每首带结构化标注：
+140 首诗词数据，每首带结构化标注：
 
 - 朝代 / 作者 / 学段 / 体裁
 - 主题（themes）/ 意象（imagery）/ 修辞（rhetoric）

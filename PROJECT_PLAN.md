@@ -24,7 +24,7 @@
 ## 2. 技术栈（已定，不要改）
 
 ```
-前端  Next.js 15 App Router + TypeScript (strict) + Tailwind v4 + shadcn/ui
+前端  Next.js 16 App Router + TypeScript (strict) + Tailwind v4 + shadcn/ui
       Zustand (UI 状态) + TanStack Query (服务端) + Framer Motion (基础动效)
 
 服务  Next.js Server Actions / Route Handlers (不要单独搭 Hono/Express)
