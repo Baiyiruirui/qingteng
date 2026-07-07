@@ -72,6 +72,22 @@ JSON report: outputs/evals/eval-v0-2026-07-07T09-14-00-491Z.json
 
 备注:v0.2 是 57 个 checks,不是严格 50 题。多出来的是保留原有 12 个客观判题 correct/wrong 回归,用于保护规则判题稳定性。
 
+## Phase C1 自适应组卷回归
+
+2026-07-07 加入 `adaptiveSessionCases`,覆盖自适应组卷与错题专项复习:
+
+```text
+Adaptive session: 5/5 (100%)
+Overall: 62/62 (100%)
+JSON report: outputs/evals/eval-v0-2026-07-07T14-30-34-145Z.json
+```
+
+策略要点:
+
+- 有薄弱考点时优先抽取,但最多占 3/5,保留覆盖题
+- 无历史记录时回退均衡组卷
+- 错题本入口使用 `mode=review&pointType=...` 进入专项复习
+
 ## 运行记录
 
 客观题基线已跑通:

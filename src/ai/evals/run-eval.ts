@@ -9,9 +9,16 @@ import { db } from '@/db'
 import { quizQuestions } from '@/db/schema'
 import { renderMemoryContext } from '@/ai/memory/render-context'
 import { buildOpeningUserPrompt } from '@/ai/prompts/v1/opening-core'
+import { selectAdaptiveQuestions } from '@/ai/quiz/adaptive'
 
 type Question = typeof quizQuestions.$inferSelect
-type EvalKind = 'objective' | 'subjective' | 'quiz_quality' | 'memory_recall' | 'opening_quality'
+type EvalKind =
+  | 'objective'
+  | 'subjective'
+  | 'quiz_quality'
+  | 'memory_recall'
+  | 'opening_quality'
+  | 'adaptive_session'
 type QualityCheck = {
   name: string
   passed: boolean
@@ -326,6 +333,55 @@ function runOpeningQualityCases(): CaseResult[] {
   return results
 }
 
+async function runAdaptiveSessionCases(): Promise<CaseResult[]> {
+  const results: CaseResult[] = []
+
+  for (const testCase of golden.adaptiveSessionCases) {
+    console.log(`[eval] adaptive-session ${testCase.id}`)
+    const questions = await db
+      .select()
+      .from(quizQuestions)
+      .where(and(eq(quizQuestions.poemId, testCase.poemId), eq(quizQuestions.version, 'v2')))
+
+    const { selected, plan } = selectAdaptiveQuestions({
+      questions,
+      signals: testCase.signals,
+      mode: testCase.mode as 'adaptive' | 'review',
+      focusPointType: testCase.focusPointType ?? null,
+      count: 5,
+    })
+
+    const selectedPointTypes = selected.map(question => question.pointType ?? question.type)
+    const distinctPointTypes = new Set(selectedPointTypes).size
+    const includesExpected = (testCase.expectedIncludesPointTypes ?? []).every(pointType =>
+      selectedPointTypes.includes(pointType),
+    )
+    const meetsDiversity = testCase.minDistinctPointTypes
+      ? distinctPointTypes >= testCase.minDistinctPointTypes
+      : true
+    const strategyOk = plan.strategy.includes(testCase.expectedStrategyIncludes)
+
+    results.push({
+      id: testCase.id,
+      kind: 'adaptive_session',
+      poemId: testCase.poemId,
+      passed: selected.length > 0 && includesExpected && meetsDiversity && strategyOk,
+      expected: {
+        includesPointTypes: testCase.expectedIncludesPointTypes ?? [],
+        minDistinctPointTypes: testCase.minDistinctPointTypes ?? null,
+        strategyIncludes: testCase.expectedStrategyIncludes,
+      },
+      actual: {
+        selectedPointTypes,
+        distinctPointTypes,
+        strategy: plan.strategy,
+      },
+    })
+  }
+
+  return results
+}
+
 function pct(numerator: number, denominator: number): string {
   if (denominator === 0) return 'n/a'
   return `${Math.round((numerator / denominator) * 1000) / 10}%`
@@ -352,6 +408,10 @@ function formatActual(row: CaseResult): string {
     const actual = row.actual as { outputChars: number; missingIncludes: string[]; forbiddenHits: string[] }
     return `chars=${actual.outputChars} missing=${actual.missingIncludes.length} forbidden=${actual.forbiddenHits.length}`
   }
+  if (row.kind === 'adaptive_session') {
+    const actual = row.actual as { selectedPointTypes: string[]; distinctPointTypes: number }
+    return `types=${actual.selectedPointTypes.join('/')} distinct=${actual.distinctPointTypes}`
+  }
   return JSON.stringify(row.actual).slice(0, 80)
 }
 
@@ -370,12 +430,14 @@ async function main() {
   const quizQuality = await runQuizQualityCases()
   const memoryRecall = runMemoryRecallCases()
   const openingQuality = runOpeningQualityCases()
+  const adaptiveSession = await runAdaptiveSessionCases()
   const objective = await runObjectiveCases()
   const subjective = await runSubjectiveCases()
   const results = [
     ...quizQuality,
     ...memoryRecall,
     ...openingQuality,
+    ...adaptiveSession,
     ...objective,
     ...subjective,
   ]
@@ -386,11 +448,13 @@ async function main() {
   const quizQualityPassed = quizQuality.filter(row => row.passed).length
   const memoryRecallPassed = memoryRecall.filter(row => row.passed).length
   const openingQualityPassed = openingQuality.filter(row => row.passed).length
+  const adaptiveSessionPassed = adaptiveSession.filter(row => row.passed).length
   const totalPassed = results.filter(row => row.passed).length
 
   printSection('Quiz quality', quizQuality)
   printSection('Memory recall', memoryRecall)
   printSection('Opening quality', openingQuality)
+  printSection('Adaptive session', adaptiveSession)
   printSection('Objective judge', objective)
   printSection('Subjective judge', subjective)
   console.log(`\nOverall: ${totalPassed}/${results.length} (${pct(totalPassed, results.length)})`)
@@ -415,6 +479,11 @@ async function main() {
         passed: openingQualityPassed,
         total: openingQuality.length,
         passRate: passRate(openingQuality),
+      },
+      adaptiveSession: {
+        passed: adaptiveSessionPassed,
+        total: adaptiveSession.length,
+        passRate: passRate(adaptiveSession),
       },
       objective: {
         passed: objectivePassed,

@@ -309,5 +309,51 @@
       },
       "expectedIncludes": ["不要用泛泛的氛围描写", "《静夜思》"]
     }
+  ],
+  "adaptiveSessionCases": [
+    {
+      "id": "adp-dg-weak-word-first",
+      "poemId": "TANG_042",
+      "mode": "adaptive",
+      "signals": [{ "pointType": "炼字", "weakScore": 5, "attemptCount": 3, "averageScore": 0.3 }],
+      "expectedIncludesPointTypes": ["炼字"],
+      "expectedStrategyIncludes": "自适应组卷"
+    },
+    {
+      "id": "adp-jyj-multiple-weak-types",
+      "poemId": "TANG_023",
+      "mode": "adaptive",
+      "signals": [
+        { "pointType": "手法", "weakScore": 5, "attemptCount": 2, "averageScore": 0.2 },
+        { "pointType": "情感", "weakScore": 3, "attemptCount": 2, "averageScore": 0.4 }
+      ],
+      "expectedIncludesPointTypes": ["手法", "情感"],
+      "expectedStrategyIncludes": "薄弱考点"
+    },
+    {
+      "id": "adp-jys-balanced-without-history",
+      "poemId": "TANG_001",
+      "mode": "adaptive",
+      "signals": [],
+      "minDistinctPointTypes": 5,
+      "expectedStrategyIncludes": "均衡组卷"
+    },
+    {
+      "id": "rev-dg-focus-translate",
+      "poemId": "TANG_042",
+      "mode": "review",
+      "focusPointType": "翻译",
+      "signals": [{ "pointType": "翻译", "weakScore": 4, "attemptCount": 1, "averageScore": 0.2 }],
+      "expectedIncludesPointTypes": ["翻译"],
+      "expectedStrategyIncludes": "专项复习"
+    },
+    {
+      "id": "rev-jys-fallback-to-weak",
+      "poemId": "TANG_001",
+      "mode": "review",
+      "signals": [{ "pointType": "情感", "weakScore": 4, "attemptCount": 2, "averageScore": 0.25 }],
+      "expectedIncludesPointTypes": ["情感"],
+      "expectedStrategyIncludes": "待加强考点"
+    }
   ]
 }

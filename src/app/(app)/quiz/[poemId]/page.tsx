@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { AppNav } from '@/components/AppNav'
 
@@ -25,6 +25,13 @@ type JudgeResult = {
   feedback?: string
 }
 
+type QuizSelectionPlan = {
+  mode: 'adaptive' | 'review'
+  focusPointType: string | null
+  weakPointTypes: string[]
+  strategy: string
+}
+
 type SessionState =
   | { phase: 'loading' }
   | { phase: 'error'; message: string }
@@ -32,6 +39,7 @@ type SessionState =
       phase: 'quiz'
       sessionId: string
       questions: SafeQuestion[]
+      plan: QuizSelectionPlan
       current: number
       userAnswer: string
       submitting: boolean
@@ -53,6 +61,7 @@ function completionLabel(rate: number): { text: string; color: string; bg: strin
 
 export default function QuizPage() {
   const { poemId } = useParams<{ poemId: string }>()
+  const searchParams = useSearchParams()
   const [state, setState] = useState<SessionState>({ phase: 'loading' })
   const submitted = state.phase === 'quiz' ? state.submitted : null
   const answerRef = useRef<HTMLTextAreaElement | HTMLInputElement | null>(null)
@@ -63,7 +72,11 @@ export default function QuizPage() {
       const res = await fetch('/api/quiz/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ poemId }),
+        body: JSON.stringify({
+          poemId,
+          mode: searchParams.get('mode') === 'review' ? 'review' : 'adaptive',
+          focusPointType: searchParams.get('pointType'),
+        }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? '无法加载题目')
@@ -71,6 +84,7 @@ export default function QuizPage() {
         phase: 'quiz',
         sessionId: data.sessionId,
         questions: data.questions,
+        plan: data.plan,
         current: 0,
         userAnswer: '',
         submitting: false,
@@ -80,7 +94,7 @@ export default function QuizPage() {
     } catch (e) {
       setState({ phase: 'error', message: e instanceof Error ? e.message : '网络错误' })
     }
-  }, [poemId])
+  }, [poemId, searchParams])
 
   useEffect(() => { startSession() }, [startSession])
 
@@ -214,6 +228,23 @@ export default function QuizPage() {
       />
 
       <main className="mx-auto max-w-2xl px-4 py-8 space-y-6">
+        <div
+          className="rounded-xl border border-qt-border px-4 py-3 text-sm text-qt-ink-mid"
+          style={{ background: 'rgba(255,255,255,0.58)' }}
+        >
+          <div className="flex items-center justify-between gap-3">
+            <span className="font-medium text-qt-earth">
+              {state.plan.mode === 'review' ? '专项复习' : '自适应组卷'}
+            </span>
+            {state.plan.weakPointTypes.length > 0 && (
+              <span className="text-xs text-qt-ink-light">
+                关注：{state.plan.weakPointTypes.slice(0, 3).join('、')}
+              </span>
+            )}
+          </div>
+          <p className="mt-1 leading-relaxed">{state.plan.strategy}</p>
+        </div>
+
         {/* 题干 */}
         <div
           className="rounded-xl border border-qt-border p-6"

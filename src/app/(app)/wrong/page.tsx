@@ -90,11 +90,11 @@ export default async function WrongPage() {
                     <p className="text-sm line-clamp-2 text-qt-ink">{row.stem}</p>
                   </div>
                   <Link
-                    href={`/quiz/${row.poemId}`}
+                    href={`/quiz/${row.poemId}?mode=review&pointType=${encodeURIComponent(row.pointType ?? row.type)}`}
                     className="shrink-0 text-xs px-3 py-1.5 rounded-lg font-medium transition-opacity hover:opacity-80"
                     style={{ background: 'var(--qt-earth)', color: '#fff' }}
                   >
-                    去练习
+                    专项练习
                   </Link>
                 </div>
               </div>

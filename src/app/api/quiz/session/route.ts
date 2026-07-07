@@ -1,14 +1,23 @@
 import { NextResponse } from 'next/server'
-import { eq, and } from 'drizzle-orm'
+import { desc, eq, and } from 'drizzle-orm'
 import { randomUUID } from 'crypto'
 import { requireAuth } from '@/lib/auth-server'
 import { db } from '@/db'
-import { quizQuestions } from '@/db/schema'
+import { quizAttempts, quizQuestions, wrongQuestions } from '@/db/schema'
+import {
+  selectAdaptiveQuestions,
+  type PointMasterySignal,
+  type QuizSessionMode,
+} from '@/ai/quiz/adaptive'
 
 export async function POST(req: Request) {
-  await requireAuth()
+  const session = await requireAuth()
 
-  const { poemId } = (await req.json()) as { poemId: string }
+  const { poemId, mode = 'adaptive', focusPointType } = (await req.json()) as {
+    poemId: string
+    mode?: QuizSessionMode
+    focusPointType?: string | null
+  }
   if (!poemId) {
     return NextResponse.json({ error: 'poemId required' }, { status: 400 })
   }
@@ -23,8 +32,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'No questions found for this poem' }, { status: 404 })
   }
 
-  // Sample up to 5 questions with pointType coverage (prefer variety)
-  const selected = sampleByPointType(all, 5)
+  const { signals, focusQuestionIds } = await getMasterySignals(session.userId, poemId)
+  const { selected, plan } = selectAdaptiveQuestions({
+    questions: all,
+    signals,
+    mode: mode === 'review' ? 'review' : 'adaptive',
+    focusPointType: focusPointType ?? null,
+    focusQuestionIds,
+    count: 5,
+  })
   const sessionId = randomUUID()
 
   // Strip answer and scoringPoints — never expose to client
@@ -39,37 +55,75 @@ export async function POST(req: Request) {
     pointType: q.pointType,
   }))
 
-  return NextResponse.json({ sessionId, questions: safeQuestions })
+  return NextResponse.json({ sessionId, questions: safeQuestions, plan })
 }
 
-function sampleByPointType(
-  questions: typeof quizQuestions.$inferSelect[],
-  count: number,
-) {
-  if (questions.length <= count) return questions
+async function getMasterySignals(userId: string, poemId: string) {
+  const [attemptRows, wrongRows] = await Promise.all([
+    db
+      .select({
+        pointType: quizQuestions.pointType,
+        type: quizQuestions.type,
+        isCorrect: quizAttempts.isCorrect,
+        completionRate: quizAttempts.completionRate,
+      })
+      .from(quizAttempts)
+      .innerJoin(quizQuestions, eq(quizAttempts.questionId, quizQuestions.id))
+      .where(eq(quizAttempts.userId, userId))
+      .orderBy(desc(quizAttempts.createdAt))
+      .limit(80),
+    db
+      .select({
+        questionId: wrongQuestions.questionId,
+        poemId: wrongQuestions.poemId,
+        wrongCount: wrongQuestions.wrongCount,
+        resolved: wrongQuestions.resolved,
+        pointType: quizQuestions.pointType,
+        type: quizQuestions.type,
+      })
+      .from(wrongQuestions)
+      .innerJoin(quizQuestions, eq(wrongQuestions.questionId, quizQuestions.id))
+      .where(eq(wrongQuestions.userId, userId))
+      .orderBy(desc(wrongQuestions.lastWrongAt))
+      .limit(80),
+  ])
 
-  // Group by pointType, pick one per type first
-  const byType = new Map<string, typeof questions>()
-  for (const q of questions) {
-    const key = q.pointType ?? q.type
-    if (!byType.has(key)) byType.set(key, [])
-    byType.get(key)!.push(q)
+  const stats = new Map<string, { weakScore: number; attemptCount: number; scoreSum: number }>()
+  const add = (pointType: string, score: number, weakScore: number) => {
+    const current = stats.get(pointType) ?? { weakScore: 0, attemptCount: 0, scoreSum: 0 }
+    current.weakScore += weakScore
+    current.attemptCount += 1
+    current.scoreSum += score
+    stats.set(pointType, current)
   }
 
-  const picked: typeof questions = []
-  const types = [...byType.keys()]
-
-  // Round-robin across pointTypes until we have enough
-  let i = 0
-  while (picked.length < count && i < types.length * count) {
-    const type = types[i % types.length]
-    const pool = byType.get(type)!
-    const alreadyPicked = picked.filter(q => (q.pointType ?? q.type) === type).length
-    if (alreadyPicked < pool.length) {
-      picked.push(pool[alreadyPicked])
-    }
-    i++
+  for (const attempt of attemptRows) {
+    const pointType = attempt.pointType ?? attempt.type
+    const score = attempt.isCorrect !== null
+      ? (attempt.isCorrect ? 1 : 0)
+      : (attempt.completionRate ?? 0)
+    const weakScore = score < 0.5 ? 2 : score < 0.8 ? 1 : 0
+    add(pointType, score, weakScore)
   }
 
-  return picked.slice(0, count)
+  const focusQuestionIds: string[] = []
+  for (const wrong of wrongRows) {
+    if (wrong.resolved) continue
+    const pointType = wrong.pointType ?? wrong.type
+    const isSamePoem = wrong.poemId === poemId
+    if (isSamePoem) focusQuestionIds.push(wrong.questionId)
+    add(pointType, 0, (isSamePoem ? 3 : 1) * wrong.wrongCount)
+  }
+
+  const signals: PointMasterySignal[] = [...stats.entries()].map(([pointType, stat]) => ({
+    pointType,
+    weakScore: stat.weakScore,
+    attemptCount: stat.attemptCount,
+    averageScore: stat.attemptCount > 0 ? stat.scoreSum / stat.attemptCount : null,
+  }))
+
+  return {
+    signals,
+    focusQuestionIds,
+  }
 }
