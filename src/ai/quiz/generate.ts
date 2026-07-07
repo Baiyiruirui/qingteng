@@ -8,6 +8,7 @@ import { getPoemForQuiz } from '@/db/repositories/poems'
 import { db } from '@/db'
 import { quizQuestions, quizBlueprints } from '@/db/schema'
 import type { BlueprintPoint } from '@/db/schema'
+import { telemetry } from '@/ai/observability/telemetry'
 
 // Zod schemas — mcq has options, subjective adds scoringPoints
 const BaseQuizSchema = z.object({
@@ -50,6 +51,7 @@ function verifyMcqAnswer(answer: string, options: string[]): boolean {
 async function callWithFallback(
   prompt: string,
   form: QuizForm,
+  metadata: Record<string, string | number | boolean | undefined>,
 ): Promise<z.infer<typeof McqSchema> | z.infer<typeof SubjectiveSchema> | z.infer<typeof BaseQuizSchema>> {
   const schema = form === 'mcq' ? McqSchema : form === 'subjective' ? SubjectiveSchema : BaseQuizSchema
 
@@ -59,6 +61,7 @@ async function callWithFallback(
       model: route.quizGenerate,
       schema,
       prompt,
+      experimental_telemetry: telemetry('qingteng.quiz.generate.object', metadata),
     })
     return result.object
   } catch (e) {
@@ -69,6 +72,7 @@ async function callWithFallback(
   const result = await generateText({
     model: route.quizGenerate,
     prompt,
+    experimental_telemetry: telemetry('qingteng.quiz.generate.text-fallback', metadata),
   })
 
   const jsonMatch = result.text.match(/\{[\s\S]*\}/)
@@ -88,7 +92,13 @@ export async function generateQuestion(
 
   const prompt = buildQuizPrompt(poem, type, difficulty)
 
-  const raw = await callWithFallback(prompt, type === 'mcq' ? 'mcq' : 'fill')
+  const raw = await callWithFallback(prompt, type === 'mcq' ? 'mcq' : 'fill', {
+    mode: 'quiz-generate',
+    version: QUIZ_GEN_VERSION,
+    poemId,
+    type,
+    difficulty,
+  })
 
   // Post-validation 1: evidence lines must appear in poem text
   const poemLineContents = poem.lines.map(l => l.content)
@@ -158,7 +168,14 @@ async function generateOneByPoint(
   const isSubjective = point.form === 'appreciate' || point.form === 'translate'
   const quizForm: QuizForm = point.form === 'mcq' ? 'mcq' : isSubjective ? 'subjective' : 'fill'
 
-  const raw = await callWithFallback(prompt, quizForm)
+  const raw = await callWithFallback(prompt, quizForm, {
+    mode: 'quiz-generate',
+    version: QUIZ_GEN_VERSION_V2,
+    poemId: poem.id,
+    pointId: point.id,
+    pointType: point.type,
+    form: point.form,
+  })
 
   // evidenceLines validation: for 默写, the answer itself IS the poem line
   const poemLineContents = poem.lines.map(l => l.content)

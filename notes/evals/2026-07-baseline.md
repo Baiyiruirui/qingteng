@@ -37,6 +37,17 @@
 
 这次修复没有改 judge prompt,只做判题结果后处理。`sub-dg-imagery-partial` 从 100% 回落到 67%,`sub-dg-translate-weak` 从 0% 修正到 50%,都进入人工期望区间。
 
+2026-07-07 Langfuse 接入后再次回归,发现 `sub-dg-word-strong` 会因"暮年多病/年老多病"同义表达随机掉到 67%。已补窄域同义兜底后恢复 22/22:
+
+```text
+Objective judge: 12/12 (100%)
+Subjective judge: 10/10 (100%)
+Overall: 22/22 (100%)
+JSON report: outputs/evals/eval-v0-2026-07-07T08-50-01-654Z.json
+```
+
+结论: telemetry 接入不改变判题行为;新增同义兜底让 judge 后处理对 DeepSeek 输出波动更稳。
+
 ## 运行记录
 
 客观题基线已跑通:

@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { route } from '@/ai/router'
 import { buildJudgePrompt } from '@/ai/prompts/v1/quiz-judge'
 import type { PoemForQuiz } from '@/db/repositories/poems'
+import { telemetry } from '@/ai/observability/telemetry'
 
 export interface ObjectiveQuestion {
   type: 'mcq' | 'fill'
@@ -115,6 +116,8 @@ function hasAliasConceptMatch(scoringPoint: string, userAnswer: string): boolean
     ['亲人', '家人'],
     ['思乡', '想家', '思念故乡'],
     ['霜鬓', '白发', '鬓白'],
+    ['暮年多病', '年老多病', '老多病'],
+    ['孤苦无依', '独自', '孤独'],
   ]
 
   return aliasGroups.some(group => {
@@ -217,10 +220,25 @@ export async function judgeSubjective(
       model: route.quizGenerate,
       schema: JudgeResponseSchema,
       prompt,
+      experimental_telemetry: telemetry('qingteng.quiz.judge.object', {
+        mode: 'quiz-judge',
+        poemId: poem.id,
+        questionType: question.type,
+        scoringPointCount: question.scoringPoints.length,
+      }),
     })
     raw = result.object
   } catch {
-    const result = await generateText({ model: route.quizGenerate, prompt })
+    const result = await generateText({
+      model: route.quizGenerate,
+      prompt,
+      experimental_telemetry: telemetry('qingteng.quiz.judge.text-fallback', {
+        mode: 'quiz-judge',
+        poemId: poem.id,
+        questionType: question.type,
+        scoringPointCount: question.scoringPoints.length,
+      }),
+    })
     const m = result.text.match(/\{[\s\S]*\}/)
     if (!m) throw new Error('LLM returned no parseable JSON for judge')
     raw = JudgeResponseSchema.parse(JSON.parse(m[0]))

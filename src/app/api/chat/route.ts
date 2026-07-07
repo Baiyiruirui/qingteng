@@ -10,6 +10,7 @@ import { recordEvent } from '@/db/repositories/events'
 import { updateShortTerm } from '@/ai/memory/short-term'
 import { buildSystemContext, renderMemoryContext } from '@/ai/memory/build-context'
 import { recall, extractAndStore } from '@/ai/memory/long-term'
+import { telemetry } from '@/ai/observability/telemetry'
 
 export const runtime = 'nodejs'
 
@@ -87,6 +88,12 @@ export async function POST(req: Request) {
       model: route.characterDialog,
       system: systemPrompt,
       messages: await convertToModelMessages(messages),
+      experimental_telemetry: telemetry('qingteng.chat', {
+        route: '/api/chat',
+        conversationId,
+        userId: session.userId,
+        recalledMemoryCount: recalled.length,
+      }),
       onFinish: async ({ text, usage, finishReason, model }) => {
         try {
           await appendMessage(conversationId, 'assistant', text, {

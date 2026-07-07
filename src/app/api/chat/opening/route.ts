@@ -8,6 +8,7 @@ import { getShortTerm } from '@/ai/memory/short-term'
 import { getOrCreateActiveConversation, loadMessages } from '@/db/repositories/conversations'
 import { appendMessage } from '@/db/repositories/messages'
 import { recordEvent } from '@/db/repositories/events'
+import { telemetry } from '@/ai/observability/telemetry'
 
 export const runtime = 'nodejs'
 
@@ -30,6 +31,12 @@ export async function POST() {
     model: route.characterDialog,
     system: CHARACTER_SYSTEM_PROMPT,
     prompt: userPrompt,
+    experimental_telemetry: telemetry('qingteng.opening', {
+      route: '/api/chat/opening',
+      conversationId: conversation.id,
+      userId: user.id,
+      isReturning: !!snapshot && snapshot.recentMessages.length > 0,
+    }),
   })
 
   const openingText = result.text.trim()

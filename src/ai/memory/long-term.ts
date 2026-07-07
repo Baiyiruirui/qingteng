@@ -6,6 +6,7 @@ import { db } from '@/db'
 import { memories } from '@/db/schema'
 import { embed } from '@/ai/embedding'
 import { buildExtractPrompt } from '@/ai/prompts/v1/memory-extract'
+import { telemetry } from '@/ai/observability/telemetry'
 
 type ExtractedMemory = { content: string; kind: string }
 
@@ -34,6 +35,11 @@ export async function extractAndStore(userId: string, transcript: string): Promi
   const { text } = await generateText({
     model: route.quizGenerate, // DeepSeek — cheap
     prompt: buildExtractPrompt(transcript),
+    experimental_telemetry: telemetry('qingteng.memory.extract', {
+      mode: 'memory-extract',
+      userId,
+      transcriptChars: transcript.length,
+    }),
   })
 
   const extracted = parseExtracted(text)
