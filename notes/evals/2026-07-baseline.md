@@ -18,6 +18,25 @@
 | Overall pass rate | 19/22 = 86.4% |
 | JSON report | `outputs/evals/eval-v0-2026-07-07T08-10-48-720Z.json` |
 
+## Judge 后处理 v1
+
+修复内容:
+
+- 将 LLM 返回的 `hitPoints` / `missedPoints` 统一映射回原始 `scoringPoints`
+- 去重并消除 hit/missed 重叠,以归一化后的命中点重算 `completionRate`
+- 对学生答案里明确出现的释义关键词和极少量常见同义表达做弱命中兜底,避免"生活艰难 / 不能喝酒"这类答案被判为 0 分
+
+回归结果:
+
+| 指标 | 结果 |
+|---|---|
+| Objective judge pass rate | 12/12 = 100% |
+| Subjective judge pass rate | 10/10 = 100% |
+| Overall pass rate | 22/22 = 100% |
+| JSON report | `outputs/evals/eval-v0-2026-07-07T08-19-12-841Z.json` |
+
+这次修复没有改 judge prompt,只做判题结果后处理。`sub-dg-imagery-partial` 从 100% 回落到 67%,`sub-dg-translate-weak` 从 0% 修正到 50%,都进入人工期望区间。
+
 ## 运行记录
 
 客观题基线已跑通:
