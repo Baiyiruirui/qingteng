@@ -5,6 +5,7 @@ import { getSession } from '@/lib/auth-server'
 import { db } from '@/db'
 import { wrongQuestions, quizQuestions, poems } from '@/db/schema'
 import { SealStamp } from '@/components/SealStamp'
+import { AppNav } from '@/components/AppNav'
 
 export default async function WrongPage() {
   const session = await getSession()
@@ -43,13 +44,7 @@ export default async function WrongPage() {
 
   return (
     <div className="min-h-screen bg-qt-paper text-qt-ink">
-      <header className="flex items-center justify-between px-6 py-5 border-b border-qt-border">
-        <Link href="/poems" className="text-sm text-qt-ink-light hover:text-qt-ink transition-colors">
-          ← 诗库
-        </Link>
-        <h1 className="font-serif text-xl tracking-widest text-qt-ink">待加强</h1>
-        <span className="text-sm text-qt-ink-light">{unresolved.length} 道</span>
-      </header>
+      <AppNav title="待加强" right={<span>{unresolved.length} 道</span>} />
 
       <main className="mx-auto max-w-2xl px-4 py-8 space-y-8">
         {/* 诗意空状态 */}

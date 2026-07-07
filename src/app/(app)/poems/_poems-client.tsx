@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { inkFadeIn, inkFadeInStagger } from '@/lib/motion'
 import { ShanshuiBanner } from '@/components/ShanshuiBanner'
+import { AppNav } from '@/components/AppNav'
 
 const QUIZ_POEM_IDS = new Set(['TANG_001', 'TANG_023', 'TANG_042'])
 
@@ -38,7 +39,7 @@ export default function PoemsClient({ userName, poems }: Props) {
     return seen
   }, [poems])
 
-  async function startMode(mode: 'roleplay' | 'creative', poemId: string) {
+  async function startMode(mode: 'roleplay', poemId: string) {
     const key = `${mode}-${poemId}`
     if (loading) return
     setLoading(key)
@@ -74,14 +75,7 @@ export default function PoemsClient({ userName, poems }: Props) {
 
   return (
     <div className="relative min-h-screen bg-paper text-ink">
-      {/* 磨砂 Header */}
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-edge bg-paper/80 px-6 py-5 backdrop-blur">
-        <Link href="/chat" className="text-sm text-ink-faint transition-colors hover:text-ink">
-          ← 对话
-        </Link>
-        <h1 className="font-serif text-2xl tracking-[0.18em] text-ink">诗库</h1>
-        <span className="text-sm text-ink-faint">你好，{userName}</span>
-      </header>
+      <AppNav title="诗笺地图" userName={userName} />
 
       {/* 山水页眉横幅 */}
       <ShanshuiBanner />
@@ -94,7 +88,7 @@ export default function PoemsClient({ userName, poems }: Props) {
               type="text"
               value={query}
               onChange={e => setQuery(e.target.value)}
-              placeholder="搜题目、作者、朝代…"
+              placeholder="想读点什么？试试「孤独」「送别」或诗人名字"
               className="w-full rounded-lg border border-edge bg-paper/60 px-4 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-ink-faint/70 focus:border-jade focus:bg-paper"
             />
             <span className="pointer-events-none absolute -bottom-px left-1/2 h-px w-0 -translate-x-1/2 bg-jade transition-all duration-300 group-focus-within:w-[calc(100%-16px)]" />
@@ -124,7 +118,7 @@ export default function PoemsClient({ userName, poems }: Props) {
         <p className="mb-6 text-xs text-ink-faint">
           {q || dynasty
             ? `找到 ${filtered.length} 首`
-            : `共 ${poems.length} 首 · 标注「可沉浸」的诗支持角色扮演模式`}
+            : `共 ${poems.length} 张诗笺 · 标注「可沉浸」的诗支持角色扮演模式`}
         </p>
 
         {/* 空状态 */}
@@ -200,13 +194,6 @@ export default function PoemsClient({ userName, poems }: Props) {
                     沉浸敬请期待
                   </span>
                 )}
-                <button
-                  onClick={() => startMode('creative', poem.id)}
-                  disabled={loading !== null}
-                  className="rounded-lg border border-edge bg-transparent px-3 py-1.5 text-xs font-medium text-ink-mid transition-opacity hover:opacity-70 disabled:opacity-40"
-                >
-                  {loading === `creative-${poem.id}` ? '进入中…' : '一起写诗'}
-                </button>
               </div>
             </motion.div>
           ))}

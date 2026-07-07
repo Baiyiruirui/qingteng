@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth-server'
+import { canUseInternalTools } from '@/lib/demo-guard'
 import { generateQuestion } from '@/ai/quiz/generate'
 import type { QuizType, QuizDifficulty } from '@/ai/prompts/v1/quiz-generate'
 
@@ -9,6 +10,13 @@ const VALID_TYPES: QuizType[] = ['mcq', 'fill', 'translate', 'appreciate']
 const VALID_DIFFICULTIES: QuizDifficulty[] = ['易', '中', '难']
 
 export async function POST(req: Request) {
+  if (!(await canUseInternalTools())) {
+    return NextResponse.json(
+      { error: { code: 'FORBIDDEN', message: '出题生成接口仅限内部调试使用' } },
+      { status: 403 },
+    )
+  }
+
   const session = await getSession()
   if (!session) {
     return NextResponse.json(

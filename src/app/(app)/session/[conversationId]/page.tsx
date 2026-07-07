@@ -49,6 +49,7 @@ export default async function SessionPage({ params }: Props) {
         userName={user.name}
         conversationId={conversation.id}
         initialMessages={initialMessages}
+        poemId={conversation.poemId}
         poemTitle={poemRow.title}
         poemAuthor={poemRow.author}
         poemLines={poemLines}

@@ -139,8 +139,8 @@ export default function ChatClient({
     }
   }
 
-  /** 进入沉浸 / 协同创作（与诗库页同一 API） */
-  async function startMode(mode: 'roleplay' | 'creative', poemId: string) {
+  /** 进入沉浸（与诗笺地图页同一 API） */
+  async function startMode(mode: 'roleplay', poemId: string) {
     const key = `${mode}-${poemId}`
     if (modeLoading) return
     setModeLoading(key)
@@ -357,7 +357,7 @@ function DailyDesk({
   dailyPoem: DailyPoem | null
   memCtx: MemoryContext | null
   modeLoading: string | null
-  onStartMode: (mode: 'roleplay' | 'creative', poemId: string) => void
+  onStartMode: (mode: 'roleplay', poemId: string) => void
 }) {
   const p = memCtx?.profile
   const memories = memCtx?.memories ?? []
@@ -390,14 +390,17 @@ function DailyDesk({
 
   return (
     <main className="relative mx-auto w-full max-w-6xl flex-1 px-4 pb-12 pt-8 lg:px-6">
-      {/* 垂藤（左缘，multiply 融进宣纸） */}
+      {/* 垂藤（左缘垂下，multiply 融进宣纸，径向遮罩消掉方形纸底边界） */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/yijing/vine-left.webp"
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute -left-14 -top-6 hidden w-80 select-none opacity-90 mix-blend-multiply lg:block"
-        style={{ maskImage: 'linear-gradient(to bottom, black 65%, transparent)' }}
+        className="pointer-events-none absolute -left-24 -top-10 hidden w-[34rem] select-none opacity-95 mix-blend-multiply lg:block xl:w-[40rem]"
+        style={{
+          maskImage:
+            'radial-gradient(130% 115% at 24% 4%, black 48%, rgba(0,0,0,0.35) 72%, transparent 90%)',
+        }}
       />
 
       <motion.div
@@ -528,13 +531,6 @@ function DailyDesk({
           label="练一题"
           tone="jade"
           href={dailyPoem?.hasQuiz ? `/quiz/${dailyPoem.id}` : '/poems'}
-        />
-        <DeskTab
-          label="写两句"
-          tone="earth"
-          onClick={dailyPoem ? () => onStartMode('creative', dailyPoem.id) : undefined}
-          href={dailyPoem ? undefined : '/poems'}
-          loading={dailyPoem ? modeLoading === `creative-${dailyPoem.id}` : false}
         />
       </motion.div>
     </main>

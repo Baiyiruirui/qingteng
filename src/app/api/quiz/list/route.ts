@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth-server'
+import { canUseInternalTools } from '@/lib/demo-guard'
 import { db } from '@/db'
 import { quizQuestions } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -7,6 +8,13 @@ import { eq } from 'drizzle-orm'
 export const runtime = 'nodejs'
 
 export async function GET(req: Request) {
+  if (!(await canUseInternalTools())) {
+    return NextResponse.json(
+      { error: { code: 'FORBIDDEN', message: '题库验证接口仅限内部调试使用' } },
+      { status: 403 },
+    )
+  }
+
   const session = await getSession()
   if (!session) {
     return NextResponse.json({ error: { code: 'UNAUTHORIZED', message: '请先登录' } }, { status: 401 })

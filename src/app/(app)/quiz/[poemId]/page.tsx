@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
+import { AppNav } from '@/components/AppNav'
 
 type SafeQuestion = {
   id: string
@@ -122,26 +123,32 @@ export default function QuizPage() {
 
   if (state.phase === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-qt-paper">
-        <p className="font-serif text-qt-ink-light tracking-widest animate-ink-fade-in">
-          青藤正在组卷…
-        </p>
+      <div className="min-h-screen bg-qt-paper">
+        <AppNav title="青藤考你" />
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <p className="font-serif text-qt-ink-light tracking-widest animate-ink-fade-in">
+            青藤正在组卷…
+          </p>
+        </div>
       </div>
     )
   }
 
   if (state.phase === 'error') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-qt-paper">
-        <p className="text-qt-vermilion text-sm">{state.message}</p>
-        <button
-          onClick={startSession}
-          className="text-sm px-4 py-2 rounded-lg"
-          style={{ background: 'var(--qt-green)', color: '#fff' }}
-        >
-          重试
-        </button>
-        <Link href="/poems" className="text-sm text-qt-ink-light">← 返回诗库</Link>
+      <div className="min-h-screen bg-qt-paper">
+        <AppNav title="青藤考你" />
+        <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
+          <p className="text-qt-vermilion text-sm">{state.message}</p>
+          <button
+            onClick={startSession}
+            className="text-sm px-4 py-2 rounded-lg"
+            style={{ background: 'var(--qt-green)', color: '#fff' }}
+          >
+            重试
+          </button>
+          <Link href="/poems" className="text-sm text-qt-ink-light">返回诗笺地图</Link>
+        </div>
       </div>
     )
   }
@@ -152,36 +159,39 @@ export default function QuizPage() {
       : 0
     const pct = Math.round(avg * 100)
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-qt-paper">
-        <div
-          className="w-full max-w-md rounded-2xl border border-qt-border p-8 text-center space-y-4 animate-ink-fade-in"
-          style={{ background: 'rgba(255,255,255,0.72)' }}
-        >
-          <div className="text-5xl">{pct >= 80 ? '🎉' : pct >= 50 ? '👍' : '💪'}</div>
-          <h2 className="font-serif text-2xl tracking-widest text-qt-ink">整体掌握度 {pct}%</h2>
-          <p className="text-sm text-qt-ink-mid">
-            {pct >= 80 ? '掌握得很好，继续保持！' : pct >= 50 ? '核心都懂了，再细化一下～' : '多读几遍，你一定能行！'}
-          </p>
-          <div className="flex gap-3 pt-4 justify-center flex-wrap">
-            <button
-              onClick={startSession}
-              className="px-4 py-2 rounded-xl text-sm font-medium"
-              style={{ background: 'var(--qt-earth)', color: '#fff' }}
-            >
-              再做一轮
-            </button>
-            <Link
-              href="/wrong"
-              className="px-4 py-2 rounded-xl text-sm border border-qt-border text-qt-ink-mid font-medium"
-            >
-              待加强
-            </Link>
-            <Link
-              href="/poems"
-              className="px-4 py-2 rounded-xl text-sm border border-qt-border text-qt-ink-mid font-medium"
-            >
-              诗库
-            </Link>
+      <div className="min-h-screen bg-qt-paper">
+        <AppNav title="青藤考你" />
+        <div className="flex min-h-[70vh] flex-col items-center justify-center px-4">
+          <div
+            className="w-full max-w-md rounded-2xl border border-qt-border p-8 text-center space-y-4 animate-ink-fade-in"
+            style={{ background: 'rgba(255,255,255,0.72)' }}
+          >
+            <SealResult pct={pct} />
+            <h2 className="font-serif text-2xl tracking-widest text-qt-ink">整体掌握度 {pct}%</h2>
+            <p className="text-sm text-qt-ink-mid">
+              {pct >= 80 ? '掌握得很好，继续保持！' : pct >= 50 ? '核心都懂了，再细化一下～' : '多读几遍，你一定能行！'}
+            </p>
+            <div className="flex gap-3 pt-4 justify-center flex-wrap">
+              <button
+                onClick={startSession}
+                className="px-4 py-2 rounded-xl text-sm font-medium"
+                style={{ background: 'var(--qt-earth)', color: '#fff' }}
+              >
+                再做一轮
+              </button>
+              <Link
+                href="/wrong"
+                className="px-4 py-2 rounded-xl text-sm border border-qt-border text-qt-ink-mid font-medium"
+              >
+                待加强
+              </Link>
+              <Link
+                href="/poems"
+                className="px-4 py-2 rounded-xl text-sm border border-qt-border text-qt-ink-mid font-medium"
+              >
+                诗笺地图
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -194,19 +204,14 @@ export default function QuizPage() {
 
   return (
     <div className="min-h-screen bg-qt-paper">
-      {/* Header */}
-      <header className="flex items-center justify-between px-6 py-4 border-b border-qt-border">
-        <Link href="/poems" className="text-sm text-qt-ink-light hover:text-qt-ink transition-colors">
-          ← 诗库
-        </Link>
-        <span className="text-sm font-medium text-qt-ink">{progress}</span>
-        <span
-          className="text-xs px-2 py-1 rounded-full"
-          style={{ background: 'var(--qt-paper-alt)', color: 'var(--qt-earth)' }}
-        >
-          {TYPE_LABEL[q.type] ?? q.type}
-        </span>
-      </header>
+      <AppNav
+        title="青藤考你"
+        right={
+          <span className="rounded-full bg-paper-block px-2.5 py-1 text-ink-mid">
+            {progress} · {TYPE_LABEL[q.type] ?? q.type}
+          </span>
+        }
+      />
 
       <main className="mx-auto max-w-2xl px-4 py-8 space-y-6">
         {/* 题干 */}
@@ -373,6 +378,15 @@ export default function QuizPage() {
           </div>
         )}
       </main>
+    </div>
+  )
+}
+
+function SealResult({ pct }: { pct: number }) {
+  const label = pct >= 80 ? '优' : pct >= 50 ? '进' : '习'
+  return (
+    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-lg border-2 border-qt-vermilion font-kai text-3xl text-qt-vermilion">
+      {label}
     </div>
   )
 }
