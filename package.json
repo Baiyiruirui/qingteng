@@ -11,7 +11,8 @@
     "db:verify": "tsx --env-file=.env.local scripts/verify-poems.ts",
     "import:immersion": "tsx --env-file=.env.local scripts/import-immersion.ts",
     "pregenerate:quiz": "tsx --env-file=.env.local scripts/pregenerate-quiz.ts",
-    "import:blueprints": "tsx --env-file=.env.local scripts/import-blueprints.ts"
+    "import:blueprints": "tsx --env-file=.env.local scripts/import-blueprints.ts",
+    "eval": "tsx --env-file=.env.local src/ai/evals/run-eval.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.84",

@@ -1,0 +1,183 @@
+{
+  "version": "eval-v0.1",
+  "createdAt": "2026-07-07",
+  "description": "首版 Eval 底座：用现有 20 道 v2 蓝图题评估客观题稳定性与 LLM-as-judge 主观题完成度。",
+  "objectiveCases": [
+    {
+      "id": "obj-jys-fill-correct",
+      "poemId": "TANG_001",
+      "pointId": "p1",
+      "userAnswer": "$ANSWER",
+      "expectedCorrect": true
+    },
+    {
+      "id": "obj-jys-fill-wrong",
+      "poemId": "TANG_001",
+      "pointId": "p1",
+      "userAnswer": "明月照大江",
+      "expectedCorrect": false
+    },
+    {
+      "id": "obj-jys-mcq-correct",
+      "poemId": "TANG_001",
+      "pointId": "p6",
+      "userAnswer": "$ANSWER",
+      "expectedCorrect": true
+    },
+    {
+      "id": "obj-jys-mcq-wrong",
+      "poemId": "TANG_001",
+      "pointId": "p6",
+      "userAnswer": "$WRONG_OPTION",
+      "expectedCorrect": false
+    },
+    {
+      "id": "obj-jyj-fill-correct",
+      "poemId": "TANG_023",
+      "pointId": "p1",
+      "userAnswer": "$ANSWER",
+      "expectedCorrect": true
+    },
+    {
+      "id": "obj-jyj-fill-wrong",
+      "poemId": "TANG_023",
+      "pointId": "p1",
+      "userAnswer": "遥知兄弟登高处",
+      "expectedCorrect": false
+    },
+    {
+      "id": "obj-jyj-mcq-correct",
+      "poemId": "TANG_023",
+      "pointId": "p6",
+      "userAnswer": "$ANSWER",
+      "expectedCorrect": true
+    },
+    {
+      "id": "obj-jyj-mcq-wrong",
+      "poemId": "TANG_023",
+      "pointId": "p6",
+      "userAnswer": "$WRONG_OPTION",
+      "expectedCorrect": false
+    },
+    {
+      "id": "obj-dg-fill-correct",
+      "poemId": "TANG_042",
+      "pointId": "p1",
+      "userAnswer": "$ANSWER",
+      "expectedCorrect": true
+    },
+    {
+      "id": "obj-dg-fill-wrong",
+      "poemId": "TANG_042",
+      "pointId": "p1",
+      "userAnswer": "无边落木萧萧下，不尽长江滚滚来",
+      "expectedCorrect": false
+    },
+    {
+      "id": "obj-dg-mcq-correct",
+      "poemId": "TANG_042",
+      "pointId": "p8",
+      "userAnswer": "$ANSWER",
+      "expectedCorrect": true
+    },
+    {
+      "id": "obj-dg-mcq-wrong",
+      "poemId": "TANG_042",
+      "pointId": "p8",
+      "userAnswer": "$WRONG_OPTION",
+      "expectedCorrect": false
+    }
+  ],
+  "subjectiveCases": [
+    {
+      "id": "sub-jys-emotion-strong",
+      "poemId": "TANG_001",
+      "pointId": "p4",
+      "userAnswer": "这首诗表达了游子客居他乡时的思乡之情，也写出了他借明月想念故乡和亲人的心情。",
+      "expectedCompletionMin": 0.7,
+      "expectedCompletionMax": 1,
+      "rationale": "完整命中思乡、亲人、客居他乡等核心点。"
+    },
+    {
+      "id": "sub-jys-emotion-partial",
+      "poemId": "TANG_001",
+      "pointId": "p4",
+      "userAnswer": "表达了诗人想家的感情。",
+      "expectedCompletionMin": 0.2,
+      "expectedCompletionMax": 0.6,
+      "rationale": "只答到思乡核心，缺少亲人、游子身份和诗句结合。"
+    },
+    {
+      "id": "sub-jys-word-partial",
+      "poemId": "TANG_001",
+      "pointId": "p2",
+      "userAnswer": "疑是好像的意思，写诗人把月光看成了霜，说明月光很白很冷。",
+      "expectedCompletionMin": 0.45,
+      "expectedCompletionMax": 0.85,
+      "rationale": "答到字义、错觉和清冷月光，未充分联系思乡。"
+    },
+    {
+      "id": "sub-jys-translate-strong",
+      "poemId": "TANG_001",
+      "pointId": "p5",
+      "userAnswer": "我抬头望着明亮的月亮，又低下头思念远方的故乡。",
+      "expectedCompletionMin": 0.65,
+      "expectedCompletionMax": 1,
+      "rationale": "翻译通顺，两个动作和思乡情感都到位。"
+    },
+    {
+      "id": "sub-jyj-method-strong",
+      "poemId": "TANG_023",
+      "pointId": "p3",
+      "userAnswer": "这里用了从对方着笔的虚写，想象兄弟重阳登高插茱萸时发现少了自己，从而反衬自己思亲，表达得很含蓄动人。",
+      "expectedCompletionMin": 0.75,
+      "expectedCompletionMax": 1,
+      "rationale": "完整命中手法、想象情景、思亲效果和表达特点。"
+    },
+    {
+      "id": "sub-jyj-emotion-partial",
+      "poemId": "TANG_023",
+      "pointId": "p5",
+      "userAnswer": "写他重阳节很想念家人。",
+      "expectedCompletionMin": 0.35,
+      "expectedCompletionMax": 0.75,
+      "rationale": "答到佳节思亲和亲人，缺少异乡孤寂与不能团聚遗憾。"
+    },
+    {
+      "id": "sub-dg-word-strong",
+      "poemId": "TANG_042",
+      "pointId": "p4",
+      "userAnswer": "常写出诗人长期漂泊在外，独写出他年老多病又独自登台，两个字叠加加深了悲凉孤苦之情。",
+      "expectedCompletionMin": 0.75,
+      "expectedCompletionMax": 1,
+      "rationale": "完整命中常、独和情感叠加效果。"
+    },
+    {
+      "id": "sub-dg-imagery-partial",
+      "poemId": "TANG_042",
+      "pointId": "p6",
+      "userAnswer": "落木和长江营造出苍凉悲壮的意境，也让人想到时间流逝。",
+      "expectedCompletionMin": 0.35,
+      "expectedCompletionMax": 0.8,
+      "rationale": "答到整体意境和时光流逝，但对两个意象的分别分析不足。"
+    },
+    {
+      "id": "sub-dg-translate-weak",
+      "poemId": "TANG_042",
+      "pointId": "p7",
+      "userAnswer": "生活很艰难，所以他不能喝酒了。",
+      "expectedCompletionMin": 0.15,
+      "expectedCompletionMax": 0.55,
+      "rationale": "只触及艰难和停酒，缺少霜鬓、潦倒等关键翻译点。"
+    },
+    {
+      "id": "sub-dg-method-strong",
+      "poemId": "TANG_042",
+      "pointId": "p3",
+      "userAnswer": "这一联用了对偶，萧萧和滚滚是叠字，写出落叶纷飞、江水奔流的壮阔景象，也寄寓时光流逝、人生短暂的感慨。",
+      "expectedCompletionMin": 0.75,
+      "expectedCompletionMax": 1,
+      "rationale": "完整命中对偶、叠字景象和情感寄托。"
+    }
+  ]
+}

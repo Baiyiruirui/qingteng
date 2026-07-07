@@ -59,7 +59,7 @@
 | 部署上线 | ✅ | Vercel 上线 qingteng-ecru.vercel.app；Next.js 16 proxy 兼容；CI/CD 踩坑记录 | `64bc816` |
 | 美术 Phase A-1 | ✅ | 诗库页精修(`c67dc3e`)✅;聊天页重设+「青藤记得你」Memory 可视化(`03875a5`)✅;根路径重定向 + 统一导航 + 公开 demo 防护 + 沉浸剧场化 | `3b759c2` |
 | 美术 Phase A-2 | ⏳ | 视觉走查 + 做题页批注细节 + 文档/讲点补齐(可与 Phase B 并行) | - |
-| Phase B | ⏳ | Langfuse 接入 + 50 题黄金集 + eval runner + 基线报告 | - |
+| Phase B | 🔨 | Eval v0 runner + golden-v0 + objective baseline 已落地;主观题因 DeepSeek 余额不足待完整跑;Langfuse 待接入 | - |
 | Phase C1 | ⏳ | 难度自适应出题 + 错题专项复习 | - |
 | Phase C2 | ⏳ | Whisper 朗读评分(前置:OpenAI key + R2) | - |
 | Phase C3 | ⏳ | 语义诗词搜索 | - |
