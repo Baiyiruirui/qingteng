@@ -14,9 +14,9 @@
 | 指标 | 结果 |
 |---|---|
 | Objective judge pass rate | 12/12 = 100% |
-| Subjective judge pass rate | blocked: DeepSeek 返回 `Insufficient Balance` |
-| Overall pass rate | objective-only: 12/12 = 100%; smoke with 1 subjective error: 12/13 = 92.3% |
-| JSON report | `outputs/evals/eval-v0-2026-07-07T04-18-45-490Z.json`、`outputs/evals/eval-v0-2026-07-07T04-17-33-747Z.json` |
+| Subjective judge pass rate | 7/10 = 70% |
+| Overall pass rate | 19/22 = 86.4% |
+| JSON report | `outputs/evals/eval-v0-2026-07-07T08-10-48-720Z.json` |
 
 ## 运行记录
 
@@ -35,15 +35,22 @@ Subjective judge: 0/0 (n/a)
 Overall: 12/12 (100%)
 ```
 
-主观题 smoke 已验证 runner 能调用 LLM-as-judge,但当前 DeepSeek 账号余额不足:
+完整主观题基线已跑通:
 
 ```text
-Subjective judge: 0/1 (0%)
-FAIL sub-jys-emotion-strong error=Insufficient Balance
-Overall: 12/13 (92.3%)
+Subjective judge: 7/10 (70%)
+Overall: 19/22 (86.4%)
 ```
 
-这不是 judge 逻辑失败,而是模型供应商返回 402。补足 DeepSeek 余额后,直接运行默认 `pnpm eval` 即可跑完整 10 个主观题 case。
+## 失败 case 观察
+
+| Case | 现象 | 初步判断 |
+|---|---|---|
+| `sub-jyj-emotion-partial` | 学生答"重阳节很想念家人",模型只命中"佳节思亲",completionRate=25% | 偏严;按教育产品的宽容判定,可考虑把"家人"映射到"亲人" |
+| `sub-dg-imagery-partial` | 学生只概括"苍凉悲壮/时间流逝",模型给 completionRate=100% | 偏宽;且暴露 hitPoints/missedPoints 可能不互斥,需要后处理校验 |
+| `sub-dg-translate-weak` | 学生答"生活很艰难,所以不能喝酒",模型给 completionRate=0% | 偏严;至少触及"艰难"与"停酒"两个弱信号 |
+
+结论:客观题规则判定稳定;主观题 judge 可用但需要下一轮优化,重点不是改题库,而是改 judge 结果校验和 prompt 的宽容/一致性。
 
 ## 设计取舍
 
