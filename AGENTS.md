@@ -197,8 +197,8 @@ qingteng/
 
 ## 当前需要关注的已知问题
 
-- 一首诗的 `dynasty` 字段值是英文 `'Tang'` 而不是 `'唐'`(140 首里就这一首异常),计划 Week 5 数据清洗时统一处理
 - localhost:3001 在用户机器上需要走 `127.0.0.1:3001` 或局域网 IP 访问(FIClash 拦截 localhost)
+- 数据验收入口为 `pnpm verify:data`; 口径见 `notes/phase-d/2026-07-08-data-readiness.md`
 
 ---
 
