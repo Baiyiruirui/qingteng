@@ -1,8 +1,9 @@
-import { desc, eq } from 'drizzle-orm'
+import { desc, eq, sql } from 'drizzle-orm'
 import { getSession } from '@/lib/auth-server'
 import { db } from '@/db'
 import { memories } from '@/db/schema'
 import { getProfile } from '@/ai/memory/mid-term'
+import { MEMORY_DECAY_BASE } from '@/ai/memory/policy'
 
 export const runtime = 'nodejs'
 
@@ -25,7 +26,16 @@ export async function GET() {
         .select({ content: memories.content, source: memories.source })
         .from(memories)
         .where(eq(memories.userId, session.userId))
-        .orderBy(desc(memories.weight), desc(memories.createdAt))
+        .orderBy(
+          desc(sql`
+            coalesce(${memories.weight}, 1)
+            * power(
+                ${MEMORY_DECAY_BASE},
+                greatest(extract(epoch from (now() - ${memories.createdAt})) / 86400.0, 0)
+              )
+          `),
+          desc(memories.createdAt),
+        )
         .limit(MEMORY_LIMIT),
     ])
 

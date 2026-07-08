@@ -10,6 +10,7 @@
     "db:check": "tsx --env-file=.env.local scripts/db-check.ts",
     "db:verify": "tsx --env-file=.env.local scripts/verify-poems.ts",
     "verify:data": "tsx --env-file=.env.local scripts/verify-data.ts",
+    "verify:memory": "tsx --env-file=.env.local scripts/verify-memory-policy.ts",
     "import:immersion": "tsx --env-file=.env.local scripts/import-immersion.ts",
     "pregenerate:quiz": "tsx --env-file=.env.local scripts/pregenerate-quiz.ts",
     "import:blueprints": "tsx --env-file=.env.local scripts/import-blueprints.ts",
