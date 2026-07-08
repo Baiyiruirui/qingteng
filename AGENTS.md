@@ -63,7 +63,7 @@
 | Phase C2 | ✅ | 腾讯 ASR 朗读评分：录音页 + 一句话识别 + 逐字对齐评分 + events 记录;真机验证通过 | - |
 | Phase C3 | ✅ | 语义诗词搜索：poem_embeddings + bge-m3 + pgvector 混合检索已落地;140 首诗已回填 | - |
 | Phase D-1 | ✅ | 数据验收脚本 + `Tang` 源数据修正 + 构建字体去外部依赖 | `470318a` |
-| Phase D-2 | 🔨 | Memory 膨胀治理：去重、时间衰减、单用户上限 | - |
+| Phase D-2 | ✅ | Memory 膨胀治理：去重、时间衰减、单用户上限;Eval 62/62 | `1005212` |
 | Phase D | ⏳ | 优化提纲 P0 清偿(CHARTER.md 第五节) | - |
 | Phase E | ⏳ | Demo 视频 + README 终稿 + key 轮换 | - |
 
