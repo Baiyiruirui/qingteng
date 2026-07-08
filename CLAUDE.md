@@ -10,7 +10,7 @@
 - **名称**:青藤(Qingteng)
 - **定位**:面向中学生的对话式古诗词学习产品,有持久 Memory 的 AI 诗友
 - **目标**:求职作品集项目(AI 应用工程师方向)
-- **当前状态**:后半程按 CHARTER.md 执行。Phase B 已完成,Phase C1 自适应组卷、错题专项复习入口和学习进度页已落地
+- **当前状态**:后半程按 CHARTER.md 执行。Phase B、Phase C1 和 Phase C2 腾讯 ASR 朗读评分已完成,准备进入 Phase C3 语义诗词搜索
 - **章程**:后半程目标/范围/节奏见 CHARTER.md,与本文件冲突以 CHARTER.md 为准
 - **线上地址**:https://qingteng-ecru.vercel.app
 - **GitHub**:https://github.com/Baiyiruirui/qingteng
@@ -61,7 +61,7 @@
 | 美术 Phase A-2 | ⏳ | 视觉走查 + 做题页批注细节 + 文档/讲点补齐(可与 Phase B 并行) | - |
 | Phase B | 🔨 | Eval v0.2 已扩成 57 checks 并回归 57/57;Langfuse 已接入 chat/opening/quiz-generate/quiz-judge/memory-extract | - |
 | Phase C1 | ✅ | 自适应组卷 + 错题专项复习入口 + 学习进度页已落地;Eval 62/62 | - |
-| Phase C2 | 🔨 | 腾讯 ASR 朗读评分：录音页 + 一句话识别 + 逐字对齐评分已接入;待真机密钥验证 | - |
+| Phase C2 | ✅ | 腾讯 ASR 朗读评分：录音页 + 一句话识别 + 逐字对齐评分 + events 记录;真机验证通过 | - |
 | Phase C3 | ⏳ | 语义诗词搜索 | - |
 | Phase D | ⏳ | 优化提纲 P0 清偿(CHARTER.md 第五节) | - |
 | Phase E | ⏳ | Demo 视频 + README 终稿 + key 轮换 | - |
