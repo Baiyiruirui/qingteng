@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
@@ -17,6 +17,8 @@ type Poem = {
   dynasty: string | null
   grade: string | null
   hasScript: boolean
+  similarity?: number | null
+  matchReason?: string
 }
 
 type Props = {
@@ -29,6 +31,9 @@ export default function PoemsClient({ userName, poems }: Props) {
   const [loading, setLoading] = useState<string | null>(null)
   const [query, setQuery] = useState('')
   const [dynasty, setDynasty] = useState<string | null>(null)
+  const [results, setResults] = useState<Poem[]>(poems)
+  const [searching, setSearching] = useState(false)
+  const [searchMode, setSearchMode] = useState<'browse' | 'hybrid' | 'keyword-fallback'>('browse')
 
   // 朝代筛选轴：从数据动态派生，保持诗库出现顺序
   const dynasties = useMemo(() => {
@@ -63,15 +68,42 @@ export default function PoemsClient({ userName, poems }: Props) {
   }
 
   const q = query.trim()
-  const filtered = poems.filter(p => {
-    const matchQuery =
-      !q ||
-      p.title.includes(q) ||
-      p.author.includes(q) ||
-      (p.dynasty ?? '').includes(q)
-    const matchDynasty = !dynasty || p.dynasty === dynasty
-    return matchQuery && matchDynasty
-  })
+  useEffect(() => {
+    const controller = new AbortController()
+    const params = new URLSearchParams()
+    if (q) params.set('q', q)
+    if (dynasty) params.set('dynasty', dynasty)
+    params.set('limit', '48')
+
+    setSearching(true)
+    fetch(`/api/poems/search?${params.toString()}`, { signal: controller.signal })
+      .then(async res => {
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error ?? '搜索失败')
+        setResults(data.poems)
+        setSearchMode(data.mode)
+      })
+      .catch(error => {
+        if (error instanceof DOMException && error.name === 'AbortError') return
+        setResults(poems.filter(p => {
+          const matchQuery =
+            !q ||
+            p.title.includes(q) ||
+            p.author.includes(q) ||
+            (p.dynasty ?? '').includes(q)
+          const matchDynasty = !dynasty || p.dynasty === dynasty
+          return matchQuery && matchDynasty
+        }))
+        setSearchMode('keyword-fallback')
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setSearching(false)
+      })
+
+    return () => controller.abort()
+  }, [dynasty, poems, q])
+
+  const filtered = results
 
   return (
     <div className="relative min-h-screen bg-paper text-ink">
@@ -116,9 +148,11 @@ export default function PoemsClient({ userName, poems }: Props) {
         </div>
 
         <p className="mb-6 text-xs text-ink-faint">
-          {q || dynasty
-            ? `找到 ${filtered.length} 首`
-            : `共 ${poems.length} 张诗笺 · 标注「可沉浸」的诗支持角色扮演模式`}
+          {searching
+            ? '青藤正在翻诗笺…'
+            : q || dynasty
+              ? `找到 ${filtered.length} 首 · ${searchMode === 'hybrid' ? '语义 + 关键词混合检索' : '关键词检索'}`
+              : `共 ${poems.length} 张诗笺 · 标注「可沉浸」的诗支持角色扮演模式`}
         </p>
 
         {/* 空状态 */}
@@ -168,6 +202,14 @@ export default function PoemsClient({ userName, poems }: Props) {
                   {poem.dynasty ?? ''} · {poem.author}
                   {poem.grade ? ` · ${poem.grade}` : ''}
                 </p>
+                {(q || dynasty) && poem.matchReason && (
+                  <p className="mt-3 text-xs leading-5 text-ink-mid">
+                    {poem.matchReason}
+                    {poem.similarity !== null && poem.similarity !== undefined
+                      ? ` · 相似度 ${Math.round(poem.similarity * 100)}%`
+                      : ''}
+                  </p>
+                )}
               </div>
 
               {/* 操作按钮 */}

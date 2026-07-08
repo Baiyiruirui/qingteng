@@ -64,6 +64,13 @@
       "when": 1782120572973,
       "tag": "0008_deep_nuke",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1783483444367,
+      "tag": "0009_massive_doorman",
+      "breakpoints": true
     }
   ]
 }

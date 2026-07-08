@@ -12,6 +12,7 @@
     "import:immersion": "tsx --env-file=.env.local scripts/import-immersion.ts",
     "pregenerate:quiz": "tsx --env-file=.env.local scripts/pregenerate-quiz.ts",
     "import:blueprints": "tsx --env-file=.env.local scripts/import-blueprints.ts",
+    "embed:poems": "tsx --env-file=.env.local scripts/embed-poems.ts",
     "eval": "tsx --env-file=.env.local src/ai/evals/run-eval.ts"
   },
   "dependencies": {

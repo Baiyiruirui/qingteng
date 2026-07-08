@@ -1,7 +1,7 @@
 # 006. 诗词语义搜索（复用 pgvector 基础设施）
 
-**状态**: 规划中 · Week 6 候选，非必须
-**相关代码**: 复用 `src/ai/embedding.ts`、pgvector（Week 2 为 Memory 建立）
+**状态**: 已实现 · Phase C3
+**相关代码**: `src/ai/embedding-core.ts`, `src/ai/poems/search.ts`, `src/app/api/poems/search/route.ts`, `scripts/embed-poems.ts`
 
 ## 一句话讲点
 
@@ -13,14 +13,15 @@
 
 普通方案是关键词全文搜索（标题/作者/朝代匹配）——任何 CRUD 应用都有，不体现 AI 能力，招聘 ROI 低。
 
-## 想法
+## 实现
 
 利用已经搭好的 pgvector + bge-m3 embedding 基础设施：
 
-1. 给每首诗的"标题 + 主题 + 意象 + 首句"拼成一段文本，做 embedding，存进一张 `poem_embeddings` 表（或在 poems 表加 embedding 列）
-2. 用户输入自然语言查询（"想读关于离别的诗""有没有写月亮的"），query 做 embedding
-3. pgvector 余弦相似度召回 top N 首
-4. 可叠加结构化过滤（学段、朝代）做混合检索
+1. 新增 `poem_embeddings` 表,独立于 `poems`,存 `poemId/content/embedding/model`
+2. `scripts/embed-poems.ts` 把 140 首诗拼成搜索文本并写入 bge-m3 向量
+3. `/api/poems/search` 接收自然语言 query,做 query embedding
+4. pgvector 余弦相似度召回 top N
+5. 关键词命中优先,语义召回补位,朝代筛选继续可用
 
 ## 为什么这是个好讲点
 
@@ -28,10 +29,24 @@
 - **语义优于关键词**：用户搜"孤独"，能召回《登高》《九月九日忆山东兄弟》这些并未出现"孤独"二字但意境契合的诗
 - **混合检索**：语义 + 结构化过滤，是 RAG 检索的进阶形态
 
-## 何时做
+## 验证样例
 
-Week 3-5 主线（沉浸 + 创作 + Eval）完成后，Week 6 如果有余力再做。**不是必须项**——它是"锦上添花 + 多一个讲点"，不是项目完整性的前提。
+`孤独` 查询已回填验证,top 结果包括:
 
-## 不要现在做的理由
+- 《江雪》 柳宗元
+- 《独坐敬亭山》 李白
+- 《月下独酌》 李白
+- 《竹里馆》 王维
+- 《登高》 杜甫
+- 《旅夜书怀》 杜甫
 
-Week 3 主线是诗境沉浸 + 协同创作，这两个是产品差异化的核心。搜索是基础设施优化，优先级在主线之后。提前做会分散精力。
+这些结果不只靠标题/作者命中,而是来自主题、意象、译文、释义和原文的综合语义。
+
+## 设计取舍
+
+没有把 embedding 直接塞进 `poems` 表,而是新增 `poem_embeddings` 表。理由:
+
+- 诗词原始资料和向量索引生命周期不同
+- 后续可以重跑 embedding 或更换模型,不污染主表
+- 可保留 `model` 字段,支持版本化
+- 更符合 RAG/检索系统的工程边界

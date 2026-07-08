@@ -25,6 +25,14 @@ export const poems = pgTable('poems', {
   createdAt: timestamp('created_at').defaultNow(),
 })
 
+export const poemEmbeddings = pgTable('poem_embeddings', {
+  poemId: text('poem_id').primaryKey().references(() => poems.id),
+  content: text('content').notNull(),
+  embedding: vector('embedding', { dimensions: 1024 }).notNull(),
+  model: text('model').notNull().default('BAAI/bge-m3'),
+  createdAt: timestamp('created_at').defaultNow(),
+})
+
 export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: text('name').notNull().unique(),
