@@ -12,6 +12,7 @@
     "verify:data": "tsx --env-file=.env.local scripts/verify-data.ts",
     "verify:memory": "tsx --env-file=.env.local scripts/verify-memory-policy.ts",
     "audit:quiz": "tsx --env-file=.env.local scripts/audit-quiz-bank.ts",
+    "plan:blueprints": "tsx --env-file=.env.local scripts/plan-blueprint-scale.ts",
     "import:immersion": "tsx --env-file=.env.local scripts/import-immersion.ts",
     "pregenerate:quiz": "tsx --env-file=.env.local scripts/pregenerate-quiz.ts",
     "import:blueprints": "tsx --env-file=.env.local scripts/import-blueprints.ts",

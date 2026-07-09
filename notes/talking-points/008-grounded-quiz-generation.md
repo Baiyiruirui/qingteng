@@ -66,7 +66,7 @@ data/quiz-blueprints.json
 
 ---
 
-## 蓝图生成器（为规模化铺路）
+## 蓝图生成器与规模化计划
 
 `src/ai/quiz/generate-blueprint.ts`：输入任意一首诗的结构化数据 → 输出考点蓝图 JSON。
 
@@ -79,6 +79,8 @@ data/quiz-blueprints.json
 - p6 [综合选择] 全诗
 
 **人在回路**：AI 生成蓝图 → 教研员审核调整 → 导入后按蓝图出题。这样既能规模化（140 首），又能把关质量。
+
+Phase D 增加了 `pnpm plan:blueprints` dry-run:只读数据库,统计当前覆盖、估算全量生成量、列出第一批建议处理的诗和 10% 人工抽检样本。这样规模化不再是"口头说能扩",而是有批次、抽检和审计门槛。
 
 ---
 
@@ -95,5 +97,5 @@ data/quiz-blueprints.json
 ## 面试追问
 
 - "蓝图人工设计成本高，能自动化吗？" → 有蓝图生成器，已在春晓测试。人工主要做"审核"而非"设计"
-- "evidenceValid=false 的题怎么处理？" → 入库标记，Week 5 加人工审核 UI
-- "怎么扩展到 140 首？" → 批量跑蓝图生成器 + 人工抽检，是 Week 6 规模化任务
+- "evidenceValid=false 的题怎么处理？" → `pnpm audit:quiz` 会把 v2 题中的 evidence/quality/blueprint 问题列为 critical;旧 v1 题只作为 warning 留痕,不进 demo 流程。
+- "怎么扩展到 140 首？" → `pnpm plan:blueprints` 先做 dry-run 覆盖计划;每批 20 首生成蓝图,人工抽检至少 10%,再导入并生成 v2 题,最后 `audit:quiz` critical 必须为 0。
