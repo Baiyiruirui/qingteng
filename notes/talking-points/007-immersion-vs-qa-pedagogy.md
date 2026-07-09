@@ -1,6 +1,6 @@
 # 007. 诗境沉浸 vs 问答:产品差异化的教育学根基
 
-**相关代码**: `src/app/api/session/`（roleplay 模式，Week 3 Day 2 实现）
+**相关代码**: `src/app/api/session/`（roleplay 模式，Week 3 Day 2 实现）、`src/ai/prompts/v1/immersion-memory.ts`
 **相关数据**: `data/immersion-scripts.json`、`immersion_scripts` 表
 **相关决策**: `notes/decisions/0004-conversation-mode-architecture.md`
 
@@ -43,7 +43,7 @@
 
 **跑题拉回机制**：prompt 明确约束"学生跑题或敷衍时，温和地把他拉回情境，不要生硬"。实测：学生说无关内容时，青藤会用"你刚才说……让我想起你此刻站在这里……"的方式将话题拉回诗境，既承接了学生的发言，又回到了引导线。
 
-**不注入三层 Memory**：沉浸模式 system prompt 只注入诗境脚本，不注入 short-term / mid-term / long-term memory。原因：沉浸是情境专注的，用户上一次说"喜欢李白"不应该打断这次《登高》里杜甫的情境。Memory 整合留到 Week 6。
+**不注入三层 Memory,但出境后抽取 Memory**：沉浸模式 system prompt 只注入诗境脚本，不注入 short-term / mid-term / long-term memory。原因：沉浸是情境专注的，用户上一次说"喜欢李白"不应该打断这次《登高》里杜甫的情境。但沉浸结束后,`extractImmersionAndStore()` 会用专门 prompt 判断学生是否表达了真实情绪、偏好或困惑,只把"这位学生在《登高》的沉浸对话里说出了自己的孤独感"这类信号写入长期 Memory,不把角色扮演剧情当成真人经历。
 
 ## 可能的追问
 
@@ -55,3 +55,6 @@
 
 - Q: 为什么不让 140 首诗都支持沉浸？
   A: 沉浸脚本需要文学性的人工设计（角色、场景、教学目标、情感节点），不能机械生成。精雕 3 首做范式验证，远胜粗制 140 首。规模化时可以做"脚本生成 + 人工审核"的半自动 pipeline。
+
+- Q: 沉浸模式为什么不直接用用户 Memory?
+  A: 入境时不注入,出境后再抽取。入境时保持诗境纯净,避免历史偏好打断当前角色扮演;出境后把真实学习信号沉淀回长期 Memory。这样既保留沉浸感,又不丢掉最有价值的情绪和困惑信号。

@@ -9,6 +9,7 @@ import type { PoemLine } from '@/db/schema'
 import { getImmersionScript } from '@/db/repositories/conversations'
 import { appendMessage } from '@/db/repositories/messages'
 import { recordEvent } from '@/db/repositories/events'
+import { extractImmersionAndStore } from '@/ai/memory/long-term'
 
 export const runtime = 'nodejs'
 
@@ -100,10 +101,21 @@ export async function POST(req: Request) {
             userId: session.userId,
             type: 'immersion',
             poemId: conv.poemId ?? undefined,
-            meta: { conversationId, totalTokens: usage.totalTokens },
+            meta: { conversationId, totalTokens: usage.totalTokens, memoryEligible: Boolean(userText) },
           })
         } catch (e) {
           console.error('[immersion onFinish] failed to persist:', e)
+        }
+
+        if (userText) {
+          extractImmersionAndStore({
+            userId: session.userId,
+            poemTitle: poemRow.title,
+            poemAuthor: poemRow.author,
+            role: script.role,
+            userText,
+            assistantText: text,
+          }).catch(e => console.error('[immersion memory] extract failed:', e))
         }
       },
     })

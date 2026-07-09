@@ -6,6 +6,7 @@ import { db } from '@/db'
 import { memories } from '@/db/schema'
 import { embed } from '@/ai/embedding'
 import { buildExtractPrompt } from '@/ai/prompts/v1/memory-extract'
+import { buildImmersionMemoryPrompt } from '@/ai/prompts/v1/immersion-memory'
 import { telemetry } from '@/ai/observability/telemetry'
 import {
   MEMORY_CAP_PER_USER,
@@ -70,20 +71,28 @@ export async function extractAndStore(userId: string, transcript: string): Promi
   const extracted = parseExtracted(text)
   if (extracted.length === 0) return
 
-  await Promise.all(
-    extracted.map(async (m) => {
-      const content = normalizeMemoryContent(m.content)
-      if (!content) return
+  await storeMemoryCandidates(userId, extracted)
+}
 
-      const kind = normalizeMemoryKind(m.kind)
+async function storeMemoryCandidates(userId: string, candidates: ExtractedMemory[]): Promise<void> {
+  const seenContents = new Set<string>()
+  const normalizedCandidates = candidates.flatMap(m => {
+    const content = normalizeMemoryContent(m.content)
+    if (!content || seenContents.has(content)) return []
+    seenContents.add(content)
+    return [{ content, kind: normalizeMemoryKind(m.kind) }]
+  })
+
+  const stored = await Promise.all(
+    normalizedCandidates.map(async (m) => {
       const existing = await db
         .select({ id: memories.id, source: memories.source, weight: memories.weight })
         .from(memories)
-        .where(and(eq(memories.userId, userId), eq(memories.content, content)))
+        .where(and(eq(memories.userId, userId), eq(memories.content, m.content)))
         .limit(1)
 
       if (existing[0]) {
-        const nextSource = existing[0].source === 'preference' ? 'preference' : kind
+        const nextSource = existing[0].source === 'preference' ? 'preference' : m.kind
         const nextWeight = Math.min(
           (existing[0].weight ?? 1) + MEMORY_DUPLICATE_WEIGHT_BONUS,
           MEMORY_MAX_WEIGHT,
@@ -97,21 +106,49 @@ export async function extractAndStore(userId: string, transcript: string): Promi
             createdAt: new Date(),
           })
           .where(eq(memories.id, existing[0].id))
-        return
+        return true
       }
 
-      const vector = await embed(content)
+      const vector = await embed(m.content)
       await db.insert(memories).values({
         userId,
-        content,
+        content: m.content,
         embedding: vector,
-        source: kind,
+        source: m.kind,
         weight: 1,
       })
+      return true
     }),
   )
 
-  await enforceMemoryCap(userId)
+  if (stored.some(Boolean)) {
+    await enforceMemoryCap(userId)
+  }
+}
+
+export async function extractImmersionAndStore(input: {
+  userId: string
+  poemTitle: string
+  poemAuthor: string
+  role: string
+  userText: string
+  assistantText: string
+}): Promise<void> {
+  const { text } = await generateText({
+    model: route.quizGenerate,
+    prompt: buildImmersionMemoryPrompt(input),
+    experimental_telemetry: telemetry('qingteng.memory.extract', {
+      mode: 'immersion-memory-extract',
+      userId: input.userId,
+      poemTitle: input.poemTitle,
+      transcriptChars: input.userText.length + input.assistantText.length,
+    }),
+  })
+
+  const extracted = parseExtracted(text)
+  if (extracted.length === 0) return
+
+  await storeMemoryCandidates(input.userId, extracted)
 }
 
 export async function recall(
