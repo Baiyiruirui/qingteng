@@ -65,6 +65,7 @@
 | Phase D-1 | ✅ | 数据验收脚本 + `Tang` 源数据修正 + 构建字体去外部依赖 | `470318a` |
 | Phase D-2 | ✅ | Memory 膨胀治理：去重、时间衰减、单用户上限;Eval 62/62 | `1005212` |
 | Phase D-3 | ✅ | 沉浸模式 Memory 整合：出境后抽取真实情绪/困惑信号;Eval 62/62 | `4506995` |
+| Phase D-4 | ✅ | 题库审核闭环 v1：audit:quiz 0 critical,旧 v1 warning 留痕;Eval 62/62 | `5ec428b` |
 | Phase D | ⏳ | 优化提纲 P0 清偿(CHARTER.md 第五节) | - |
 | Phase E | ⏳ | Demo 视频 + README 终稿 + key 轮换 | - |
 
