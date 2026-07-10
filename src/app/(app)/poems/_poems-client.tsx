@@ -30,6 +30,7 @@ export default function PoemsClient({ userName, poems }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
   const [query, setQuery] = useState('')
+  const [debouncedQuery, setDebouncedQuery] = useState('')
   const [dynasty, setDynasty] = useState<string | null>(null)
   const [results, setResults] = useState<Poem[]>(poems)
   const [searching, setSearching] = useState(false)
@@ -67,7 +68,12 @@ export default function PoemsClient({ userName, poems }: Props) {
     }
   }
 
-  const q = query.trim()
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedQuery(query.trim()), 350)
+    return () => window.clearTimeout(timer)
+  }, [query])
+
+  const q = debouncedQuery
   useEffect(() => {
     const controller = new AbortController()
     const params = new URLSearchParams()
@@ -120,6 +126,7 @@ export default function PoemsClient({ userName, poems }: Props) {
               type="text"
               value={query}
               onChange={e => setQuery(e.target.value)}
+              maxLength={120}
               placeholder="想读点什么？试试「孤独」「送别」或诗人名字"
               className="w-full rounded-lg border border-edge bg-paper/60 px-4 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-ink-faint/70 focus:border-jade focus:bg-paper"
             />

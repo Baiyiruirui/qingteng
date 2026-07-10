@@ -1,28 +1,49 @@
 import { randomUUID } from 'node:crypto'
 import { NextResponse } from 'next/server'
+import { z } from 'zod'
 import { requireAuth } from '@/lib/auth-server'
 import { getPoemForQuiz } from '@/db/repositories/poems'
 import { recordEvent } from '@/db/repositories/events'
 import { poemLinesToText, scoreRecitation } from '@/ai/recite/score'
 import { recognizeSentence } from '@/ai/recite/tencent-asr'
+import { checkRateLimits, rateLimitResponse } from '@/lib/rate-limit'
+import { estimateBase64Bytes } from '@/lib/request-limits'
 
 export const runtime = 'nodejs'
 
 const MAX_AUDIO_BYTES = 2_500_000
+const MAX_BASE64_CHARS = Math.ceil((MAX_AUDIO_BYTES * 4) / 3) + 4
+
+const requestSchema = z.object({
+  poemId: z.string().min(1).max(64),
+  audioBase64: z.string().min(1).max(MAX_BASE64_CHARS),
+  audioBytes: z.number().int().positive().max(MAX_AUDIO_BYTES),
+  voiceFormat: z.enum(['wav']).optional(),
+})
 
 export async function POST(req: Request) {
   const session = await requireAuth()
-  const body = (await req.json()) as {
-    poemId?: string
-    audioBase64?: string
-    audioBytes?: number
-    voiceFormat?: string
+
+  const rateLimit = await checkRateLimits({
+    req,
+    userId: session.userId,
+    policies: [
+      { scope: 'recite-user-minute', identity: 'user', limit: 4, windowSeconds: 60 },
+      { scope: 'recite-user-hour', identity: 'user', limit: 20, windowSeconds: 60 * 60 },
+      { scope: 'recite-ip-hour', identity: 'ip', limit: 40, windowSeconds: 60 * 60 },
+    ],
+  })
+  if (!rateLimit.allowed) {
+    return rateLimitResponse(rateLimit, { errorShape: 'string' })
   }
 
-  if (!body.poemId || !body.audioBase64 || !body.audioBytes) {
+  const parsedBody = requestSchema.safeParse(await req.json().catch(() => null))
+  if (!parsedBody.success) {
     return NextResponse.json({ error: 'Missing poemId or audio data' }, { status: 400 })
   }
-  if (body.audioBytes > MAX_AUDIO_BYTES) {
+  const body = parsedBody.data
+  const actualAudioBytes = estimateBase64Bytes(body.audioBase64)
+  if (actualAudioBytes <= 0 || actualAudioBytes > MAX_AUDIO_BYTES) {
     return NextResponse.json({ error: 'Audio is too large; please keep it under 20 seconds' }, { status: 413 })
   }
 
@@ -34,7 +55,7 @@ export async function POST(req: Request) {
   try {
     const asr = await recognizeSentence({
       audioBase64: body.audioBase64,
-      audioBytes: body.audioBytes,
+      audioBytes: actualAudioBytes,
       voiceFormat: body.voiceFormat ?? 'wav',
       userAudioKey: `${session.userId}-${body.poemId}-${randomUUID()}`,
     })

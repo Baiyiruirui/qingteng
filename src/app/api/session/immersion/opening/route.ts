@@ -1,6 +1,7 @@
 import { generateText } from 'ai'
 import { NextResponse } from 'next/server'
 import { eq, and } from 'drizzle-orm'
+import { z } from 'zod'
 import { route } from '@/ai/router'
 import { buildImmersionSystem } from '@/ai/prompts/v1/immersion'
 import { getSession } from '@/lib/auth-server'
@@ -10,8 +11,15 @@ import type { PoemLine } from '@/db/schema'
 import { getImmersionScript, loadMessages } from '@/db/repositories/conversations'
 import { appendMessage } from '@/db/repositories/messages'
 import { recordEvent } from '@/db/repositories/events'
+import {
+  checkRateLimits,
+  PUBLIC_AI_BUDGET_POLICIES,
+  rateLimitResponse,
+} from '@/lib/rate-limit'
 
 export const runtime = 'nodejs'
+
+const requestSchema = z.object({ conversationId: z.string().uuid() })
 
 export async function POST(req: Request) {
   const session = await getSession()
@@ -19,12 +27,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: { code: 'UNAUTHORIZED', message: '请先登录' } }, { status: 401 })
   }
 
-  const body = await req.json().catch(() => ({}))
-  const { conversationId } = body as { conversationId?: string }
-
-  if (!conversationId) {
-    return NextResponse.json({ error: { code: 'BAD_REQUEST', message: '缺少 conversationId' } }, { status: 400 })
+  const parsedBody = requestSchema.safeParse(await req.json().catch(() => null))
+  if (!parsedBody.success) {
+    return NextResponse.json(
+      { error: { code: 'BAD_REQUEST', message: 'conversationId 不正确' } },
+      { status: 400 },
+    )
   }
+  const { conversationId } = parsedBody.data
 
   // Verify conversation belongs to user and is roleplay mode
   const [conv] = await db
@@ -48,6 +58,16 @@ export async function POST(req: Request) {
   if (existing.length > 0) {
     return NextResponse.json({ opening: null })
   }
+
+  const rateLimit = await checkRateLimits({
+    req,
+    userId: session.userId,
+    policies: [
+      ...PUBLIC_AI_BUDGET_POLICIES,
+      { scope: 'immersion-opening-user-hour', identity: 'user', limit: 12, windowSeconds: 60 * 60 },
+    ],
+  })
+  if (!rateLimit.allowed) return rateLimitResponse(rateLimit)
 
   // Load immersion script + poem lines in parallel
   const [script, poemRow] = await Promise.all([

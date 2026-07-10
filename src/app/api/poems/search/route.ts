@@ -4,6 +4,11 @@ import { getSession } from '@/lib/auth-server'
 import { db } from '@/db'
 import { immersionScripts, poems } from '@/db/schema'
 import { semanticPoemSearch, type PoemSearchResult } from '@/ai/poems/search'
+import {
+  checkRateLimits,
+  PUBLIC_AI_BUDGET_POLICIES,
+  rateLimitResponse,
+} from '@/lib/rate-limit'
 
 export const runtime = 'nodejs'
 
@@ -63,7 +68,28 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const query = (searchParams.get('q') ?? '').trim()
   const dynasty = (searchParams.get('dynasty') ?? '').trim()
-  const limit = Math.min(Number(searchParams.get('limit') ?? 48), 80)
+  const requestedLimit = Number.parseInt(searchParams.get('limit') ?? '48', 10)
+  const limit = Number.isFinite(requestedLimit) && requestedLimit > 0
+    ? Math.min(requestedLimit, 80)
+    : 48
+
+  if (query.length > 120) {
+    return NextResponse.json({ error: '搜索内容不能超过 120 字' }, { status: 400 })
+  }
+
+  if (query) {
+    const rateLimit = await checkRateLimits({
+      req,
+      userId: session.userId,
+      policies: [
+        ...PUBLIC_AI_BUDGET_POLICIES,
+        { scope: 'poem-search-user-minute', identity: 'user', limit: 12, windowSeconds: 60 },
+      ],
+    })
+    if (!rateLimit.allowed) {
+      return rateLimitResponse(rateLimit, { errorShape: 'string' })
+    }
+  }
 
   const [poemRows, scripts] = await Promise.all([
     db

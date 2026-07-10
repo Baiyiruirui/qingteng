@@ -133,6 +133,7 @@ export default function RegisterPage() {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 autoComplete="new-password"
+                maxLength={128}
               />
 
               {error && <p className="text-sm text-cinnabar opacity-90">{error}</p>}

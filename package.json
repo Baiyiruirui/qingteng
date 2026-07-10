@@ -10,6 +10,7 @@
     "db:check": "tsx --env-file=.env.local scripts/db-check.ts",
     "db:verify": "tsx --env-file=.env.local scripts/verify-poems.ts",
     "verify:data": "tsx --env-file=.env.local scripts/verify-data.ts",
+    "verify:security": "tsx --env-file=.env.local scripts/verify-security.ts",
     "verify:memory": "tsx --env-file=.env.local scripts/verify-memory-policy.ts",
     "audit:quiz": "tsx --env-file=.env.local scripts/audit-quiz-bank.ts",
     "plan:blueprints": "tsx --env-file=.env.local scripts/plan-blueprint-scale.ts",

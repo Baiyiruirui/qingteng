@@ -20,6 +20,13 @@ function getTextContent(parts: Array<{ type: string; text?: string }>) {
     .join('')
 }
 
+function chatErrorMessage(error: Error) {
+  if (error.message.includes('429') || error.message.includes('RATE_LIMITED')) {
+    return '这一程走得有些急了，稍等片刻再回应。'
+  }
+  return '诗境暂时没有回应，请稍后再试。'
+}
+
 type Props = {
   userName: string
   conversationId: string
@@ -56,7 +63,7 @@ export default function ImmersionClient({
     [conversationId],
   )
 
-  const { messages, status, sendMessage, setMessages } = useChat({
+  const { messages, status, sendMessage, setMessages, error, clearError } = useChat({
     transport,
     messages: initialMessages,
   })
@@ -92,13 +99,15 @@ export default function ImmersionClient({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const text = input.trim()
-    if (!text || status !== 'ready') return
+    if (!text || status === 'submitted' || status === 'streaming') return
+    if (error) clearError()
     sendMessage({ text })
     setInput('')
   }
 
   const roleDisplay = role.replace(/^你是/, '').split(',')[0].trim()
   const sceneImage = YIJING[poemId]
+  const busy = status === 'submitted' || status === 'streaming'
 
   return (
     <div className="flex min-h-screen flex-col bg-paper text-ink">
@@ -245,6 +254,11 @@ export default function ImmersionClient({
       </main>
 
       <footer className="sticky bottom-0 border-t border-edge bg-paper/92 py-4 backdrop-blur">
+        {error && (
+          <p className="mx-auto mb-2 max-w-4xl px-4 text-xs text-cinnabar">
+            {chatErrorMessage(error)}
+          </p>
+        )}
         <form
           onSubmit={handleSubmit}
           className="mx-auto flex max-w-4xl items-end gap-3 px-4"
@@ -252,7 +266,11 @@ export default function ImmersionClient({
           <input
             className="flex-1 rounded-xl border border-edge bg-white/80 px-4 py-3 text-sm text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-jade"
             value={input}
-            onChange={e => setInput(e.target.value)}
+            onChange={e => {
+              if (error) clearError()
+              setInput(e.target.value)
+            }}
+            maxLength={2000}
             onKeyDown={e => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault()
@@ -260,12 +278,12 @@ export default function ImmersionClient({
               }
             }}
             placeholder="说说你看见了什么，感受到什么..."
-            disabled={status !== 'ready'}
+            disabled={busy}
             autoFocus
           />
           <button
             type="submit"
-            disabled={!input.trim() || status !== 'ready'}
+            disabled={!input.trim() || busy}
             className="shrink-0 rounded-xl px-5 py-3 font-serif text-sm tracking-[0.12em] text-paper-block transition-opacity disabled:opacity-40"
             style={{ background: 'var(--qt-ink-btn)' }}
           >

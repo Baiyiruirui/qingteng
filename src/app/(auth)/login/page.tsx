@@ -124,6 +124,7 @@ export default function LoginPage() {
                 onChange={e => setName(e.target.value)}
                 autoFocus
                 autoComplete="username"
+                maxLength={20}
               />
               <InkField
                 label="密码"
@@ -132,6 +133,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 autoComplete="current-password"
+                maxLength={128}
               />
 
               {error && <p className="text-sm text-cinnabar opacity-90">{error}</p>}
@@ -176,6 +178,7 @@ function InkField({
   onChange,
   autoFocus,
   autoComplete,
+  maxLength,
 }: {
   label: string
   type?: string
@@ -184,6 +187,7 @@ function InkField({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   autoFocus?: boolean
   autoComplete?: string
+  maxLength?: number
 }) {
   return (
     <label className="group flex flex-col gap-1.5">
@@ -196,6 +200,7 @@ function InkField({
           onChange={onChange}
           autoFocus={autoFocus}
           autoComplete={autoComplete}
+          maxLength={maxLength}
           className="w-full rounded-lg border border-edge bg-paper/60 px-3.5 py-2.5 font-sans text-sm text-ink outline-none transition-colors placeholder:text-ink-faint/70 focus:border-jade focus:bg-paper"
         />
         <span className="pointer-events-none absolute -bottom-px left-1/2 h-px w-0 -translate-x-1/2 bg-jade transition-all duration-300 group-focus-within:w-[calc(100%-12px)]" />

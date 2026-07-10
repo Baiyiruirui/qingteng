@@ -5,15 +5,24 @@ import { z } from 'zod'
 import { db } from '@/db'
 import { users } from '@/db/schema'
 import { verifyPassword, signSession, COOKIE_NAME } from '@/lib/auth'
+import { checkRateLimits, rateLimitResponse } from '@/lib/rate-limit'
 
 const schema = z.object({
-  name: z.string().min(1),
-  password: z.string().min(1),
+  name: z.string().min(1).max(20),
+  password: z.string().min(1).max(128),
 })
 
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7
 
 export async function POST(req: Request) {
+  const rateLimit = await checkRateLimits({
+    req,
+    policies: [
+      { scope: 'auth-login-ip-10m', identity: 'ip', limit: 15, windowSeconds: 10 * 60 },
+    ],
+  })
+  if (!rateLimit.allowed) return rateLimitResponse(rateLimit)
+
   const body = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) {

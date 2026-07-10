@@ -1,5 +1,6 @@
 import { streamText, convertToModelMessages } from 'ai'
 import { and, eq } from 'drizzle-orm'
+import { z } from 'zod'
 import { route } from '@/ai/router'
 import { CHARACTER_SYSTEM_PROMPT } from '@/ai/prompts/v1/character'
 import { getSession } from '@/lib/auth-server'
@@ -11,8 +12,19 @@ import { updateShortTerm } from '@/ai/memory/short-term'
 import { buildSystemContext, renderMemoryContext } from '@/ai/memory/build-context'
 import { recall, extractAndStore } from '@/ai/memory/long-term'
 import { telemetry } from '@/ai/observability/telemetry'
+import {
+  checkRateLimits,
+  PUBLIC_AI_BUDGET_POLICIES,
+  rateLimitResponse,
+} from '@/lib/rate-limit'
+import { parseUiMessages } from '@/lib/request-limits'
 
 export const runtime = 'nodejs'
+
+const requestSchema = z.object({
+  conversationId: z.string().uuid(),
+  messages: z.unknown(),
+})
 
 export async function POST(req: Request) {
   const session = await getSession()
@@ -23,15 +35,35 @@ export async function POST(req: Request) {
     )
   }
 
-  try {
-    const { messages, conversationId } = await req.json()
+  const rateLimit = await checkRateLimits({
+    req,
+    userId: session.userId,
+    policies: [
+      ...PUBLIC_AI_BUDGET_POLICIES,
+      { scope: 'chat-user-minute', identity: 'user', limit: 8, windowSeconds: 60 },
+    ],
+  })
+  if (!rateLimit.allowed) return rateLimitResponse(rateLimit)
 
-    if (!conversationId) {
+  try {
+    const parsedBody = requestSchema.safeParse(await req.json().catch(() => null))
+    if (!parsedBody.success) {
       return Response.json(
-        { error: { code: 'BAD_REQUEST', message: '缺少 conversationId' } },
+        { error: { code: 'BAD_REQUEST', message: '请求格式不正确' } },
         { status: 400 },
       )
     }
+
+    const parsedMessages = parseUiMessages(parsedBody.data.messages)
+    if (!parsedMessages.success) {
+      return Response.json(
+        { error: { code: 'BAD_REQUEST', message: parsedMessages.message } },
+        { status: 400 },
+      )
+    }
+
+    const { conversationId } = parsedBody.data
+    const { messages, lastUserText: userText } = parsedMessages.data
 
     // Verify conversation ownership and fetch user name in parallel
     const [convRows, userRows] = await Promise.all([
@@ -62,23 +94,15 @@ export async function POST(req: Request) {
     const userName = userRows[0]?.name ?? ''
 
     // Save the new user message (last in array) to PG and Redis
-    const lastMsg = messages[messages.length - 1]
-    let userText = ''
-    if (lastMsg?.role === 'user') {
-      userText = (lastMsg.parts as Array<{ type: string; text?: string }>)
-        ?.filter((p: { type: string }) => p.type === 'text')
-        .map((p: { type: string; text?: string }) => p.text ?? '')
-        .join('') ?? ''
-      await appendMessage(conversationId, 'user', userText)
-      updateShortTerm(session.userId, conversationId, { role: 'user', content: userText }).catch(
-        e => console.error('[redis] updateShortTerm user failed:', e),
-      )
-    }
+    await appendMessage(conversationId, 'user', userText)
+    updateShortTerm(session.userId, conversationId, { role: 'user', content: userText }).catch(
+      e => console.error('[redis] updateShortTerm user failed:', e),
+    )
 
     // Build mid-term profile context + recall long-term memories in parallel
     const [profileContext, recalled] = await Promise.all([
       buildSystemContext(session.userId, userName),
-      userText ? recall(session.userId, userText).catch(() => []) : Promise.resolve([]),
+      recall(session.userId, userText).catch(() => []),
     ])
 
     const systemPrompt =
@@ -118,12 +142,10 @@ export async function POST(req: Request) {
         )
 
         // Extract long-term memories from this turn — fire-and-forget, never blocks
-        if (userText) {
-          const transcript = `${userName}: ${userText}\n青藤: ${text}`
-          extractAndStore(session.userId, transcript).catch(
-            e => console.error('[long-term] extract failed:', e),
-          )
-        }
+        const transcript = `${userName}: ${userText}\n青藤: ${text}`
+        extractAndStore(session.userId, transcript).catch(
+          e => console.error('[long-term] extract failed:', e),
+        )
       },
     })
     return result.toUIMessageStreamResponse()

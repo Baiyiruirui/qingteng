@@ -161,6 +161,9 @@ pnpm tsx scripts/import-poems.ts
 
 # 启动
 pnpm dev
+
+# 发布前安全自检（不输出任何密钥值）
+pnpm verify:security
 ```
 
 需要的服务账号：

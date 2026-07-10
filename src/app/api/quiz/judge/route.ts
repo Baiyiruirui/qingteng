@@ -1,25 +1,32 @@
 import { NextResponse } from 'next/server'
 import { eq, and, sql } from 'drizzle-orm'
+import { z } from 'zod'
 import { requireAuth } from '@/lib/auth-server'
 import { db } from '@/db'
 import { quizQuestions, quizAttempts, wrongQuestions } from '@/db/schema'
 import { getPoemForQuiz } from '@/db/repositories/poems'
 import { judgeObjective, judgeSubjective } from '@/ai/quiz/judge'
+import {
+  checkRateLimits,
+  PUBLIC_AI_BUDGET_POLICIES,
+  rateLimitResponse,
+} from '@/lib/rate-limit'
+
+const requestSchema = z.object({
+  questionId: z.string().uuid(),
+  userAnswer: z.string().trim().min(1).max(2_000),
+  sessionId: z.string().uuid(),
+})
 
 export async function POST(req: Request) {
   const session = await requireAuth()
   const { userId } = session
 
-  const body = await req.json()
-  const { questionId, userAnswer, sessionId } = body as {
-    questionId: string
-    userAnswer: string
-    sessionId: string
-  }
-
-  if (!questionId || userAnswer === undefined || !sessionId) {
+  const parsedBody = requestSchema.safeParse(await req.json().catch(() => null))
+  if (!parsedBody.success) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
+  const { questionId, userAnswer, sessionId } = parsedBody.data
 
   // Idempotency: if this session+question was already judged, return cached result
   const [existing] = await db
@@ -68,6 +75,18 @@ export async function POST(req: Request) {
     isCorrect = result.isCorrect
     completionRate = null
   } else {
+    const rateLimit = await checkRateLimits({
+      req,
+      userId,
+      policies: [
+        ...PUBLIC_AI_BUDGET_POLICIES,
+        { scope: 'quiz-judge-user-minute', identity: 'user', limit: 10, windowSeconds: 60 },
+      ],
+    })
+    if (!rateLimit.allowed) {
+      return rateLimitResponse(rateLimit, { errorShape: 'string' })
+    }
+
     const scoringPoints = (question.scoringPoints ?? []) as string[]
     if (scoringPoints.length === 0) {
       return NextResponse.json({ error: 'Question missing scoringPoints — run backfill first' }, { status: 422 })

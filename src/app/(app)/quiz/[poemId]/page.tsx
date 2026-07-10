@@ -283,6 +283,7 @@ export default function QuizPage() {
                 type="text"
                 placeholder="请填写答案…"
                 value={state.userAnswer}
+                maxLength={2000}
                 onChange={e => setState(s => s.phase === 'quiz' ? { ...s, userAnswer: e.target.value } : s)}
                 onKeyDown={e => { if (e.key === 'Enter' && !state.submitting) submitAnswer() }}
                 className="w-full px-4 py-3 rounded-xl border border-qt-border text-sm outline-none focus:border-qt-green transition-colors bg-white text-qt-ink"
@@ -292,6 +293,7 @@ export default function QuizPage() {
                 ref={el => { answerRef.current = el }}
                 placeholder="请写下你的回答（尽量详细）…"
                 value={state.userAnswer}
+                maxLength={2000}
                 onChange={e => setState(s => s.phase === 'quiz' ? { ...s, userAnswer: e.target.value } : s)}
                 rows={5}
                 className="w-full px-4 py-3 rounded-xl border border-qt-border text-sm outline-none focus:border-qt-green transition-colors resize-none bg-white text-qt-ink"

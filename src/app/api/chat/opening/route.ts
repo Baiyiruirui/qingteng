@@ -9,10 +9,15 @@ import { getOrCreateActiveConversation, loadMessages } from '@/db/repositories/c
 import { appendMessage } from '@/db/repositories/messages'
 import { recordEvent } from '@/db/repositories/events'
 import { telemetry } from '@/ai/observability/telemetry'
+import {
+  checkRateLimits,
+  PUBLIC_AI_BUDGET_POLICIES,
+  rateLimitResponse,
+} from '@/lib/rate-limit'
 
 export const runtime = 'nodejs'
 
-export async function POST() {
+export async function POST(req: Request) {
   const user = await getCurrentUser()
   if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
 
@@ -23,6 +28,16 @@ export async function POST() {
   if (existing.length > 0) {
     return NextResponse.json({ opening: null, conversationId: conversation.id })
   }
+
+  const rateLimit = await checkRateLimits({
+    req,
+    userId: user.id,
+    policies: [
+      ...PUBLIC_AI_BUDGET_POLICIES,
+      { scope: 'opening-user-hour', identity: 'user', limit: 12, windowSeconds: 60 * 60 },
+    ],
+  })
+  if (!rateLimit.allowed) return rateLimitResponse(rateLimit)
 
   const snapshot = await getShortTerm(user.id).catch(() => null)
   const userPrompt = buildOpeningUserPrompt({ userName: user.name, snapshot })

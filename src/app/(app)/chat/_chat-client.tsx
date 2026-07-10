@@ -18,6 +18,16 @@ function getTextContent(parts: Array<{ type: string; text?: string }>) {
     .join('')
 }
 
+function chatErrorMessage(error: Error) {
+  if (error.message.includes('429') || error.message.includes('RATE_LIMITED')) {
+    return '今天聊得有些密了，稍等片刻再继续。'
+  }
+  if (error.message.includes('503') || error.message.includes('RATE_LIMIT_UNAVAILABLE')) {
+    return '青藤暂时接不上话，请稍后再试。'
+  }
+  return '这次没有收到回应，请稍后再试。'
+}
+
 export type DailyPoem = {
   id: string
   title: string
@@ -71,7 +81,7 @@ export default function ChatClient({
     [conversationId],
   )
 
-  const { messages, status, sendMessage, setMessages } = useChat({
+  const { messages, status, sendMessage, setMessages, error, clearError } = useChat({
     transport,
     messages: initialMessages,
   })
@@ -118,7 +128,8 @@ export default function ChatClient({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const text = input.trim()
-    if (!text || status !== 'ready') return
+    if (!text || status === 'submitted' || status === 'streaming') return
+    if (error) clearError()
     sendMessage({ text })
     setInput('')
   }
@@ -164,6 +175,7 @@ export default function ChatClient({
   }
 
   const waiting = status === 'submitted'
+  const busy = status === 'submitted' || status === 'streaming'
 
   // 案头信文 = 开场白（最后一条 assistant 消息）
   const lastAssistant = [...messages].reverse().find(m => m.role === 'assistant')
@@ -304,11 +316,20 @@ export default function ChatClient({
 
       {/* 输入区（案头与对话共用：从案头输入即进入对话） */}
       <footer className="sticky bottom-0 z-20 border-t border-edge bg-paper/95 py-4 backdrop-blur">
+        {error && (
+          <p className="mx-auto mb-2 max-w-180 px-4 text-xs text-cinnabar">
+            {chatErrorMessage(error)}
+          </p>
+        )}
         <form onSubmit={handleSubmit} className="mx-auto flex max-w-180 items-end gap-3 px-4">
           <input
             className="flex-1 rounded-xl border border-edge bg-white px-4 py-3 text-sm text-ink outline-none transition-colors duration-200 placeholder:text-ink-faint focus:border-jade"
             value={input}
-            onChange={e => setInput(e.target.value)}
+            onChange={e => {
+              if (error) clearError()
+              setInput(e.target.value)
+            }}
+            maxLength={2000}
             onKeyDown={e => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault()
@@ -316,12 +337,12 @@ export default function ChatClient({
               }
             }}
             placeholder={showDesk ? '回应青藤，或随便聊聊…' : '和青藤聊聊…'}
-            disabled={status !== 'ready'}
+            disabled={busy}
             autoFocus
           />
           <button
             type="submit"
-            disabled={!input.trim() || status !== 'ready'}
+            disabled={!input.trim() || busy}
             className="shrink-0 cursor-pointer rounded-xl px-5 py-3 font-serif text-sm tracking-[0.12em] text-paper-block transition-opacity duration-200 disabled:opacity-40"
             style={{ background: 'var(--qt-ink-btn)' }}
           >
