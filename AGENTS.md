@@ -10,7 +10,7 @@
 - **名称**:青藤(Qingteng)
 - **定位**:面向中学生的对话式古诗词学习产品,有持久 Memory 的 AI 诗友
 - **目标**:求职作品集项目(AI 应用工程师方向)
-- **当前状态**:后半程按 CHARTER.md 执行。Phase B、Phase C1、Phase C2 和 Phase C3 语义诗词搜索已完成,准备进入 Phase D 优化与技术债清偿
+- **当前状态**:后半程按 CHARTER.md 执行。Phase B、Phase C1-C3 已完成;Phase D-1 至 D-6 已完成,继续清偿剩余 P0
 - **章程**:后半程目标/范围/节奏见 `CHARTER.md`;与本文件冲突时,以 `CHARTER.md` 为准
 - **线上地址**:https://qingteng-ecru.vercel.app
 - **GitHub**:https://github.com/Baiyiruirui/qingteng
@@ -67,6 +67,7 @@
 | Phase D-3 | ✅ | 沉浸模式 Memory 整合：出境后抽取真实情绪/困惑信号;Eval 62/62 | `4506995` |
 | Phase D-4 | ✅ | 题库审核闭环 v1：audit:quiz 0 critical,旧 v1 warning 留痕;Eval 62/62 | `5ec428b` |
 | Phase D-5 | ✅ | 蓝图规模化准备：plan:blueprints 覆盖 dry-run + 批次/抽检计划;Eval 62/62 | `40cd3b6` |
+| Phase D-6 | ✅ | 公开 Demo 成本护栏：用户/IP 限流 + 输入边界 + 安全自检 + key 轮换清单 | `dfd1ed2` |
 | Phase D | ⏳ | 优化提纲 P0 清偿(CHARTER.md 第五节) | - |
 | Phase E | ⏳ | Demo 视频 + README 终稿 + key 轮换 | - |
 
@@ -204,6 +205,8 @@ qingteng/
 
 - localhost:3001 在用户机器上需要走 `127.0.0.1:3001` 或局域网 IP 访问(FIClash 拦截 localhost)
 - 数据验收入口为 `pnpm verify:data`; 口径见 `notes/phase-d/2026-07-08-data-readiness.md`
+- 发布前安全自检入口为 `pnpm verify:security`;当前仅 `QT_ADMIN_USER_IDS` 未配置,内部工具默认全部拒绝
+- 腾讯云和 Langfuse 凭据曾在协作截图中出现,Phase E 必须按 `notes/phase-d/2026-07-10-public-demo-security.md` 轮换
 
 ---
 
