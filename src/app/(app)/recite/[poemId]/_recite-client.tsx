@@ -122,7 +122,13 @@ function blobToBase64(blob: Blob): Promise<string> {
   })
 }
 
-export default function ReciteClient({ poem }: { poem: RecitePoem }) {
+export default function ReciteClient({
+  poem,
+  imageSrc,
+}: {
+  poem: RecitePoem
+  imageSrc?: string
+}) {
   const [state, setState] = useState<CaptureState>({ phase: 'idle' })
   const chunksRef = useRef<Float32Array[]>([])
   const streamRef = useRef<MediaStream | null>(null)
@@ -261,32 +267,59 @@ export default function ReciteClient({ poem }: { poem: RecitePoem }) {
   const pct = state.phase === 'done' ? Math.round(state.result.accuracy * 100) : null
 
   return (
-    <main className="mx-auto grid max-w-6xl gap-6 px-4 py-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,0.75fr)]">
-      <section className="border border-edge bg-white/55 p-6">
-        <div className="flex items-center gap-3">
-          <SealStamp size={42} tilt />
-          <div>
-            <p className="text-xs tracking-[0.24em] text-ink-faint">RECITE</p>
-            <h1 className="font-serif text-3xl text-ink">{poem.title}</h1>
-            <p className="mt-1 text-sm text-ink-faint">
-              {poem.dynasty ?? ''} · {poem.author}
-            </p>
+    <main className="mx-auto w-full max-w-6xl px-4 py-8">
+      <section className="relative aspect-video overflow-hidden border-y border-edge bg-paper-block">
+        {imageSrc && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={imageSrc}
+            alt={`《${poem.title}》意境图`}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        )}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            background: imageSrc
+              ? 'linear-gradient(90deg, rgba(247,244,236,0.96) 0%, rgba(247,244,236,0.78) 30%, rgba(247,244,236,0.12) 58%, transparent 76%)'
+              : 'linear-gradient(110deg, rgba(242,237,224,0.9), rgba(247,244,236,0.7))',
+          }}
+        />
+        <div className="relative flex h-full max-w-[78%] items-center px-5 py-4 sm:max-w-[62%] sm:px-10 sm:py-6">
+          <div className="flex items-start gap-3 sm:gap-4">
+            <div className="hidden sm:block">
+              <SealStamp size={42} tilt />
+            </div>
+            <div>
+              <p className="text-xs tracking-[0.24em] text-ink-faint">RECITE</p>
+              <h1 className="mt-1 font-serif text-xl leading-snug text-ink sm:text-5xl sm:leading-tight">
+                {poem.title}
+              </h1>
+              <p className="mt-2 text-sm text-ink-mid">
+                {poem.dynasty ?? ''} · {poem.author}
+              </p>
+            </div>
           </div>
-        </div>
-
-        <div className="mt-8 space-y-3 font-serif text-2xl leading-loose text-ink sm:text-3xl">
-          {poem.lines.map((line, index) => (
-            <p key={`${line}-${index}`}>{line}</p>
-          ))}
-        </div>
-
-        <div className="mt-8 border-t border-edge pt-5 text-sm leading-7 text-ink-mid">
-          <p>读的时候不必太快。青藤会先听清字句，再给出漏读、误读的提醒。</p>
-          <p className="text-ink-faint">当前版本每次最多录 {MAX_SECONDS} 秒，适合读一首短诗或其中四句。</p>
         </div>
       </section>
 
-      <section className="space-y-4">
+      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,0.75fr)]">
+        <section className="border border-edge bg-white/55 p-6">
+
+          <div className="space-y-3 font-serif text-2xl leading-loose text-ink sm:text-3xl">
+            {poem.lines.map((line, index) => (
+              <p key={`${line}-${index}`}>{line}</p>
+            ))}
+          </div>
+
+          <div className="mt-8 border-t border-edge pt-5 text-sm leading-7 text-ink-mid">
+            <p>读的时候不必太快。青藤会先听清字句，再给出漏读、误读的提醒。</p>
+            <p className="text-ink-faint">当前版本每次最多录 {MAX_SECONDS} 秒，适合读一首短诗或其中四句。</p>
+          </div>
+        </section>
+
+        <section className="space-y-4">
         <div className="border border-edge bg-paper-block/75 p-5">
           <div className="flex items-center gap-2">
             <Volume2 className="h-4 w-4 text-jade" aria-hidden="true" />
@@ -419,7 +452,8 @@ export default function ReciteClient({ poem }: { poem: RecitePoem }) {
             青藤考你
           </Link>
         </div>
-      </section>
+        </section>
+      </div>
     </main>
   )
 }

@@ -6,12 +6,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { UIMessage } from 'ai'
 import { AppNav } from '@/components/AppNav'
-
-const YIJING: Record<string, string> = {
-  TANG_001: '/yijing/yijing-jingyesi.webp',
-  TANG_023: '/yijing/yijing-jiuyuejiu.webp',
-  TANG_042: '/yijing/yijing-denggao.webp',
-}
+import { getPoemImage } from '@/lib/poem-images'
 
 function getTextContent(parts: Array<{ type: string; text?: string }>) {
   return parts
@@ -106,7 +101,7 @@ export default function ImmersionClient({
   }
 
   const roleDisplay = role.replace(/^你是/, '').split(',')[0].trim()
-  const sceneImage = YIJING[poemId]
+  const sceneImage = getPoemImage(poemId)
   const busy = status === 'submitted' || status === 'streaming'
 
   return (

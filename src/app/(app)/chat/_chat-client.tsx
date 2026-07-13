@@ -10,6 +10,7 @@ import type { UIMessage } from 'ai'
 import { inkFadeIn, inkFadeInStagger } from '@/lib/motion'
 import { ShanshuiBanner } from '@/components/ShanshuiBanner'
 import { Seal } from '@/components/Seal'
+import { getPoemImage } from '@/lib/poem-images'
 
 function getTextContent(parts: Array<{ type: string; text?: string }>) {
   return parts
@@ -358,13 +359,6 @@ export default function ChatClient({
 
 // ── 今日案头 · 方案 A「一封信」：信 + 今日入诗 + 三枚书签，无图标 ──────────
 
-/** 意境图（Owner 生成，public/yijing/） */
-const YIJING: Record<string, string> = {
-  TANG_001: '/yijing/yijing-jingyesi.webp',
-  TANG_023: '/yijing/yijing-jiuyuejiu.webp',
-  TANG_042: '/yijing/yijing-denggao.webp',
-}
-
 function DailyDesk({
   userName,
   openingLoading,
@@ -409,7 +403,7 @@ function DailyDesk({
     ? `因为你最近常聊「${p.recentThemes[0]}」`
     : '今天想和你一起读读它'
 
-  const yijingSrc = dailyPoem ? YIJING[dailyPoem.id] : undefined
+  const yijingSrc = dailyPoem ? getPoemImage(dailyPoem.id) : undefined
 
   return (
     <main className="relative mx-auto w-full max-w-6xl flex-1 px-4 pb-12 pt-8 lg:px-6">
