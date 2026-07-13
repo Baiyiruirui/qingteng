@@ -70,6 +70,7 @@
 | Phase D-6 | ✅ | 公开 Demo 成本护栏：用户/IP 限流 + 输入边界 + 安全自检 + key 轮换清单 | `dfd1ed2` |
 | Phase D-7 | ✅ | 方案 B 代表题库：14 首、95 道 v2、8 类考点、运行时质量门槛;Eval 62/62 | `ddeb9d4` |
 | Phase D | ✅ | 优化提纲 P0 清偿完成(CHARTER.md 第五节) | `ddeb9d4` |
+| Phase E-1 | ✅ | 诗歌意境图首批接入：14 张代表诗专属图 + T07 边塞共用图，三处统一映射 | `ab0a3e8` |
 | Phase E | ⏳ | Demo 视频 + README 终稿 + key 轮换 | - |
 
 **完成一个 Day 后必须更新这张表**(把 ⏳ 改 ✅,填 commit hash)。

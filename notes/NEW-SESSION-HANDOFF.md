@@ -38,6 +38,8 @@
 最近关键提交：
 
 ```text
+ab0a3e8 feat: add poem imagery backgrounds
+4824227 docs: add jimeng image atlas for 140 poems
 695cdd7 style: finish quiz annotations and visual consistency
 ddeb9d4 feat(quiz): scale representative v2 bank to 95 questions
 dfd1ed2 feat(security): add public demo cost guardrails
@@ -75,7 +77,7 @@ dfd1ed2 feat(security): add public demo cost guardrails
 
 ## 诗歌意境图方案
 
-Owner 已选择“14 首代表诗专属图 + 16 类共用主题图”，以 30 张资产覆盖 140 首诗。完整即梦提示词、文件命名和逐诗映射见 `notes/jimeng-poem-image-prompts.md`，ADR 为 `notes/decisions/0011-poem-image-atlas.md`。当前只完成资产规划，不修改页面；图片经人工生成和验收后，再决定优先接入朗读页还是统一诗歌详情页。
+Owner 已选择“14 首代表诗专属图 + 16 类共用主题图”，以 30 张资产覆盖 140 首诗。第一批 14 张代表诗专属图与 `T07` 边塞共用图已经压缩并接入今日案头、诗境沉浸和朗读页；统一映射在 `src/lib/poem-images.ts`。当前共 15 张 1920×1080 JPG、约 3.59 MB，覆盖 14 首代表诗和 8 首边塞诗；其余主题没有图时回退宣纸底。完整提示词与逐诗映射见 `notes/jimeng-poem-image-prompts.md`，ADR 为 `notes/decisions/0011-poem-image-atlas.md`。Owner 本轮确认先保留现有平台标识使用。
 
 ## 下一步建议
 
