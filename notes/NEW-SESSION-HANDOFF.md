@@ -73,6 +73,10 @@ dfd1ed2 feat(security): add public demo cost guardrails
 
 任何日志、笔记、提交和回复都不能打印密钥值。不要自动替用户在第三方后台轮换或撤销凭据。
 
+## 诗歌意境图方案
+
+Owner 已选择“14 首代表诗专属图 + 16 类共用主题图”，以 30 张资产覆盖 140 首诗。完整即梦提示词、文件命名和逐诗映射见 `notes/jimeng-poem-image-prompts.md`，ADR 为 `notes/decisions/0011-poem-image-atlas.md`。当前只完成资产规划，不修改页面；图片经人工生成和验收后，再决定优先接入朗读页还是统一诗歌详情页。
+
 ## 下一步建议
 
 进入 Phase E，按发布前顺序推进：

@@ -1,5 +1,8 @@
 # 意境图生图 Prompt(Phase A-2 · 2026-07-06)
 
+> 本文保留 Phase A-2 最初 5 张资产的生成记录。覆盖全部 140 首诗的新方案见
+> `notes/jimeng-poem-image-prompts.md`，决策见 `notes/decisions/0011-poem-image-atlas.md`。
+
 > 用即梦/豆包/可灵等生成,**每张至少 2000px 宽**,JPG/PNG 均可。
 > 生成后放到 `public/yijing/` 目录,按下面的文件名命名,发给 Claude Code 接入。
 > 风格统一后缀已内嵌:宣纸质感、大量留白、低饱和、墨色浓淡、无文字无印章。
