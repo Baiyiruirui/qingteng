@@ -81,11 +81,11 @@ LLM 出古诗题容易把典故安在错误的诗句上（案例：《登高》"
 
 1. **Prompt 注入权威资料** — 出题前把该诗逐句原文 + 译 + 释 + 修辞意象全部注入，明令禁止使用资料外知识
 2. **generateObject + Zod** — 强制 `evidenceLines` 字段，LLM 必须声明每道题的原诗依据
-3. **Post-validation 字符串匹配** — 代码层验证 evidenceLines 真实存在于原诗，不通过标记 `evidenceValid=false` 并降低 qualityScore
+3. **Post-validation + runtime gate** — v2 生成后验证 evidenceLines、选择题答案、评分点和 qualityScore；不合格题拒绝入库并重试，Demo 运行时再过滤一次
 
 ### 📊 Eval 驱动开发
 
-50 题黄金集 + Langfuse 全链路 trace。每次 Prompt 改动都跑评估，看准确率 diff —— 把 AI 应用当软件做，不是当玄学做。
+62 项黄金检查 + Langfuse 全链路 trace。每次 Prompt 改动都跑评估，看准确率 diff —— 把 AI 应用当软件做，不是当玄学做。
 
 ---
 
@@ -123,6 +123,7 @@ AI    Vercel AI SDK
 | Phase A | 美术与 demo 信息架构收口 | ✅ P0 完成 — 根路径、统一导航、公开 demo 防护、沉浸剧场化 |
 | Phase B | Eval 黄金集 + Langfuse 接入 + 基线报告 | ✅ Eval v0.2 + Langfuse 核心链路 |
 | Phase C | 自适应出题 / 朗读评分 / 语义搜索 | ✅ 完成 — 自适应组卷、学习画像、腾讯 ASR 朗读评分、pgvector 语义诗词搜索 |
+| Phase D | 技术债与题库质量闭环 | ✅ 完成 — 14 首代表诗、95 道 v2、运行时质量门槛、公开 Demo 成本护栏 |
 | Phase E | 3min Demo 视频 + 文档 | ⏳ |
 
 详细方案见 [PROJECT_PLAN.md](./PROJECT_PLAN.md)。
@@ -138,6 +139,8 @@ AI    Vercel AI SDK
 - 逐句翻译 + 关键词 + 释义
 
 数据来自前置版本的人工标注 + LLM 补全。
+
+题库采用“代表作深覆盖”口径：14 首中小学高频诗词共 95 道 v2 题，覆盖默写、炼字、画面、意象、手法、情感、翻译和综合选择 8 类考点。所有 v2 题通过 evidence 溯源和运行时质量门槛；其余 126 首的题库扩展保留为后续 backlog，不宣称已全量出题。
 
 ---
 

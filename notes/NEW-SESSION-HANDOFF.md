@@ -1,6 +1,6 @@
 # 青藤 · 新会话接力
 
-更新时间：2026-07-10
+更新时间：2026-07-13
 
 ## 项目定位
 
@@ -30,13 +30,14 @@
 | Phase C1 | ✅ | 自适应组卷、错题专项复习、学习进度页 |
 | Phase C2 | ✅ | 腾讯 ASR 朗读评分，真机验证通过 |
 | Phase C3 | ✅ | bge-m3 + pgvector 混合语义搜索，140 首 embedding 完整 |
-| Phase D-1 至 D-6 | ✅ | 数据验收、Memory 治理、沉浸记忆、题库审核、蓝图规模 dry-run、公开 Demo 成本护栏 |
-| Phase D | ⏳ | 继续核对并关闭 CHARTER 第五节剩余 P0 |
+| Phase D-1 至 D-7 | ✅ | 数据验收、Memory 治理、沉浸记忆、题库审核、代表集规模化、公开 Demo 成本护栏 |
+| Phase D | ✅ | CHARTER 第五节 P0 已关闭；方案 B 为 14 首代表诗深覆盖 |
 | Phase E | ⏳ | 3 分钟视频、README 终稿、密钥轮换、最终归档 |
 
 最近关键提交：
 
 ```text
+ddeb9d4 feat(quiz): scale representative v2 bank to 95 questions
 dfd1ed2 feat(security): add public demo cost guardrails
 40cd3b6 chore(quiz): add blueprint scale dry run (eval 62/62)
 5ec428b chore(quiz): add bank audit script (eval 62/62)
@@ -51,7 +52,8 @@ dfd1ed2 feat(security): add public demo cost guardrails
 - `pnpm eval` 最近基线为 62/62。
 - `pnpm verify:data` 是数据完整性入口。
 - `pnpm audit:quiz` 当前 0 critical；旧 v1 有 22 个留痕 warning。
-- `pnpm plan:blueprints` 显示 140 首诗中仍有 136 首缺蓝图；完整规模化预计还需约 892 道 v2 题，当前只是 dry-run 和首批计划，不要误写成已全部生成。
+- Owner 已选择题库规模方案 B：14 首代表诗、95 道 v2、8 类考点；`verify:quiz:representative` 为 95/95，`audit:quiz` 为 0 critical。
+- 140 首结构化诗歌与 embedding 仍完整；其余 126 首没有承诺全量出题，属于作品集发布后的 backlog。
 - `pnpm verify:security` 当前 27/27 checks；唯一 warning 是 `QT_ADMIN_USER_IDS` 未配置，因此生产内部工具默认全部拒绝。
 
 ## Phase D-6 安全实现
@@ -71,12 +73,12 @@ dfd1ed2 feat(security): add public demo cost guardrails
 
 ## 下一步建议
 
-先做一次 Phase D P0 关账，不直接宣布 Phase D 完成：
+进入 Phase E，但先把发布前顺序守住：
 
-1. 核对“evidenceValid=false 人工审核 UI”是否仍需 UI，还是已由 `audit:quiz` 脚本替代；这是产品验收口径，需要 Owner 确认。
-2. 核对“140 首蓝图规模化”是否真的执行。当前只有 dry-run，若执行会产生大量 LLM 调用和人工抽检工作，必须先确认批次与预算。
-3. Phase A 尾项仍有做题页批注细节、全站移动/桌面视觉走查、talking-points 011/012。
-4. 上述口径确认后进入 Phase E，完成视频、README 和密钥轮换。
+1. Phase A 尾项：做题页批注细节、全站移动/桌面视觉走查、talking-points 011/012。
+2. 补 Demo 视频脚本与 README 终稿，使用真实口径“140 首基础内容 + 14 首/95 道深题库”。
+3. 按安全清单轮换腾讯云和 Langfuse 密钥，再更新 Vercel 并复验聊天、trace、朗读。
+4. 完成 3 分钟 Demo 视频与最终归档。
 
 ## 工作纪律
 
