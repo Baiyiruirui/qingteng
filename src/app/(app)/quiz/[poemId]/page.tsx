@@ -1,9 +1,18 @@
 'use client'
 
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import {
+  ArrowRight,
+  BookOpenText,
+  Check,
+  ClipboardCheck,
+  Plus,
+  RotateCcw,
+} from 'lucide-react'
 import { AppNav } from '@/components/AppNav'
+import { SealStamp } from '@/components/SealStamp'
 
 type SafeQuestion = {
   id: string
@@ -49,14 +58,17 @@ type SessionState =
   | { phase: 'summary'; scores: number[] }
 
 const TYPE_LABEL: Record<string, string> = {
-  mcq: '选择题', fill: '填空题', translate: '翻译题', appreciate: '赏析题',
+  mcq: '选择题',
+  fill: '填空题',
+  translate: '翻译题',
+  appreciate: '赏析题',
 }
 
-function completionLabel(rate: number): { text: string; color: string; bg: string } {
-  if (rate >= 1)   return { text: '答得很完整 ✓',          color: '#3d8c78', bg: '#e8f4f0' }
-  if (rate >= 0.5) return { text: '答到了核心，还能更全面', color: '#5a7a2e', bg: '#f0f5e8' }
-  if (rate > 0)    return { text: '答到了一点，我们一起补全', color: '#7c6b4f', bg: '#f5f0eb' }
-  return             { text: '再想想看～',                 color: '#9A9384', bg: '#f5f3ef' }
+function completionCopy(rate: number) {
+  if (rate >= 1) return '要点齐备'
+  if (rate >= 0.5) return '抓住核心'
+  if (rate > 0) return '已有落笔'
+  return '再读一遍'
 }
 
 export default function QuizPage() {
@@ -64,7 +76,6 @@ export default function QuizPage() {
   const searchParams = useSearchParams()
   const [state, setState] = useState<SessionState>({ phase: 'loading' })
   const submitted = state.phase === 'quiz' ? state.submitted : null
-  const answerRef = useRef<HTMLTextAreaElement | HTMLInputElement | null>(null)
 
   const startSession = useCallback(async () => {
     setState({ phase: 'loading' })
@@ -91,57 +102,70 @@ export default function QuizPage() {
         submitted: null,
         scores: [],
       })
-    } catch (e) {
-      setState({ phase: 'error', message: e instanceof Error ? e.message : '网络错误' })
+    } catch (error) {
+      setState({ phase: 'error', message: error instanceof Error ? error.message : '网络错误' })
     }
   }, [poemId, searchParams])
 
-  useEffect(() => { startSession() }, [startSession])
+  useEffect(() => {
+    void startSession()
+  }, [startSession])
 
   async function submitAnswer() {
     if (state.phase !== 'quiz' || state.submitting || state.submitted) return
-    const q = state.questions[state.current]
+    const question = state.questions[state.current]
     if (!state.userAnswer.trim()) return
-    setState(s => s.phase === 'quiz' ? { ...s, submitting: true } : s)
+    setState(current => current.phase === 'quiz' ? { ...current, submitting: true } : current)
     try {
       const res = await fetch('/api/quiz/judge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          questionId: q.id,
+          questionId: question.id,
           userAnswer: state.userAnswer,
           sessionId: state.sessionId,
         }),
       })
       const result: JudgeResult = await res.json()
       if (!res.ok) throw new Error((result as { error?: string }).error ?? '判题失败')
-      setState(s => s.phase === 'quiz' ? { ...s, submitting: false, submitted: result } : s)
-    } catch (e) {
-      setState(s => s.phase === 'quiz' ? { ...s, submitting: false } : s)
-      alert(e instanceof Error ? e.message : '网络错误，请重试')
+      setState(current => current.phase === 'quiz'
+        ? { ...current, submitting: false, submitted: result }
+        : current)
+    } catch (error) {
+      setState(current => current.phase === 'quiz' ? { ...current, submitting: false } : current)
+      alert(error instanceof Error ? error.message : '网络错误，请重试')
     }
   }
 
   function next() {
     if (state.phase !== 'quiz' || !state.submitted) return
-    const r = state.submitted
-    const score = r.isCorrect !== undefined ? (r.isCorrect ? 1 : 0) : (r.completionRate ?? 0)
+    const result = state.submitted
+    const score = result.isCorrect !== undefined
+      ? (result.isCorrect ? 1 : 0)
+      : (result.completionRate ?? 0)
     const scores = [...state.scores, score]
-    const nextIdx = state.current + 1
-    if (nextIdx >= state.questions.length) {
+    const nextIndex = state.current + 1
+    if (nextIndex >= state.questions.length) {
       setState({ phase: 'summary', scores })
-    } else {
-      setState({ ...state, current: nextIdx, userAnswer: '', submitting: false, submitted: null, scores })
+      return
     }
+    setState({
+      ...state,
+      current: nextIndex,
+      userAnswer: '',
+      submitting: false,
+      submitted: null,
+      scores,
+    })
   }
 
   if (state.phase === 'loading') {
     return (
-      <div className="min-h-screen bg-qt-paper">
+      <div className="min-h-screen bg-paper text-ink">
         <AppNav title="青藤考你" />
         <div className="flex min-h-[60vh] items-center justify-center">
-          <p className="font-serif text-qt-ink-light tracking-widest animate-ink-fade-in">
-            青藤正在组卷…
+          <p className="animate-ink-fade-in font-serif text-sm tracking-[0.2em] text-ink-faint">
+            青藤正在组卷...
           </p>
         </div>
       </div>
@@ -150,275 +174,324 @@ export default function QuizPage() {
 
   if (state.phase === 'error') {
     return (
-      <div className="min-h-screen bg-qt-paper">
+      <div className="min-h-screen bg-paper text-ink">
         <AppNav title="青藤考你" />
-        <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
-          <p className="text-qt-vermilion text-sm">{state.message}</p>
+        <main className="mx-auto flex min-h-[60vh] max-w-xl flex-col items-center justify-center gap-4 px-4 text-center">
+          <SealStamp size={42} tilt />
+          <p className="text-sm text-cinnabar">{state.message}</p>
           <button
             onClick={startSession}
-            className="text-sm px-4 py-2 rounded-lg"
-            style={{ background: 'var(--qt-green)', color: '#fff' }}
+            className="inline-flex items-center gap-2 rounded-lg bg-ink px-4 py-2 text-sm font-medium text-paper transition-opacity hover:opacity-85"
           >
+            <RotateCcw className="h-4 w-4" aria-hidden="true" />
             重试
           </button>
-          <Link href="/poems" className="text-sm text-qt-ink-light">返回诗笺地图</Link>
-        </div>
+          <Link href="/poems" className="text-sm text-ink-faint transition-colors hover:text-ink">
+            返回诗笺地图
+          </Link>
+        </main>
       </div>
     )
   }
 
   if (state.phase === 'summary') {
-    const avg = state.scores.length > 0
-      ? state.scores.reduce((a, b) => a + b, 0) / state.scores.length
+    const average = state.scores.length > 0
+      ? state.scores.reduce((sum, score) => sum + score, 0) / state.scores.length
       : 0
-    const pct = Math.round(avg * 100)
+    const percentage = Math.round(average * 100)
     return (
-      <div className="min-h-screen bg-qt-paper">
+      <div className="min-h-screen bg-paper text-ink">
         <AppNav title="青藤考你" />
-        <div className="flex min-h-[70vh] flex-col items-center justify-center px-4">
-          <div
-            className="w-full max-w-md rounded-2xl border border-qt-border p-8 text-center space-y-4 animate-ink-fade-in"
-            style={{ background: 'rgba(255,255,255,0.72)' }}
-          >
-            <SealResult pct={pct} />
-            <h2 className="font-serif text-2xl tracking-widest text-qt-ink">整体掌握度 {pct}%</h2>
-            <p className="text-sm text-qt-ink-mid">
-              {pct >= 80 ? '掌握得很好，继续保持！' : pct >= 50 ? '核心都懂了，再细化一下～' : '多读几遍，你一定能行！'}
+        <main className="mx-auto flex min-h-[70vh] max-w-3xl items-center px-4 py-10">
+          <section className="animate-ink-fade-in w-full rounded-xl border border-edge bg-white/60 px-6 py-10 text-center sm:px-10">
+            <SealResult percentage={percentage} />
+            <p className="mt-5 text-xs tracking-[0.22em] text-cinnabar">本轮小结</p>
+            <h1 className="mt-2 font-serif text-3xl text-ink">整体掌握度 {percentage}%</h1>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-ink-mid">
+              {percentage >= 80
+                ? '这一轮答得稳，换一组考点继续温习。'
+                : percentage >= 50
+                  ? '主干已经抓住，回看批注后再练一轮。'
+                  : '先回到诗句里读一遍，再来落笔也不迟。'}
             </p>
-            <div className="flex gap-3 pt-4 justify-center flex-wrap">
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
               <button
                 onClick={startSession}
-                className="px-4 py-2 rounded-xl text-sm font-medium"
-                style={{ background: 'var(--qt-earth)', color: '#fff' }}
+                className="inline-flex items-center gap-2 rounded-lg bg-ink px-4 py-2.5 text-sm font-medium text-paper transition-opacity hover:opacity-85"
               >
+                <RotateCcw className="h-4 w-4" aria-hidden="true" />
                 再做一轮
               </button>
               <Link
                 href="/wrong"
-                className="px-4 py-2 rounded-xl text-sm border border-qt-border text-qt-ink-mid font-medium"
+                className="inline-flex items-center gap-2 rounded-lg border border-edge px-4 py-2.5 text-sm font-medium text-ink-mid transition-colors hover:bg-paper-block"
               >
+                <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
                 待加强
               </Link>
               <Link
                 href="/poems"
-                className="px-4 py-2 rounded-xl text-sm border border-qt-border text-qt-ink-mid font-medium"
+                className="inline-flex items-center gap-2 rounded-lg border border-edge px-4 py-2.5 text-sm font-medium text-ink-mid transition-colors hover:bg-paper-block"
               >
+                <BookOpenText className="h-4 w-4" aria-hidden="true" />
                 诗笺地图
               </Link>
             </div>
-          </div>
-        </div>
+          </section>
+        </main>
       </div>
     )
   }
 
-  const q = state.questions[state.current]
+  const question = state.questions[state.current]
   const progress = `${state.current + 1} / ${state.questions.length}`
-  const isObjective = q.type === 'mcq' || q.type === 'fill'
+  const isObjective = question.type === 'mcq' || question.type === 'fill'
 
   return (
-    <div className="min-h-screen bg-qt-paper">
+    <div className="min-h-screen bg-paper text-ink">
       <AppNav
         title="青藤考你"
         right={
-          <span className="rounded-full bg-paper-block px-2.5 py-1 text-ink-mid">
-            {progress} · {TYPE_LABEL[q.type] ?? q.type}
+          <span className="rounded-lg bg-paper-block px-2.5 py-1 text-ink-mid">
+            {progress} · {TYPE_LABEL[question.type] ?? question.type}
           </span>
         }
       />
 
-      <main className="mx-auto max-w-2xl px-4 py-8 space-y-6">
-        <div
-          className="rounded-xl border border-qt-border px-4 py-3 text-sm text-qt-ink-mid"
-          style={{ background: 'rgba(255,255,255,0.58)' }}
-        >
-          <div className="flex items-center justify-between gap-3">
-            <span className="font-medium text-qt-earth">
+      <main className="mx-auto max-w-4xl space-y-5 px-4 py-6 sm:py-8">
+        <section className="border-l-2 border-jade bg-paper-block/60 px-4 py-3 text-sm text-ink-mid sm:px-5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="font-medium text-ink">
               {state.plan.mode === 'review' ? '专项复习' : '自适应组卷'}
             </span>
             {state.plan.weakPointTypes.length > 0 && (
-              <span className="text-xs text-qt-ink-light">
+              <span className="text-xs text-ink-faint">
                 关注：{state.plan.weakPointTypes.slice(0, 3).join('、')}
               </span>
             )}
           </div>
-          <p className="mt-1 leading-relaxed">{state.plan.strategy}</p>
-        </div>
+          <p className="mt-1 leading-6">{state.plan.strategy}</p>
+        </section>
 
-        {/* 题干 */}
-        <div
-          className="rounded-xl border border-qt-border p-6"
-          style={{ background: 'rgba(255,255,255,0.72)' }}
-        >
-          <p className="text-base leading-relaxed text-qt-ink">{q.stem}</p>
-        </div>
+        <section className="rounded-xl border border-edge bg-white/62 p-5 sm:p-7">
+          <div className="mb-4 flex flex-wrap items-center gap-3 text-xs text-ink-faint">
+            <span className="font-medium text-cinnabar">第 {state.current + 1} 题</span>
+            <span>{question.pointType ?? TYPE_LABEL[question.type]}</span>
+            <span>{question.difficulty}</span>
+          </div>
+          <h1 className="font-serif text-xl leading-9 text-ink sm:text-2xl sm:leading-10">
+            {question.stem}
+          </h1>
+        </section>
 
-        {/* 答题区 */}
         {!submitted && (
-          <div className="space-y-3">
-            {q.type === 'mcq' && q.options ? (
-              <div className="space-y-2">
-                {q.options.map((opt, i) => {
-                  const letter = 'ABCD'[i]
-                  const selected = state.userAnswer === opt
+          <section className="space-y-3">
+            {question.type === 'mcq' && question.options ? (
+              <div className="space-y-2.5">
+                {question.options.map((option, index) => {
+                  const letter = 'ABCD'[index]
+                  const selected = state.userAnswer === option
                   return (
                     <button
-                      key={i}
-                      onClick={() => setState(s => s.phase === 'quiz' ? { ...s, userAnswer: opt } : s)}
-                      className="w-full text-left px-4 py-3 rounded-xl border text-sm transition-colors"
-                      style={{
-                        borderColor: selected ? 'var(--qt-earth)' : 'var(--qt-border)',
-                        background: selected ? 'var(--qt-paper-alt)' : 'rgba(255,255,255,0.72)',
-                        color: 'var(--qt-ink)',
-                      }}
+                      key={option}
+                      onClick={() => setState(current => current.phase === 'quiz'
+                        ? { ...current, userAnswer: option }
+                        : current)}
+                      className={
+                        selected
+                          ? 'flex w-full items-start gap-3 rounded-xl border border-jade bg-jade/8 px-4 py-3.5 text-left text-sm leading-6 text-ink transition-colors'
+                          : 'flex w-full items-start gap-3 rounded-xl border border-edge bg-white/60 px-4 py-3.5 text-left text-sm leading-6 text-ink transition-colors hover:bg-white/80'
+                      }
                     >
-                      <span className="font-medium mr-2">{letter}.</span>{opt}
+                      <span className={
+                        selected
+                          ? 'flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-jade text-xs font-semibold text-white'
+                          : 'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-edge text-xs font-semibold text-ink-mid'
+                      }>
+                        {letter}
+                      </span>
+                      <span>{option.replace(/^[A-D][.．]\s*/, '')}</span>
                     </button>
                   )
                 })}
               </div>
-            ) : q.type === 'fill' ? (
+            ) : question.type === 'fill' ? (
               <input
-                ref={el => { answerRef.current = el }}
                 type="text"
-                placeholder="请填写答案…"
+                placeholder="请填写答案..."
                 value={state.userAnswer}
                 maxLength={2000}
-                onChange={e => setState(s => s.phase === 'quiz' ? { ...s, userAnswer: e.target.value } : s)}
-                onKeyDown={e => { if (e.key === 'Enter' && !state.submitting) submitAnswer() }}
-                className="w-full px-4 py-3 rounded-xl border border-qt-border text-sm outline-none focus:border-qt-green transition-colors bg-white text-qt-ink"
+                onChange={event => setState(current => current.phase === 'quiz'
+                  ? { ...current, userAnswer: event.target.value }
+                  : current)}
+                onKeyDown={event => {
+                  if (event.key === 'Enter' && !state.submitting) void submitAnswer()
+                }}
+                className="w-full rounded-xl border border-edge bg-white/75 px-4 py-3 text-sm text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-jade"
               />
             ) : (
               <textarea
-                ref={el => { answerRef.current = el }}
-                placeholder="请写下你的回答（尽量详细）…"
+                placeholder="请写下你的回答..."
                 value={state.userAnswer}
                 maxLength={2000}
-                onChange={e => setState(s => s.phase === 'quiz' ? { ...s, userAnswer: e.target.value } : s)}
+                onChange={event => setState(current => current.phase === 'quiz'
+                  ? { ...current, userAnswer: event.target.value }
+                  : current)}
                 rows={5}
-                className="w-full px-4 py-3 rounded-xl border border-qt-border text-sm outline-none focus:border-qt-green transition-colors resize-none bg-white text-qt-ink"
+                className="w-full resize-none rounded-xl border border-edge bg-white/75 px-4 py-3 text-sm leading-7 text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-jade"
               />
             )}
 
             <button
-              onClick={submitAnswer}
+              onClick={() => void submitAnswer()}
               disabled={!state.userAnswer.trim() || state.submitting}
-              className="w-full py-3 rounded-xl font-medium text-sm transition-opacity disabled:opacity-40"
-              style={{ background: 'var(--qt-earth)', color: '#fff' }}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-ink py-3 text-sm font-medium text-paper transition-opacity disabled:opacity-35"
             >
-              {state.submitting ? '判题中…' : '提交答案'}
+              {state.submitting ? '先生正在批阅...' : '交卷'}
             </button>
-          </div>
+          </section>
         )}
 
-        {/* 结果面板 */}
         {submitted && (
-          <div className="space-y-4">
-            {/* 客观题判定 */}
-            {isObjective && submitted.isCorrect !== undefined && (
-              <div
-                className="flex items-center gap-3 px-4 py-3 rounded-xl"
-                style={{
-                  background: submitted.isCorrect ? '#e8f4f0' : 'var(--qt-paper-alt)',
-                  color: submitted.isCorrect ? '#3d8c78' : 'var(--qt-earth)',
-                }}
-              >
-                <span className="text-xl">{submitted.isCorrect ? '✓' : '△'}</span>
-                <span className="font-medium">{submitted.isCorrect ? '答对了！' : '这次差一点～'}</span>
-              </div>
-            )}
+          <section className="animate-ink-fade-in space-y-5" aria-live="polite">
+            <ReviewHeading result={submitted} isObjective={isObjective} />
 
-            {/* 主观题完成度 */}
-            {!isObjective && submitted.completionRate !== undefined && (() => {
-              const { text, color, bg } = completionLabel(submitted.completionRate)
-              const pct = Math.round(submitted.completionRate * 100)
-              return (
-                <div className="px-4 py-3 rounded-xl" style={{ background: bg }}>
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium text-sm" style={{ color }}>{text}</span>
-                    <span className="text-xs font-medium" style={{ color }}>{pct}%</span>
-                  </div>
-                  <div className="mt-2 h-1.5 rounded-full" style={{ background: 'rgba(0,0,0,0.08)' }}>
-                    <div
-                      className="h-1.5 rounded-full transition-all"
-                      style={{ width: `${pct}%`, background: color }}
-                    />
-                  </div>
-                </div>
-              )
-            })()}
+            <div className="overflow-hidden rounded-xl border border-edge bg-white/58 lg:grid lg:grid-cols-[minmax(0,1fr)_18rem]">
+              <article className="p-5 sm:p-6">
+                <p className="text-xs tracking-[0.2em] text-ink-faint">你的答卷</p>
+                <p className="mt-3 border-l-2 border-cinnabar/55 pl-4 font-serif text-lg leading-8 text-ink">
+                  {state.userAnswer}
+                </p>
+              </article>
 
-            {/* 客观题答案 */}
+              <aside className="border-t border-edge bg-paper-block/45 p-5 sm:p-6 lg:border-l lg:border-t-0">
+                {isObjective ? (
+                  <div>
+                    <p className="text-xs tracking-[0.18em] text-ink-faint">正确答案</p>
+                    <p className="mt-3 text-sm font-medium leading-7 text-ink">{submitted.answer}</p>
+                  </div>
+                ) : (
+                  <div className="space-y-5">
+                    <PointList title="已经答到" items={submitted.hitPoints ?? []} variant="hit" />
+                    <PointList title="还可补上" items={submitted.missedPoints ?? []} variant="missed" />
+                  </div>
+                )}
+              </aside>
+            </div>
+
             {isObjective && (
-              <div
-                className="rounded-xl border border-qt-border p-4 space-y-2"
-                style={{ background: 'rgba(255,255,255,0.72)' }}
-              >
-                <p className="text-xs font-medium text-qt-ink-light">正确答案</p>
-                <p className="text-sm text-qt-ink">{submitted.answer}</p>
-                <p className="text-xs text-qt-ink-mid">{submitted.explanation}</p>
-              </div>
+              <section className="border-l-2 border-jade bg-jade/5 px-4 py-3.5 text-sm leading-7 text-ink-mid sm:px-5">
+                {submitted.explanation}
+              </section>
             )}
 
-            {/* 主观题要点 */}
-            {!isObjective && (
-              <div className="space-y-3">
-                {submitted.hitPoints && submitted.hitPoints.length > 0 && (
-                  <div className="rounded-xl border p-4 space-y-1.5" style={{ borderColor: '#d4ece5', background: '#f4fbf8' }}>
-                    <p className="text-xs font-medium" style={{ color: '#3d8c78' }}>答到的要点</p>
-                    {submitted.hitPoints.map((pt, i) => (
-                      <p key={i} className="text-sm" style={{ color: '#2a6657' }}>✓ {pt}</p>
-                    ))}
-                  </div>
-                )}
-                {submitted.missedPoints && submitted.missedPoints.length > 0 && (
-                  <div
-                    className="rounded-xl border border-qt-border p-4 space-y-1.5"
-                    style={{ background: 'rgba(255,255,255,0.72)' }}
-                  >
-                    <p className="text-xs font-medium text-qt-earth">还可以补充</p>
-                    {submitted.missedPoints.map((pt, i) => (
-                      <p key={i} className="text-sm text-qt-earth">+ {pt}</p>
-                    ))}
-                  </div>
-                )}
-                {submitted.feedback && (
-                  <div
-                    className="rounded-xl border border-qt-border p-4"
-                    style={{ background: 'rgba(255,255,255,0.72)' }}
-                  >
-                    <p className="text-xs font-medium text-qt-earth mb-1.5">青藤说</p>
-                    <p className="text-sm leading-relaxed text-qt-ink-mid">{submitted.feedback}</p>
-                  </div>
-                )}
-                <div
-                  className="rounded-xl border border-qt-border p-4 space-y-1"
-                  style={{ background: 'rgba(255,255,255,0.72)' }}
-                >
-                  <p className="text-xs font-medium text-qt-ink-light">参考答案</p>
-                  <p className="text-sm text-qt-ink">{submitted.answer}</p>
+            {!isObjective && submitted.feedback && (
+              <section className="grid gap-4 border-y border-edge py-5 sm:grid-cols-[auto_1fr] sm:items-start">
+                <div className="flex items-center gap-3 sm:block">
+                  <SealStamp size={48} tilt />
+                  <p className="font-serif text-lg text-cinnabar sm:mt-2">青藤先生</p>
                 </div>
-              </div>
+                <p className="text-sm leading-7 text-ink-mid">{submitted.feedback}</p>
+              </section>
+            )}
+
+            {!isObjective && (
+              <details className="rounded-xl border border-edge bg-white/45 px-5 py-4">
+                <summary className="cursor-pointer text-sm font-medium text-ink-mid">
+                  对照参考答案
+                </summary>
+                <p className="mt-3 text-sm leading-7 text-ink">{submitted.answer}</p>
+              </details>
             )}
 
             <button
               onClick={next}
-              className="w-full py-3 rounded-xl font-medium text-sm"
-              style={{ background: 'var(--qt-earth)', color: '#fff' }}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-ink py-3 text-sm font-medium text-paper transition-opacity hover:opacity-85"
             >
-              {state.current + 1 >= state.questions.length ? '查看结果' : '下一题 →'}
+              {state.current + 1 >= state.questions.length ? '查看本轮小结' : '下一题'}
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </button>
-          </div>
+          </section>
         )}
       </main>
     </div>
   )
 }
 
-function SealResult({ pct }: { pct: number }) {
-  const label = pct >= 80 ? '优' : pct >= 50 ? '进' : '习'
+function ReviewHeading({ result, isObjective }: { result: JudgeResult; isObjective: boolean }) {
+  const rate = isObjective ? (result.isCorrect ? 1 : 0) : (result.completionRate ?? 0)
+  const percentage = Math.round(rate * 100)
+  const positive = percentage >= 80
+
   return (
-    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-lg border-2 border-qt-vermilion font-kai text-3xl text-qt-vermilion">
+    <header className="flex flex-wrap items-end justify-between gap-4 border-b border-edge pb-4">
+      <div>
+        <p className="text-xs tracking-[0.22em] text-cinnabar">先生批注</p>
+        <h2 className="mt-1 font-serif text-2xl text-ink">
+          {isObjective
+            ? (result.isCorrect ? '此题答对' : '这一处需回看')
+            : completionCopy(rate)}
+        </h2>
+      </div>
+      <div className="flex items-center gap-3">
+        <span className="text-sm text-ink-faint">掌握度</span>
+        <span className={positive ? 'font-serif text-3xl text-jade' : 'font-serif text-3xl text-cinnabar'}>
+          {percentage}%
+        </span>
+      </div>
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-paper-block">
+        <div
+          className={positive ? 'h-full rounded-full bg-jade transition-all' : 'h-full rounded-full bg-cinnabar/70 transition-all'}
+          style={{ width: `${percentage}%` }}
+        />
+      </div>
+    </header>
+  )
+}
+
+function PointList({
+  title,
+  items,
+  variant,
+}: {
+  title: string
+  items: string[]
+  variant: 'hit' | 'missed'
+}) {
+  const isHit = variant === 'hit'
+  return (
+    <section>
+      <p className={isHit ? 'text-xs font-medium text-jade' : 'text-xs font-medium text-cinnabar'}>
+        {title}
+      </p>
+      {items.length > 0 ? (
+        <div className="mt-2 space-y-2.5">
+          {items.map(item => (
+            <div key={item} className="flex items-start gap-2 text-sm leading-6 text-ink-mid">
+              <span className={
+                isHit
+                  ? 'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-jade/12 text-jade'
+                  : 'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-cinnabar/35 text-cinnabar'
+              }>
+                {isHit ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : <Plus className="h-3.5 w-3.5" aria-hidden="true" />}
+              </span>
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-2 text-sm leading-6 text-ink-faint">
+          {isHit ? '这次还没有命中明确得分点。' : '没有遗漏的核心要点。'}
+        </p>
+      )}
+    </section>
+  )
+}
+
+function SealResult({ percentage }: { percentage: number }) {
+  const label = percentage >= 80 ? '优' : percentage >= 50 ? '进' : '习'
+  return (
+    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-lg border-2 border-cinnabar font-kai text-3xl text-cinnabar">
       {label}
     </div>
   )

@@ -315,7 +315,9 @@ export default function ChatClient({
       )}
 
       {/* 输入区（案头与对话共用：从案头输入即进入对话） */}
-      <footer className="sticky bottom-0 z-20 border-t border-edge bg-paper/95 py-4 backdrop-blur">
+      <footer
+        className={`${showDesk ? 'relative' : 'sticky bottom-0'} z-20 border-t border-edge bg-paper/95 py-4 backdrop-blur`}
+      >
         {error && (
           <p className="mx-auto mb-2 max-w-180 px-4 text-xs text-cinnabar">
             {chatErrorMessage(error)}

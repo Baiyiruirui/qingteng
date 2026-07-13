@@ -231,8 +231,7 @@ export default function PoemsClient({ userName, poems }: Props) {
                 {QUIZ_POEM_IDS.has(poem.id) && (
                   <Link
                     href={`/quiz/${poem.id}`}
-                    className="rounded-lg px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-80"
-                    style={{ background: 'var(--qt-earth)' }}
+                    className="rounded-lg bg-ink px-3 py-1.5 text-xs font-medium text-paper transition-opacity hover:opacity-85"
                   >
                     青藤考你
                   </Link>

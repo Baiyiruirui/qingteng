@@ -6,6 +6,7 @@ import { db } from '@/db'
 import { wrongQuestions, quizQuestions, poems } from '@/db/schema'
 import { SealStamp } from '@/components/SealStamp'
 import { AppNav } from '@/components/AppNav'
+import { ArrowRight, CheckCircle2 } from 'lucide-react'
 
 export default async function WrongPage() {
   const session = await getSession()
@@ -43,20 +44,23 @@ export default async function WrongPage() {
   }
 
   return (
-    <div className="min-h-screen bg-qt-paper text-qt-ink">
-      <AppNav title="待加强" right={<span>{unresolved.length} 道</span>} />
+    <div className="min-h-screen bg-paper text-ink">
+      <AppNav
+        title="待加强"
+        right={<span className="rounded-lg bg-paper-block px-2.5 py-1 text-ink-mid">{unresolved.length} 道</span>}
+      />
 
-      <main className="mx-auto max-w-2xl px-4 py-8 space-y-8">
+      <main className="mx-auto max-w-4xl space-y-8 px-4 py-8">
         {/* 诗意空状态 */}
         {rows.length === 0 && (
           <div className="text-center py-24 animate-ink-fade-in">
             <div className="flex justify-center mb-5">
               <SealStamp size={44} tilt />
             </div>
-            <p className="font-serif text-qt-ink-light tracking-[0.2em] text-lg">
+            <p className="font-serif text-lg tracking-[0.2em] text-ink-faint">
               如清池无尘
             </p>
-            <p className="text-sm text-qt-ink-light opacity-50 mt-2">
+            <p className="mt-2 text-sm text-ink-faint">
               暂无待加强，继续精进
             </p>
           </div>
@@ -64,37 +68,39 @@ export default async function WrongPage() {
 
         {unresolved.length > 0 && (
           <section className="space-y-3">
-            <h2 className="text-sm font-medium text-qt-earth">待加强</h2>
+            <div className="flex items-end justify-between gap-4 border-b border-edge pb-3">
+              <div>
+                <p className="text-xs tracking-[0.2em] text-cinnabar">REVIEW</p>
+                <h1 className="mt-1 font-serif text-2xl text-ink">待加强的考点</h1>
+              </div>
+              <p className="text-xs text-ink-faint">按最近练习排序</p>
+            </div>
             {unresolved.map(row => (
               <div
                 key={row.id}
-                className="rounded-xl border border-qt-border p-4"
-                style={{ background: 'rgba(255,255,255,0.6)' }}
+                className="rounded-xl border border-edge bg-white/58 p-4 sm:p-5"
               >
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
                   <div className="min-w-0 flex-1 space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span
-                        className="text-xs px-2 py-0.5 rounded-full"
-                        style={{ background: 'var(--qt-paper-alt)', color: 'var(--qt-earth)' }}
-                      >
+                      <span className="rounded-full bg-paper-block px-2 py-0.5 text-xs text-cinnabar">
                         {row.poemTitle}
                       </span>
-                      <span className="text-xs text-qt-ink-light">
+                      <span className="text-xs text-ink-faint">
                         {row.pointType ?? TYPE_LABEL[row.type] ?? row.type}
                       </span>
-                      <span className="text-xs text-qt-ink-light opacity-70">
+                      <span className="text-xs text-ink-faint">
                         {practiceLabel(row.type, row.wrongCount)}
                       </span>
                     </div>
-                    <p className="text-sm line-clamp-2 text-qt-ink">{row.stem}</p>
+                    <p className="line-clamp-2 text-sm leading-6 text-ink">{row.stem}</p>
                   </div>
                   <Link
                     href={`/quiz/${row.poemId}?mode=review&pointType=${encodeURIComponent(row.pointType ?? row.type)}`}
-                    className="shrink-0 text-xs px-3 py-1.5 rounded-lg font-medium transition-opacity hover:opacity-80"
-                    style={{ background: 'var(--qt-earth)', color: '#fff' }}
+                    className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-ink px-3 py-2 text-xs font-medium text-paper transition-opacity hover:opacity-85"
                   >
                     专项练习
+                    <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
                   </Link>
                 </div>
               </div>
@@ -103,26 +109,27 @@ export default async function WrongPage() {
         )}
 
         {resolved.length > 0 && (
-          <section className="space-y-3">
-            <h2 className="text-sm font-medium text-qt-ink-light">已掌握</h2>
+          <section className="space-y-3 pt-2">
+            <h2 className="flex items-center gap-2 text-sm font-medium text-ink-mid">
+              <CheckCircle2 className="h-4 w-4 text-jade" aria-hidden="true" />
+              已掌握
+            </h2>
             {resolved.map(row => (
               <div
                 key={row.id}
-                className="rounded-xl border border-qt-border p-4 opacity-50"
-                style={{ background: 'rgba(255,255,255,0.4)' }}
+                className="rounded-xl border border-edge bg-white/35 p-4 opacity-65"
               >
                 <div className="flex items-center gap-2 flex-wrap">
                   <span
-                    className="text-xs px-2 py-0.5 rounded-full"
-                    style={{ background: 'var(--qt-paper-alt)', color: 'var(--qt-ink-light)' }}
+                    className="rounded-full bg-paper-block px-2 py-0.5 text-xs text-ink-faint"
                   >
                     {row.poemTitle}
                   </span>
-                  <span className="text-xs text-qt-ink-light">
+                  <span className="text-xs text-ink-faint">
                     {row.pointType ?? TYPE_LABEL[row.type] ?? row.type}
                   </span>
                 </div>
-                <p className="text-sm mt-1 line-clamp-1 text-qt-ink-mid">{row.stem}</p>
+                <p className="mt-1 line-clamp-1 text-sm text-ink-mid">{row.stem}</p>
               </div>
             ))}
           </section>
