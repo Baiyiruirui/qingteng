@@ -1,5 +1,11 @@
 import { db } from '@/db'
 import { poems, quizBlueprints, quizQuestions } from '@/db/schema'
+import {
+  REPRESENTATIVE_QUIZ_POEM_IDS,
+  REPRESENTATIVE_QUIZ_TARGET,
+  REPRESENTATIVE_V2_MAX_QUESTIONS,
+  REPRESENTATIVE_V2_MIN_QUESTIONS,
+} from '@/ai/quiz/representative-set'
 
 type PoemRow = typeof poems.$inferSelect
 type BlueprintRow = typeof quizBlueprints.$inferSelect
@@ -19,7 +25,7 @@ type PlanItem = {
   reason: string
 }
 
-const DEMO_POEM_IDS = new Set(['TANG_001', 'TANG_023', 'TANG_042'])
+const DEMO_POEM_IDS = new Set<string>(REPRESENTATIVE_QUIZ_POEM_IDS)
 const SAMPLE_RATE = 0.1
 
 function lineCount(poem: PoemRow) {
@@ -97,6 +103,7 @@ async function main() {
       .select({
         poemId: quizQuestions.poemId,
         pointId: quizQuestions.pointId,
+        version: quizQuestions.version,
       })
       .from(quizQuestions),
   ])
@@ -106,7 +113,7 @@ async function main() {
   )
   const v2QuestionPoemIds = new Set(
     v2QuestionRows
-      .filter(row => row.pointId)
+      .filter(row => row.version === 'v2' && row.pointId)
       .map(row => row.poemId),
   )
 
@@ -132,18 +139,28 @@ async function main() {
 
   const missingBlueprints = plan.filter(item => !item.hasBlueprint)
   const missingV2Questions = plan.filter(item => item.hasBlueprint && !item.hasV2Questions)
+  const representativePlan = plan.filter(item => DEMO_POEM_IDS.has(item.poemId))
+  const representativeMissingBlueprints = representativePlan.filter(item => !item.hasBlueprint)
+  const representativeMissingV2 = representativePlan.filter(item => !item.hasV2Questions)
   const remainingQuestionPoints = plan
     .filter(item => !item.hasV2Questions)
     .reduce((sum, item) => sum + item.targetPoints, 0)
   const sampleSize = Math.ceil(poemRows.length * SAMPLE_RATE)
   const auditSample = deterministicSample(plan, sampleSize)
 
-  console.log(`Poems: ${poemRows.length}`)
-  console.log(`Blueprints in DB: ${blueprintRows.length}`)
-  console.log(`Poems with v2 questions: ${v2QuestionPoemIds.size}`)
-  console.log(`Missing blueprints: ${missingBlueprints.length}`)
-  console.log(`Blueprints without v2 questions: ${missingV2Questions.length}`)
-  console.log(`Estimated remaining v2 questions if fully scaled: ${remainingQuestionPoints}`)
+  console.log('Portfolio completion line (Option B):')
+  console.log(`  Representative poems: ${representativePlan.length}/${REPRESENTATIVE_QUIZ_TARGET}`)
+  console.log(`  Representative blueprints missing: ${representativeMissingBlueprints.length}`)
+  console.log(`  Representative poems without v2 questions: ${representativeMissingV2.length}`)
+  console.log(`  Acceptance range: ${REPRESENTATIVE_V2_MIN_QUESTIONS}-${REPRESENTATIVE_V2_MAX_QUESTIONS} demo-ready v2 questions`)
+
+  console.log('\nFull-library backlog (not a Phase D ship gate):')
+  console.log(`  Poems: ${poemRows.length}`)
+  console.log(`  Blueprints in DB: ${blueprintRows.length}`)
+  console.log(`  Poems with v2 questions: ${v2QuestionPoemIds.size}`)
+  console.log(`  Missing blueprints: ${missingBlueprints.length}`)
+  console.log(`  Blueprints without v2 questions: ${missingV2Questions.length}`)
+  console.log(`  Estimated remaining v2 questions if fully scaled: ${remainingQuestionPoints}`)
 
   console.log('\nBy grade:')
   for (const [grade, count] of summarizeBy(plan, item => item.grade)) {
@@ -155,26 +172,27 @@ async function main() {
     console.log(`  ${textType}: ${count}`)
   }
 
-  console.log('\nRecommended first batch (top 20 missing blueprints):')
-  for (const item of missingBlueprints.slice(0, 20)) {
+  console.log('\nRepresentative poems still missing blueprints:')
+  for (const item of representativeMissingBlueprints) {
     console.log(
       `  ${item.poemId} 《${item.title}》 ${item.author} | ${item.grade ?? '-'} | ${item.textType ?? '-'} | target=${item.targetPoints} | ${item.reason}`,
     )
   }
 
-  console.log(`\n10% manual audit sample (${auditSample.length} poems):`)
+  console.log(`\nFuture full-library 10% audit sample (${auditSample.length} poems):`)
   for (const item of auditSample) {
     console.log(
       `  ${item.poemId} 《${item.title}》 | blueprint=${item.hasBlueprint ? 'yes' : 'no'} | v2=${item.hasV2Questions ? 'yes' : 'no'}`,
     )
   }
 
-  console.log('\nExecution plan:')
-  console.log('  1. Generate blueprints in batches of 20 poems.')
-  console.log('  2. Human-review at least 10% of poems plus every low-confidence/long poem.')
-  console.log('  3. Import reviewed blueprints, then generate v2 questions.')
-  console.log('  4. Run pnpm audit:quiz; demo cannot ship with critical issues.')
-  console.log('  5. Run pnpm eval after any prompt change.')
+  console.log('\nExecution plan for Option B:')
+  console.log('  1. Review data/quiz-blueprints-representative.json.')
+  console.log('  2. Import the reviewed file and generate missing points idempotently.')
+  console.log('  3. Run pnpm verify:quiz:representative and pnpm audit:quiz.')
+  console.log('  4. Demo routes serve only questions that pass the runtime quality gate.')
+  console.log('  5. Keep the remaining 126 poems as an explicit post-portfolio backlog.')
+  console.log('  6. Run pnpm eval after any prompt change.')
 
   console.log('\nBlueprint scale dry-run complete. No database writes were performed.\n')
   process.exit(0)

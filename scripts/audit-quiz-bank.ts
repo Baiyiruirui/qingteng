@@ -1,5 +1,7 @@
 import { db } from '@/db'
 import { poems, quizBlueprints, quizQuestions } from '@/db/schema'
+import { MIN_DEMO_QUIZ_QUALITY } from '@/ai/quiz/quality'
+import { REPRESENTATIVE_QUIZ_POEM_IDS } from '@/ai/quiz/representative-set'
 
 type QuestionRow = typeof quizQuestions.$inferSelect
 type PoemRow = Pick<typeof poems.$inferSelect, 'id' | 'title' | 'lines'>
@@ -21,8 +23,7 @@ type BlueprintPoint = {
   type: string
 }
 
-const MIN_QUALITY_SCORE = 0.7
-const DEMO_BLUEPRINT_POEM_IDS = new Set(['TANG_001', 'TANG_023', 'TANG_042'])
+const DEMO_BLUEPRINT_POEM_IDS = new Set<string>(REPRESENTATIVE_QUIZ_POEM_IDS)
 
 function stripPunct(input: string) {
   return input.replace(/[，。！？、；：""''《》【】（）()\s]/g, '')
@@ -111,7 +112,7 @@ async function main() {
       })
     }
 
-    if ((question.qualityScore ?? 0) < MIN_QUALITY_SCORE) {
+    if ((question.qualityScore ?? 0) < MIN_DEMO_QUIZ_QUALITY) {
       pushIssue(issues, {
         severity: question.version === 'v2' ? 'critical' : 'warning',
         code: 'LOW_QUALITY_SCORE',
@@ -120,7 +121,7 @@ async function main() {
         questionId: question.id,
         pointId: question.pointId,
         pointType: question.pointType,
-        detail: `qualityScore=${question.qualityScore ?? 'null'} < ${MIN_QUALITY_SCORE}.`,
+        detail: `qualityScore=${question.qualityScore ?? 'null'} < ${MIN_DEMO_QUIZ_QUALITY}.`,
         action: 'Review explanation, answer, and evidence; regenerate if quality is genuinely low.',
       })
     }
@@ -156,6 +157,19 @@ async function main() {
 
   const v2Questions = questionRows.filter(question => question.version === 'v2')
   const v2ByPoem = groupBy(v2Questions, question => question.poemId)
+  const blueprintByPoem = new Map(blueprintRows.map(blueprint => [blueprint.poemId, blueprint]))
+
+  for (const poemId of DEMO_BLUEPRINT_POEM_IDS) {
+    if (blueprintByPoem.has(poemId)) continue
+    pushIssue(issues, {
+      severity: 'critical',
+      code: 'REPRESENTATIVE_BLUEPRINT_MISSING',
+      poemId,
+      poemTitle: poemById.get(poemId)?.title ?? poemId,
+      detail: 'Representative demo poem has no imported quiz blueprint.',
+      action: 'Run pnpm import:blueprints:representative before generating the bank.',
+    })
+  }
 
   for (const blueprint of blueprintRows) {
     if (!DEMO_BLUEPRINT_POEM_IDS.has(blueprint.poemId) && !v2ByPoem.has(blueprint.poemId)) {

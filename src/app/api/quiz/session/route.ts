@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { desc, eq, and } from 'drizzle-orm'
+import { desc, eq, and, gte } from 'drizzle-orm'
 import { randomUUID } from 'crypto'
 import { requireAuth } from '@/lib/auth-server'
 import { db } from '@/db'
@@ -9,6 +9,7 @@ import {
   type PointMasterySignal,
   type QuizSessionMode,
 } from '@/ai/quiz/adaptive'
+import { isDemoReadyQuestion, MIN_DEMO_QUIZ_QUALITY } from '@/ai/quiz/quality'
 
 export async function POST(req: Request) {
   const session = await requireAuth()
@@ -23,10 +24,16 @@ export async function POST(req: Request) {
   }
 
   // Fetch all v2 questions for this poem
-  const all = await db
+  const questionRows = await db
     .select()
     .from(quizQuestions)
-    .where(and(eq(quizQuestions.poemId, poemId), eq(quizQuestions.version, 'v2')))
+    .where(and(
+      eq(quizQuestions.poemId, poemId),
+      eq(quizQuestions.version, 'v2'),
+      eq(quizQuestions.evidenceValid, true),
+      gte(quizQuestions.qualityScore, MIN_DEMO_QUIZ_QUALITY),
+    ))
+  const all = questionRows.filter(isDemoReadyQuestion)
 
   if (all.length === 0) {
     return NextResponse.json({ error: 'No questions found for this poem' }, { status: 404 })

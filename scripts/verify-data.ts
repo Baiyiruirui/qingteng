@@ -1,7 +1,15 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { db } from '@/db'
-import { sql } from 'drizzle-orm'
+import { quizBlueprints, quizQuestions } from '@/db/schema'
+import { inArray, sql } from 'drizzle-orm'
+import { isDemoReadyQuestion } from '@/ai/quiz/quality'
+import {
+  REPRESENTATIVE_QUIZ_POEM_IDS,
+  REPRESENTATIVE_QUIZ_TARGET,
+  REPRESENTATIVE_V2_MAX_QUESTIONS,
+  REPRESENTATIVE_V2_MIN_QUESTIONS,
+} from '@/ai/quiz/representative-set'
 
 type CoverageRow = {
   poems: number
@@ -18,7 +26,6 @@ type CoverageRow = {
 type IssueRow = Record<string, unknown>
 
 const EXPECTED_POEMS = 140
-const EXPECTED_V2_QUESTIONS = 20
 
 function asNumber(value: unknown) {
   return Number(value ?? 0)
@@ -107,6 +114,7 @@ async function main() {
   const embeddings = asNumber(coverage.embeddings)
   const v2Questions = asNumber(coverage.v2Questions)
   const v2EvidenceValid = asNumber(coverage.v2EvidenceValid)
+  const representativeIds = [...REPRESENTATIVE_QUIZ_POEM_IDS]
 
   if (dbPoems === EXPECTED_POEMS) ok('db poems', `${dbPoems}/${EXPECTED_POEMS}`)
   else {
@@ -155,15 +163,63 @@ async function main() {
     failures += nonChineseDynasties.length
   }
 
-  if (v2Questions === EXPECTED_V2_QUESTIONS) ok('v2 quiz count', `${v2Questions}/${EXPECTED_V2_QUESTIONS}`)
-  else {
-    fail('v2 quiz count', `${v2Questions}/${EXPECTED_V2_QUESTIONS}`)
-    failures++
-  }
-
   if (v2EvidenceValid === v2Questions) ok('v2 quiz evidence', `${v2EvidenceValid}/${v2Questions} evidenceValid`)
   else {
     fail('v2 quiz evidence', `${v2EvidenceValid}/${v2Questions} evidenceValid`)
+    failures++
+  }
+
+  const [representativeBlueprints, representativeQuestions] = await Promise.all([
+    db
+      .select({ poemId: quizBlueprints.poemId })
+      .from(quizBlueprints)
+      .where(inArray(quizBlueprints.poemId, representativeIds)),
+    db
+      .select()
+      .from(quizQuestions)
+      .where(inArray(quizQuestions.poemId, representativeIds)),
+  ])
+  const representativeV2 = representativeQuestions.filter(question => question.version === 'v2')
+  const representativeReady = representativeV2.filter(isDemoReadyQuestion)
+  const representativeReadyPoems = new Set(representativeReady.map(question => question.poemId))
+
+  if (representativeBlueprints.length === REPRESENTATIVE_QUIZ_TARGET) {
+    ok('representative blueprints', `${representativeBlueprints.length}/${REPRESENTATIVE_QUIZ_TARGET}`)
+  } else {
+    fail('representative blueprints', `${representativeBlueprints.length}/${REPRESENTATIVE_QUIZ_TARGET}`)
+    failures++
+  }
+
+  if (
+    representativeReady.length >= REPRESENTATIVE_V2_MIN_QUESTIONS
+    && representativeReady.length <= REPRESENTATIVE_V2_MAX_QUESTIONS
+  ) {
+    ok(
+      'representative quiz depth',
+      `${representativeReady.length} demo-ready questions across ${representativeReadyPoems.size} poems`,
+    )
+  } else {
+    fail(
+      'representative quiz depth',
+      `${representativeReady.length}; expected ${REPRESENTATIVE_V2_MIN_QUESTIONS}-${REPRESENTATIVE_V2_MAX_QUESTIONS}`,
+    )
+    failures++
+  }
+
+  if (representativeReadyPoems.size === REPRESENTATIVE_QUIZ_TARGET) {
+    ok('representative poem coverage', `${representativeReadyPoems.size}/${REPRESENTATIVE_QUIZ_TARGET}`)
+  } else {
+    fail('representative poem coverage', `${representativeReadyPoems.size}/${REPRESENTATIVE_QUIZ_TARGET}`)
+    failures++
+  }
+
+  if (representativeReady.length === representativeV2.length) {
+    ok('representative runtime quality gate', `${representativeReady.length}/${representativeV2.length}`)
+  } else {
+    fail(
+      'representative runtime quality gate',
+      `${representativeReady.length}/${representativeV2.length} v2 questions are demo-ready`,
+    )
     failures++
   }
 
@@ -185,7 +241,11 @@ async function main() {
   info('base content', `${dbPoems} poems with structured lines`)
   info('semantic search', `${embeddings} poem embeddings`)
   info('immersion depth', `${asNumber(coverage.immersionScripts)} curated scripts`)
-  info('adaptive quiz depth', `${v2Questions} v2 questions across ${asNumber(coverage.v2Poems)} poems`)
+  info(
+    'adaptive quiz depth',
+    `${representativeReady.length} demo-ready v2 questions across ${representativeReadyPoems.size} representative poems`,
+  )
+  info('full-library quiz backlog', `${v2Questions} total v2 questions across ${asNumber(coverage.v2Poems)} poems`)
   info('recite signal', `${asNumber(coverage.reciteEvents)} recite event(s) recorded`)
 
   if (failures > 0) {

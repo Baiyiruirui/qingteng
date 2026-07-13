@@ -1,70 +1,51 @@
 /**
- * 预生成题库脚本（v2 蓝图驱动）
- * 对 3 首诗按考点蓝图出题：静夜思 6 道 + 九月九 6 道 + 登高 8 道 = 20 道
- * 运行：pnpm pregenerate:quiz
+ * Idempotently generate demo-ready v2 questions for the representative poem set.
+ * Prerequisite: pnpm import:blueprints:representative
  */
-import { generateByBlueprint } from '../src/ai/quiz/generate'
-import { generateBlueprintForPoem } from '../src/ai/quiz/generate-blueprint'
-
-const POEMS = [
-  { id: 'TANG_001', title: '静夜思' },
-  { id: 'TANG_023', title: '九月九日忆山东兄弟' },
-  { id: 'TANG_042', title: '登高' },
-]
-
-// 蓝图生成器测试：拿春晓（TANG_002）测试生成 1 份蓝图
-const BLUEPRINT_TEST_POEM = { id: 'TANG_002', title: '春晓' }
-
-const DELAY_MS = 1500
-
-function sleep(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
+import { generateByBlueprint } from '@/ai/quiz/generate'
+import { REPRESENTATIVE_QUIZ_POEMS } from '@/ai/quiz/representative-set'
 
 async function main() {
-  // ── 1. 测试蓝图生成器（春晓）──────────────────────────────
-  console.log(`\n[blueprint-test] 为《${BLUEPRINT_TEST_POEM.title}》生成蓝图…`)
-  try {
-    const points = await generateBlueprintForPoem(BLUEPRINT_TEST_POEM.id)
-    console.log(`  ✓ 生成 ${points.length} 个考点:`)
-    points.forEach(p => console.log(`    ${p.id} [${p.type}] ${p.targetLines.join('，')}`))
-  } catch (err) {
-    console.warn(`  ⚠ 蓝图生成失败:`, err instanceof Error ? err.message : err)
-  }
-  await sleep(DELAY_MS)
+  console.log('\n-- Pregenerate representative v2 quiz bank --\n')
 
-  // ── 2. v2 题目预生成（3 首 × 蓝图考点）─────────────────────
-  console.log(`\n[pregenerate-v2] 开始按蓝图出题…`)
+  let generated = 0
+  let skipped = 0
+  const failures: string[] = []
 
-  let totalSuccess = 0
-  let totalFailed = 0
-  const evidenceInvalidList: string[] = []
-
-  for (const poem of POEMS) {
-    console.log(`\n  《${poem.title}》（${poem.id}）`)
+  for (const [index, poem] of REPRESENTATIVE_QUIZ_POEMS.entries()) {
+    console.log(`[${index + 1}/${REPRESENTATIVE_QUIZ_POEMS.length}] 《${poem.title}》 (${poem.id})`)
     try {
-      const questions = await generateByBlueprint(poem.id)
-      for (const q of questions) {
-        const ev = q.evidenceValid ? '✓' : '✗'
-        console.log(`    ${ev} [${q.pointType}] ${q.form}  Q=${q.qualityScore?.toFixed(2) ?? '-'}  id=${q.id}`)
-        if (!q.evidenceValid) evidenceInvalidList.push(`${poem.title} · ${q.pointType}`)
-        totalSuccess++
-        await sleep(DELAY_MS)
+      const result = await generateByBlueprint(poem.id, { maxAttempts: 3, delayMs: 900 })
+      generated += result.generated.length
+      skipped += result.skipped.length
+
+      for (const question of result.generated) {
+        console.log(
+          `  + ${question.pointId} [${question.pointType}] ${question.form} quality=${question.qualityScore?.toFixed(2) ?? '-'}`,
+        )
       }
-    } catch (err) {
-      console.warn(`  ⚠ ${poem.title} 整批失败:`, err instanceof Error ? err.message : err)
-      totalFailed++
+      if (result.skipped.length > 0) console.log(`  = skipped existing: ${result.skipped.join(', ')}`)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'unknown error'
+      failures.push(`${poem.id}: ${message}`)
+      console.error(`  ! failed: ${message}`)
     }
   }
 
-  console.log(`\n[pregenerate-v2] 完成！`)
-  console.log(`  成功 ${totalSuccess} 道 / 失败批次 ${totalFailed} / evidenceValid=false ${evidenceInvalidList.length} 道`)
-  if (evidenceInvalidList.length > 0) {
-    evidenceInvalidList.forEach(l => console.log(`    - ${l}`))
+  console.log(`\nGenerated: ${generated}`)
+  console.log(`Skipped existing: ${skipped}`)
+  console.log(`Failed poems: ${failures.length}`)
+
+  if (failures.length > 0) {
+    failures.forEach(failure => console.log(`  - ${failure}`))
+    process.exit(1)
   }
+
+  console.log('\nRepresentative v2 generation complete.\n')
+  process.exit(0)
 }
 
-main().catch(err => {
-  console.error('[pregenerate] 脚本异常退出:', err)
+main().catch(error => {
+  console.error(error)
   process.exit(1)
 })

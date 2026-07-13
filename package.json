@@ -17,6 +17,9 @@
     "import:immersion": "tsx --env-file=.env.local scripts/import-immersion.ts",
     "pregenerate:quiz": "tsx --env-file=.env.local scripts/pregenerate-quiz.ts",
     "import:blueprints": "tsx --env-file=.env.local scripts/import-blueprints.ts",
+    "generate:blueprints:representative": "tsx --env-file=.env.local scripts/generate-representative-blueprints.ts",
+    "import:blueprints:representative": "tsx --env-file=.env.local scripts/import-blueprints.ts data/quiz-blueprints-representative.json",
+    "verify:quiz:representative": "tsx --env-file=.env.local scripts/verify-representative-quiz.ts",
     "embed:poems": "tsx --env-file=.env.local scripts/embed-poems.ts",
     "eval": "tsx --env-file=.env.local src/ai/evals/run-eval.ts"
   },

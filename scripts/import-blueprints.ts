@@ -8,7 +8,11 @@ import { db } from '../src/db'
 import { quizBlueprints } from '../src/db/schema'
 import { sql } from 'drizzle-orm'
 
-const raw = readFileSync(join(process.cwd(), 'data/quiz-blueprints.json'), 'utf-8')
+import { BlueprintSchema, validateBlueprintAgainstPoem } from '../src/ai/quiz/blueprint-schema'
+import { getPoemForQuiz } from '../src/db/repositories/poems'
+
+const sourceFile = process.argv[2] ?? 'data/quiz-blueprints.json'
+const raw = readFileSync(join(process.cwd(), sourceFile), 'utf-8')
 const data = JSON.parse(raw)
 
 const blueprints: Array<{ poemId: string; points: unknown[] }> = (data.blueprints as Array<Record<string, unknown>>).map(b => ({
@@ -17,12 +21,20 @@ const blueprints: Array<{ poemId: string; points: unknown[] }> = (data.blueprint
 }))
 
 async function main() {
-  console.log(`[import-blueprints] 导入 ${blueprints.length} 份蓝图…`)
+  console.log(`[import-blueprints] 从 ${sourceFile} 导入 ${blueprints.length} 份蓝图…`)
 
   for (const bp of blueprints) {
+    const poem = await getPoemForQuiz(bp.poemId)
+    if (!poem) throw new Error(`Poem not found: ${bp.poemId}`)
+    const points = BlueprintSchema.parse(bp.points)
+    const issues = validateBlueprintAgainstPoem(points, poem)
+    if (issues.length > 0) {
+      throw new Error(`${bp.poemId} blueprint rejected: ${issues.join('; ')}`)
+    }
+
     await db
       .insert(quizBlueprints)
-      .values({ poemId: bp.poemId, points: bp.points })
+      .values({ poemId: bp.poemId, points })
       .onConflictDoUpdate({
         target: quizBlueprints.poemId,
         set: { points: sql`excluded.points` },

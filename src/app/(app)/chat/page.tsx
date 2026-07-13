@@ -4,10 +4,10 @@ import { getCurrentUser } from '@/lib/auth-server'
 import { getOrCreateActiveConversation, loadMessages } from '@/db/repositories/conversations'
 import { db } from '@/db'
 import { poems, immersionScripts } from '@/db/schema'
+import { REPRESENTATIVE_QUIZ_POEM_IDS } from '@/ai/quiz/representative-set'
 import ChatClient, { type DailyPoem } from './_chat-client'
 
-// 有预生成题库的诗（与诗库页保持一致）
-const QUIZ_POEM_IDS = new Set(['TANG_001', 'TANG_023', 'TANG_042'])
+const QUIZ_POEM_IDS = new Set<string>(REPRESENTATIVE_QUIZ_POEM_IDS)
 
 /** 今日入诗：从有沉浸脚本的诗里按日轮换，轻量推荐 */
 async function getDailyPoem(): Promise<DailyPoem | null> {

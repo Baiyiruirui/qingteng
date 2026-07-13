@@ -7,8 +7,9 @@ import { motion } from 'framer-motion'
 import { inkFadeIn, inkFadeInStagger } from '@/lib/motion'
 import { ShanshuiBanner } from '@/components/ShanshuiBanner'
 import { AppNav } from '@/components/AppNav'
+import { REPRESENTATIVE_QUIZ_POEM_IDS } from '@/ai/quiz/representative-set'
 
-const QUIZ_POEM_IDS = new Set(['TANG_001', 'TANG_023', 'TANG_042'])
+const QUIZ_POEM_IDS = new Set<string>(REPRESENTATIVE_QUIZ_POEM_IDS)
 
 type Poem = {
   id: string

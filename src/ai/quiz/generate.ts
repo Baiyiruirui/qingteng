@@ -1,6 +1,6 @@
 import { generateObject, generateText } from 'ai'
 import { z } from 'zod'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { route } from '@/ai/router'
 import { buildQuizPrompt, buildBlueprintPrompt, QUIZ_GEN_VERSION, QUIZ_GEN_VERSION_V2 } from '@/ai/prompts/v1/quiz-generate'
 import type { QuizType, QuizDifficulty } from '@/ai/prompts/v1/quiz-generate'
@@ -9,6 +9,7 @@ import { db } from '@/db'
 import { quizQuestions, quizBlueprints } from '@/db/schema'
 import type { BlueprintPoint } from '@/db/schema'
 import { telemetry } from '@/ai/observability/telemetry'
+import { isDemoReadyQuestion, MIN_DEMO_QUIZ_QUALITY } from '@/ai/quiz/quality'
 
 // Zod schemas — mcq has options, subjective adds scoringPoints
 const BaseQuizSchema = z.object({
@@ -188,23 +189,21 @@ async function generateOneByPoint(
     evidenceValid = verifyEvidence(raw.evidenceLines, poemLineContents)
   }
 
-  let qualityScore = raw.qualityScore ?? 0.85
-
   if (!evidenceValid) {
-    console.warn('[quiz-v2] evidence verification failed', {
-      poemId: poem.id,
-      pointId: point.id,
-      pointType: point.type,
-      evidenceLines: raw.evidenceLines,
-    })
-    qualityScore = Math.min(qualityScore, 0.4)
+    throw new Error(`Evidence validation failed for ${poem.id}/${point.id}`)
   }
 
   if (point.form === 'mcq' && 'options' in raw) {
     if (!verifyMcqAnswer(raw.answer, raw.options)) {
-      console.warn('[quiz-v2] mcq answer mismatch', { answer: raw.answer, options: raw.options })
-      qualityScore = Math.min(qualityScore, 0.4)
+      throw new Error(`MCQ answer mismatch for ${poem.id}/${point.id}`)
     }
+  }
+
+  const qualityScore = raw.qualityScore ?? 0
+  if (qualityScore < MIN_DEMO_QUIZ_QUALITY) {
+    throw new Error(
+      `Quality score ${qualityScore} is below ${MIN_DEMO_QUIZ_QUALITY} for ${poem.id}/${point.id}`,
+    )
   }
 
   const [saved] = await db
@@ -244,25 +243,69 @@ async function generateOneByPoint(
   }
 }
 
-export async function generateByBlueprint(poemId: string) {
+export async function generateByBlueprint(
+  poemId: string,
+  options: { maxAttempts?: number; delayMs?: number } = {},
+) {
   const poem = await getPoemForQuiz(poemId)
   if (!poem) throw new Error(`Poem not found: ${poemId}`)
 
-  const [blueprintRow] = await db
-    .select()
-    .from(quizBlueprints)
-    .where(eq(quizBlueprints.poemId, poemId))
-    .limit(1)
+  const [blueprintRows, existingQuestions] = await Promise.all([
+    db
+      .select()
+      .from(quizBlueprints)
+      .where(eq(quizBlueprints.poemId, poemId))
+      .limit(1),
+    db
+      .select()
+      .from(quizQuestions)
+      .where(and(eq(quizQuestions.poemId, poemId), eq(quizQuestions.version, 'v2'))),
+  ])
 
+  const [blueprintRow] = blueprintRows
   if (!blueprintRow) throw new Error(`No blueprint found for poem: ${poemId}`)
 
   const points = blueprintRow.points as BlueprintPoint[]
-  const results = []
+  const results: Awaited<ReturnType<typeof generateOneByPoint>>[] = []
+  const skipped: string[] = []
+  const maxAttempts = options.maxAttempts ?? 3
+  const delayMs = options.delayMs ?? 800
 
   for (const point of points) {
-    const q = await generateOneByPoint(poem, point)
-    results.push(q)
+    const existingForPoint = existingQuestions.filter(question => question.pointId === point.id)
+    if (existingForPoint.some(isDemoReadyQuestion)) {
+      skipped.push(point.id)
+      continue
+    }
+    if (existingForPoint.length > 0) {
+      throw new Error(
+        `${poemId}/${point.id} has an existing v2 question that failed the demo quality gate`,
+      )
+    }
+
+    let generated: Awaited<ReturnType<typeof generateOneByPoint>> | null = null
+    let lastError: unknown
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        generated = await generateOneByPoint(poem, point)
+        break
+      } catch (error) {
+        lastError = error
+        const message = error instanceof Error ? error.message : 'unknown error'
+        console.warn(`[quiz-v2] ${poemId}/${point.id} attempt ${attempt}/${maxAttempts} failed: ${message}`)
+        if (delayMs > 0) await new Promise(resolve => setTimeout(resolve, delayMs))
+      }
+    }
+
+    if (!generated) {
+      throw lastError instanceof Error
+        ? lastError
+        : new Error(`Question generation failed for ${poemId}/${point.id}`)
+    }
+
+    results.push(generated)
+    if (delayMs > 0) await new Promise(resolve => setTimeout(resolve, delayMs))
   }
 
-  return results
+  return { generated: results, skipped }
 }
