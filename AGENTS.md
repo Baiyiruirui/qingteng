@@ -10,7 +10,7 @@
 - **名称**:青藤(Qingteng)
 - **定位**:面向中学生的对话式古诗词学习产品,有持久 Memory 的 AI 诗友
 - **目标**:求职作品集项目(AI 应用工程师方向)
-- **当前状态**:后半程按 CHARTER.md 执行。Phase B、Phase C1-C3 与 Phase D P0 已完成;准备进入 Phase E,同时收尾 Phase A-2 视觉/讲点遗项
+- **当前状态**:后半程按 CHARTER.md 执行。Phase A-2、Phase B、Phase C1-C3 与 Phase D P0 已完成;当前进入 Phase E 发布收尾
 - **章程**:后半程目标/范围/节奏见 `CHARTER.md`;与本文件冲突时,以 `CHARTER.md` 为准
 - **线上地址**:https://qingteng-ecru.vercel.app
 - **GitHub**:https://github.com/Baiyiruirui/qingteng
@@ -57,8 +57,8 @@
 | Week 3 | ✅ | 诗境沉浸 + 青藤考你 MVP | `91c7b32` |
 | 部署上线 | ✅ | Vercel 上线 qingteng-ecru.vercel.app；Next.js 16 proxy 兼容；CI/CD 踩坑记录 | `64bc816` |
 | 美术 Phase A-1 | ✅ | 诗库页精修 + 聊天页 Memory 可视化 + 根路径重定向 + 统一导航 + 公开 demo 防护 + 沉浸剧场化 | `3b759c2` |
-| 美术 Phase A-2 | ⏳ | 视觉走查 + 做题页批注细节 + 文档/讲点补齐(可与 Phase B 并行) | - |
-| Phase B | 🔨 | Eval v0.2 已扩成 57 checks 并回归 57/57;Langfuse 已接入 chat/opening/quiz-generate/quiz-judge/memory-extract | - |
+| 美术 Phase A-2 | ✅ | 做题页先生批注 + 全站桌面/移动视觉走查 + talking-points 011/012 | `695cdd7` |
+| Phase B | ✅ | Eval v0.2 已扩成 62 checks 并回归 62/62;Langfuse 已接入 chat/opening/quiz-generate/quiz-judge/memory-extract | - |
 | Phase C1 | ✅ | 自适应组卷 + 错题专项复习入口 + 学习进度页已落地;Eval 62/62 | - |
 | Phase C2 | ✅ | 腾讯 ASR 朗读评分：录音页 + 一句话识别 + 逐字对齐评分 + events 记录;真机验证通过 | - |
 | Phase C3 | ✅ | 语义诗词搜索：poem_embeddings + bge-m3 + pgvector 混合检索已落地;140 首诗已回填 | - |

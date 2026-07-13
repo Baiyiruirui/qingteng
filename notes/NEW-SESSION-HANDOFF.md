@@ -26,6 +26,7 @@
 |---|---|---|
 | Week 1-3 | ✅ | 140 首诗、流式对话、JWT、三层 Memory、诗境沉浸、grounding 出题、LLM-as-judge |
 | Phase A P0 | ✅ | 根路径、统一导航、诗笺地图、今日案头、沉浸剧场、内部接口门禁 |
+| Phase A-2 | ✅ | 做题页先生批注、全站桌面/移动视觉走查、talking-points 011/012 |
 | Phase B | ✅ | Eval v0.2 62/62；Langfuse 覆盖核心 AI 链路 |
 | Phase C1 | ✅ | 自适应组卷、错题专项复习、学习进度页 |
 | Phase C2 | ✅ | 腾讯 ASR 朗读评分，真机验证通过 |
@@ -37,6 +38,7 @@
 最近关键提交：
 
 ```text
+695cdd7 style: finish quiz annotations and visual consistency
 ddeb9d4 feat(quiz): scale representative v2 bank to 95 questions
 dfd1ed2 feat(security): add public demo cost guardrails
 40cd3b6 chore(quiz): add blueprint scale dry run (eval 62/62)
@@ -73,12 +75,11 @@ dfd1ed2 feat(security): add public demo cost guardrails
 
 ## 下一步建议
 
-进入 Phase E，但先把发布前顺序守住：
+进入 Phase E，按发布前顺序推进：
 
-1. Phase A 尾项：做题页批注细节、全站移动/桌面视觉走查、talking-points 011/012。
-2. 补 Demo 视频脚本与 README 终稿，使用真实口径“140 首基础内容 + 14 首/95 道深题库”。
-3. 按安全清单轮换腾讯云和 Langfuse 密钥，再更新 Vercel 并复验聊天、trace、朗读。
-4. 完成 3 分钟 Demo 视频与最终归档。
+1. 补 Demo 视频脚本与 README 终稿，使用真实口径“140 首基础内容 + 14 首/95 道深题库”。
+2. 按安全清单轮换腾讯云和 Langfuse 密钥，再更新 Vercel 并复验聊天、trace、朗读。
+3. 完成 3 分钟 Demo 视频与最终归档。
 
 ## 工作纪律
 
