@@ -33,7 +33,6 @@
 | 打开 App | 闯关地图 / 题目列表 | 青藤先生基于学习画像的个性化开场白 |
 | 学一首诗 | 看翻译 + 听朗读 + 做题 | **诗境沉浸** — AI 扮演诗中角色带你进入场景 |
 | 出题练习 | 通用题库，AI 即时出题 | **青藤考你** — 基于 grounding 防幻觉出题，evidenceLines 强制溯源 |
-| 写诗 | 没这个功能 | AI 协同创作，实时韵脚 + 对仗反馈 |
 | 朗读 | 录音对照原文 | 腾讯 ASR 转写 + 逐字对齐评分 |
 | 记忆 | 仅记录答题历史 | 三层 Memory（短期会话 / 中期画像 / 长期诗友记忆） |
 
@@ -55,15 +54,15 @@
 
 | 任务 | 模型 | 理由 |
 |---|---|---|
-| 角色对话 | Claude Haiku | 体验关键，要稳 |
-| 出题 / 批改 | DeepSeek Chat | 30x 成本优势，质量够用 |
-| 朗读评分 | 腾讯 ASR | 国内可用，免费额度覆盖 demo |
+| 角色对话 | DeepSeek Chat（可选 Claude Haiku） | 默认国内可用，配置 Anthropic 后自动切换 |
+| 出题 / 批改 | DeepSeek Chat | 公开 Demo 成本友好，结构化任务质量够用 |
+| 朗读评分 | 腾讯 ASR | 国内可用，当前账户额度可覆盖 Demo |
 
-整体 token 成本预估降低 80% 而体验不降级。
+按任务做模型路由，并用用户/IP 限流控制公开 Demo 成本；未配置 Anthropic 时角色对话自动降级到 DeepSeek。
 
 ### 🔒 结构化输出，告别 JSON.parse 翻车
 
-所有 LLM 返回都用 Vercel AI SDK + Zod schema 强约束：
+出题等结构化 LLM 链路使用 Vercel AI SDK + Zod schema 强约束：
 
 ```ts
 const QuizQuestion = z.object({
@@ -85,7 +84,7 @@ LLM 出古诗题容易把典故安在错误的诗句上（案例：《登高》"
 
 ### 📊 Eval 驱动开发
 
-62 项黄金检查 + Langfuse 全链路 trace。每次 Prompt 改动都跑评估，看准确率 diff —— 把 AI 应用当软件做，不是当玄学做。
+62 项黄金检查 + Langfuse 核心 LLM 链路 trace。每次 Prompt 改动都跑评估，看准确率 diff —— 把 AI 应用当软件做，不是当玄学做。
 
 ---
 
@@ -99,13 +98,13 @@ LLM 出古诗题容易把典故安在错误的诗句上（案例：《登高》"
 服务  Next.js Server Actions / Route Handlers
       Drizzle ORM + Zod
 
-数据  PostgreSQL (Neon) + pgvector + Upstash Redis + R2
+数据  PostgreSQL (Neon) + pgvector + Upstash Redis
 
 AI    Vercel AI SDK
-      DeepSeek · Claude Haiku · Tencent ASR
+      DeepSeek · Claude Haiku（可选）· Tencent ASR
       自建 Memory + 多模型路由 + Prompt 版本化
 
-观测  Langfuse · Sentry · Vercel Analytics
+观测  Langfuse
 部署  Vercel (全 serverless)
 ```
 
@@ -167,6 +166,13 @@ pnpm dev
 
 # 发布前安全自检（不输出任何密钥值）
 pnpm verify:security
+
+# 关键质量门
+pnpm build
+pnpm eval
+pnpm verify:data
+pnpm verify:quiz:representative
+pnpm verify:wrong-question
 ```
 
 需要的服务账号：
