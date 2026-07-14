@@ -18,6 +18,7 @@ import {
   rateLimitResponse,
 } from '@/lib/rate-limit'
 import { parseUiMessages } from '@/lib/request-limits'
+import { scheduleAfterResponse } from '@/lib/after-response'
 
 export const runtime = 'nodejs'
 
@@ -95,7 +96,7 @@ export async function POST(req: Request) {
 
     // Save the new user message (last in array) to PG and Redis
     await appendMessage(conversationId, 'user', userText)
-    updateShortTerm(session.userId, conversationId, { role: 'user', content: userText }).catch(
+    await updateShortTerm(session.userId, conversationId, { role: 'user', content: userText }).catch(
       e => console.error('[redis] updateShortTerm user failed:', e),
     )
 
@@ -136,16 +137,13 @@ export async function POST(req: Request) {
           console.error('[onFinish] failed to persist:', e)
         }
 
-        // Update Redis short-term snapshot
-        updateShortTerm(session.userId, conversationId, { role: 'assistant', content: text }).catch(
-          e => console.error('[redis] updateShortTerm assistant failed:', e),
-        )
-
-        // Extract long-term memories from this turn — fire-and-forget, never blocks
         const transcript = `${userName}: ${userText}\n青藤: ${text}`
-        extractAndStore(session.userId, transcript).catch(
-          e => console.error('[long-term] extract failed:', e),
-        )
+        await scheduleAfterResponse('chat post-response memory', async () => {
+          await Promise.all([
+            updateShortTerm(session.userId, conversationId, { role: 'assistant', content: text }),
+            extractAndStore(session.userId, transcript),
+          ])
+        })
       },
     })
     return result.toUIMessageStreamResponse()

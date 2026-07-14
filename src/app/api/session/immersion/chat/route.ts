@@ -17,6 +17,7 @@ import {
   rateLimitResponse,
 } from '@/lib/rate-limit'
 import { parseUiMessages } from '@/lib/request-limits'
+import { scheduleAfterResponse } from '@/lib/after-response'
 
 export const runtime = 'nodejs'
 
@@ -134,14 +135,16 @@ export async function POST(req: Request) {
           console.error('[immersion onFinish] failed to persist:', e)
         }
 
-        extractImmersionAndStore({
-          userId: session.userId,
-          poemTitle: poemRow.title,
-          poemAuthor: poemRow.author,
-          role: script.role,
-          userText,
-          assistantText: text,
-        }).catch(e => console.error('[immersion memory] extract failed:', e))
+        await scheduleAfterResponse('immersion post-response memory', async () => {
+          await extractImmersionAndStore({
+            userId: session.userId,
+            poemTitle: poemRow.title,
+            poemAuthor: poemRow.author,
+            role: script.role,
+            userText,
+            assistantText: text,
+          })
+        })
       },
     })
 
