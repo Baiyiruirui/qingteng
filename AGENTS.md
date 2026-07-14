@@ -10,7 +10,7 @@
 - **名称**:青藤(Qingteng)
 - **定位**:面向中学生的对话式古诗词学习产品,有持久 Memory 的 AI 诗友
 - **目标**:求职作品集项目(AI 应用工程师方向)
-- **当前状态**:后半程按 CHARTER.md 执行。Phase A-2、Phase B、Phase C1-C3 与 Phase D P0 已完成;当前进入 Phase E 发布收尾
+- **当前状态**:后半程按 CHARTER.md 执行。Phase A-2、Phase B、Phase C1-C3 与 Phase D P0 已完成;当前进入 Phase E 发布收尾并清偿发布审计问题
 - **章程**:后半程目标/范围/节奏见 `CHARTER.md`;与本文件冲突时,以 `CHARTER.md` 为准
 - **线上地址**:https://qingteng-ecru.vercel.app
 - **GitHub**:https://github.com/Baiyiruirui/qingteng
@@ -71,6 +71,7 @@
 | Phase D-7 | ✅ | 方案 B 代表题库：14 首、95 道 v2、8 类考点、运行时质量门槛;Eval 62/62 | `ddeb9d4` |
 | Phase D | ✅ | 优化提纲 P0 清偿完成(CHARTER.md 第五节) | `ddeb9d4` |
 | Phase E-1 | ✅ | 诗歌意境图首批接入：14 张代表诗专属图 + T07 边塞共用图，三处统一映射 | `ab0a3e8` |
+| Phase E-2 | ✅ | 错题复习闭环：答对/达标后标记已掌握，答题记录与错题状态事务化，策略校验 5/5 | `aedca75` |
 | Phase E | ⏳ | Demo 视频 + README 终稿 + key 轮换 | - |
 
 **完成一个 Day 后必须更新这张表**(把 ⏳ 改 ✅,填 commit hash)。
