@@ -36,11 +36,13 @@
 | Phase E-2 | ✅ | 错题复习闭环：掌握后解除、写入事务化、策略校验 5/5 |
 | Phase E-3 | ✅ | 日常聊天与沉浸模式的长期 Memory 改由 Next `after()` 可靠承接 |
 | Phase E-4 | ✅ | README 移除未落地能力，模型、数据与观测栈口径已和线上实现对齐 |
+| Phase E-5 | ✅ | embedding/腾讯 ASR 增加超时、响应校验、错误脱敏与 provider guard |
 | Phase E | ⏳ | 3 分钟视频、README 终稿、密钥轮换、最终归档 |
 
 最近关键提交：
 
 ```text
+9ae24b6 fix(ai): harden external provider calls
 5d20573 docs: align README with deployed capabilities
 8c16a0d fix(memory): persist extraction after streamed responses
 aedca75 fix(quiz): close wrong-question review loop
@@ -67,6 +69,7 @@ dfd1ed2 feat(security): add public demo cost guardrails
 - `pnpm verify:security` 当前 27/27 checks；唯一 warning 是 `QT_ADMIN_USER_IDS` 未配置，因此生产内部工具默认全部拒绝。
 - `pnpm verify:wrong-question` 当前 5/5；客观题答对或主观题达到 50% 后解除待加强，答题记录与错题状态在同一事务内落库。
 - 日常聊天与沉浸模式的长期 Memory 抽取已挂到 Next `after()` 请求生命周期；无可用请求上下文时会同步回退，不再使用裸 fire-and-forget Promise。
+- `pnpm verify:providers` 当前 5/5；embedding 与腾讯 ASR 已有硬超时、Zod 响应校验和客户端错误脱敏，语义搜索失败时自动回退关键词结果。
 
 ## Phase D-6 安全实现
 

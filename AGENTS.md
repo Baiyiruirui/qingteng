@@ -74,6 +74,7 @@
 | Phase E-2 | ✅ | 错题复习闭环：答对/达标后标记已掌握，答题记录与错题状态事务化，策略校验 5/5 | `aedca75` |
 | Phase E-3 | ✅ | Memory 流后可靠落库：Next `after()` 承接聊天/沉浸记忆抽取，缺少请求上下文时同步回退 | `8c16a0d` |
 | Phase E-4 | ✅ | README 能力口径收口：移除未落地声明，模型/数据/观测栈与线上实现对齐 | `5d20573` |
+| Phase E-5 | ✅ | 外部 Provider 加固：embedding/腾讯 ASR 超时、结构校验、错误脱敏与 5/5 guard 校验 | `9ae24b6` |
 | Phase E | ⏳ | Demo 视频 + README 终稿 + key 轮换 | - |
 
 **完成一个 Day 后必须更新这张表**(把 ⏳ 改 ✅,填 commit hash)。
