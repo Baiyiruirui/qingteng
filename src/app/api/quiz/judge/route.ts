@@ -6,6 +6,7 @@ import { db } from '@/db'
 import { quizQuestions, quizAttempts, wrongQuestions } from '@/db/schema'
 import { getPoemForQuiz } from '@/db/repositories/poems'
 import { judgeObjective, judgeSubjective } from '@/ai/quiz/judge'
+import { getWrongQuestionOutcome } from '@/ai/quiz/wrong-question'
 import {
   checkRateLimits,
   PUBLIC_AI_BUDGET_POLICIES,
@@ -109,40 +110,48 @@ export async function POST(req: Request) {
     feedback = result.feedback
   }
 
-  // Record attempt (unique constraint on sessionId+questionId prevents duplicates at DB level)
-  await db.insert(quizAttempts).values({
-    userId,
-    questionId,
-    poemId: question.poemId,
-    sessionId,
-    userAnswer,
+  const wrongQuestionOutcome = getWrongQuestionOutcome({
+    isObjective,
     isCorrect,
     completionRate,
-    hitPoints,
-    missedPoints,
-    feedback,
   })
 
-  // Update wrong_questions:
-  // - Objective: answered wrong → add/increment
-  // - Subjective: completionRate < 0.25 (barely touched) → add/increment
-  const shouldAddToWrong = isObjective
-    ? isCorrect === false
-    : completionRate !== null && completionRate < 0.25
+  await db.transaction(async tx => {
+    // The attempt and wrong-book state must either both persist or both roll back.
+    await tx.insert(quizAttempts).values({
+      userId,
+      questionId,
+      poemId: question.poemId,
+      sessionId,
+      userAnswer,
+      isCorrect,
+      completionRate,
+      hitPoints,
+      missedPoints,
+      feedback,
+    })
 
-  if (shouldAddToWrong) {
-    await db
-      .insert(wrongQuestions)
-      .values({ userId, questionId, poemId: question.poemId, wrongCount: 1, resolved: false })
-      .onConflictDoUpdate({
-        target: [wrongQuestions.userId, wrongQuestions.questionId],
-        set: {
-          wrongCount: sql`${wrongQuestions.wrongCount} + 1`,
-          lastWrongAt: sql`now()`,
-          resolved: false,
-        },
-      })
-  }
+    if (wrongQuestionOutcome === 'increment') {
+      await tx
+        .insert(wrongQuestions)
+        .values({ userId, questionId, poemId: question.poemId, wrongCount: 1, resolved: false })
+        .onConflictDoUpdate({
+          target: [wrongQuestions.userId, wrongQuestions.questionId],
+          set: {
+            wrongCount: sql`${wrongQuestions.wrongCount} + 1`,
+            lastWrongAt: sql`now()`,
+            resolved: false,
+          },
+        })
+    }
+
+    if (wrongQuestionOutcome === 'resolve') {
+      await tx
+        .update(wrongQuestions)
+        .set({ resolved: true })
+        .where(and(eq(wrongQuestions.userId, userId), eq(wrongQuestions.questionId, questionId)))
+    }
+  })
 
   return NextResponse.json({
     ...(isCorrect !== null && { isCorrect }),
