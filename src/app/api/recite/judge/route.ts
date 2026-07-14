@@ -5,7 +5,7 @@ import { requireAuth } from '@/lib/auth-server'
 import { getPoemForQuiz } from '@/db/repositories/poems'
 import { recordEvent } from '@/db/repositories/events'
 import { poemLinesToText, scoreRecitation } from '@/ai/recite/score'
-import { recognizeSentence } from '@/ai/recite/tencent-asr'
+import { recognizeSentence, TencentAsrError } from '@/ai/recite/tencent-asr'
 import { checkRateLimits, rateLimitResponse } from '@/lib/rate-limit'
 import { estimateBase64Bytes } from '@/lib/request-limits'
 
@@ -88,8 +88,17 @@ export async function POST(req: Request) {
       feedback: score.feedback,
     })
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Recite judge failed'
-    const status = message.includes('TENCENT_SECRET') || message.includes('configured') ? 503 : 502
-    return NextResponse.json({ error: message }, { status })
+    if (error instanceof TencentAsrError) {
+      console.error('[recite] Tencent ASR failed:', {
+        code: error.code,
+        requestId: error.requestId,
+        message: error.message,
+      })
+      const status = error.code === 'CONFIG' ? 503 : error.code === 'TIMEOUT' ? 504 : 502
+      return NextResponse.json({ error: '朗读服务暂时不可用，请稍后再试' }, { status })
+    }
+
+    console.error('[recite] judge failed:', error)
+    return NextResponse.json({ error: '朗读评分暂时失败，请稍后再试' }, { status: 500 })
   }
 }

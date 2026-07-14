@@ -13,6 +13,7 @@
     "verify:security": "tsx --env-file=.env.local scripts/verify-security.ts",
     "verify:memory": "tsx --env-file=.env.local scripts/verify-memory-policy.ts",
     "verify:wrong-question": "tsx scripts/verify-wrong-question-policy.ts",
+    "verify:providers": "tsx scripts/verify-provider-guards.ts",
     "audit:quiz": "tsx --env-file=.env.local scripts/audit-quiz-bank.ts",
     "plan:blueprints": "tsx --env-file=.env.local scripts/plan-blueprint-scale.ts",
     "import:immersion": "tsx --env-file=.env.local scripts/import-immersion.ts",

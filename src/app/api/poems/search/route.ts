@@ -148,7 +148,8 @@ export async function GET(req: Request) {
     semanticResults = (await semanticPoemSearch(query, limit))
       .filter(poem => !dynasty || poem.dynasty === dynasty)
   } catch (error) {
-    semanticError = error instanceof Error ? error.message : 'semantic search failed'
+    console.error('[poem search] semantic search failed:', error)
+    semanticError = '语义搜索暂时不可用，已回退关键词搜索'
   }
 
   const merged = new Map<string, PoemSearchResult & { keywordScore: number; hasScript: boolean }>()

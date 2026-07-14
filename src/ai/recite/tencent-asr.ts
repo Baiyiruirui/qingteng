@@ -1,32 +1,35 @@
 import crypto from 'node:crypto'
+import { z } from 'zod'
 
 const SERVICE = 'asr'
 const HOST = 'asr.tencentcloudapi.com'
 const ENDPOINT = `https://${HOST}`
 const VERSION = '2019-06-14'
 const ACTION = 'SentenceRecognition'
+const ASR_TIMEOUT_MS = 15_000
 
-type TencentErrorResponse = {
-  Response?: {
-    Error?: {
-      Code?: string
-      Message?: string
-    }
-    RequestId?: string
-  }
-}
+const sentenceRecognitionResponseSchema = z.object({
+  Response: z.object({
+    Result: z.string().optional(),
+    AudioDuration: z.number().optional(),
+    RequestId: z.string().optional(),
+    Error: z.object({
+      Code: z.string().optional(),
+      Message: z.string().optional(),
+    }).optional(),
+  }),
+})
 
-type SentenceRecognitionResponse = TencentErrorResponse & {
-  Response?: {
-    Result?: string
-    AudioDuration?: number
-    WordSize?: number
-    WordList?: unknown[]
-    RequestId?: string
-    Error?: {
-      Code?: string
-      Message?: string
-    }
+export type TencentAsrErrorCode = 'CONFIG' | 'TIMEOUT' | 'UPSTREAM' | 'INVALID_RESPONSE'
+
+export class TencentAsrError extends Error {
+  constructor(
+    public readonly code: TencentAsrErrorCode,
+    message: string,
+    public readonly requestId: string | null = null,
+  ) {
+    super(message)
+    this.name = 'TencentAsrError'
   }
 }
 
@@ -87,7 +90,7 @@ function getAuthorization({
 
 function requiredEnv(name: string): string {
   const value = process.env[name]
-  if (!value) throw new Error(`${name} is not configured`)
+  if (!value) throw new TencentAsrError('CONFIG', `${name} is not configured`)
   return value
 }
 
@@ -129,28 +132,48 @@ export async function recognizeSentence({
   }
   const payload = JSON.stringify(body)
   const timestamp = Math.floor(Date.now() / 1000)
-  const res = await fetch(ENDPOINT, {
-    method: 'POST',
-    headers: {
-      Authorization: getAuthorization({ secretId, secretKey, timestamp, payload }),
-      'Content-Type': 'application/json; charset=utf-8',
-      Host: HOST,
-      'X-TC-Action': ACTION,
-      'X-TC-Timestamp': timestamp.toString(),
-      'X-TC-Version': VERSION,
-      'X-TC-Region': asrRegion(),
-    },
-    body: payload,
-  })
-  const data = (await res.json()) as SentenceRecognitionResponse
-  const error = data.Response?.Error
+  let res: Response
+  try {
+    res = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: {
+        Authorization: getAuthorization({ secretId, secretKey, timestamp, payload }),
+        'Content-Type': 'application/json; charset=utf-8',
+        Host: HOST,
+        'X-TC-Action': ACTION,
+        'X-TC-Timestamp': timestamp.toString(),
+        'X-TC-Version': VERSION,
+        'X-TC-Region': asrRegion(),
+      },
+      body: payload,
+      signal: AbortSignal.timeout(ASR_TIMEOUT_MS),
+    })
+  } catch (error) {
+    const name = error instanceof Error ? error.name : ''
+    if (name === 'TimeoutError' || name === 'AbortError') {
+      throw new TencentAsrError('TIMEOUT', 'Tencent ASR request timed out')
+    }
+    throw new TencentAsrError('UPSTREAM', 'Tencent ASR request failed')
+  }
+
+  const parsed = sentenceRecognitionResponseSchema.safeParse(await res.json().catch(() => null))
+  if (!parsed.success) {
+    throw new TencentAsrError('INVALID_RESPONSE', 'Tencent ASR returned an invalid response')
+  }
+
+  const data = parsed.data
+  const error = data.Response.Error
   if (!res.ok || error) {
-    throw new Error(error?.Message || `Tencent ASR request failed: ${res.status}`)
+    throw new TencentAsrError(
+      'UPSTREAM',
+      error?.Code ?? `Tencent ASR request failed (${res.status})`,
+      data.Response.RequestId ?? null,
+    )
   }
 
   return {
-    transcript: data.Response?.Result ?? '',
-    audioDuration: data.Response?.AudioDuration ?? null,
-    requestId: data.Response?.RequestId ?? null,
+    transcript: data.Response.Result ?? '',
+    audioDuration: data.Response.AudioDuration ?? null,
+    requestId: data.Response.RequestId ?? null,
   }
 }
