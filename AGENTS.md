@@ -149,6 +149,26 @@ pnpm config set registry https://registry.npmmirror.com
 可以自行决定的:变量命名、UI 细节、辅助函数实现。
 必须问用户的:新功能的交互设计、可能影响数据的操作、第三方服务/依赖引入。
 
+### 8. 多 Agent 动态协作
+
+由主 Agent 根据任务复杂度动态组队,不固定常驻角色,也不为小任务制造额外协调成本:
+
+- **主 Agent / 技术负责人**:读取章程、拆分任务、保留关键路径、审查结果、统一验证、commit 与 push。
+- **架构勘察 Agent**:只读梳理调用链、数据流、影响范围和章程约束,不直接修改文件。
+- **前端 Agent**:负责页面、组件、导航、字体、响应式和浏览器视觉验证;默认写入范围为 `src/app/(app)/`、`src/components/` 及相关样式。
+- **后端与 AI Agent**:负责 Route Handler、Memory、Quiz、ASR、搜索、Langfuse、限流与错误处理;默认写入范围为 `src/app/api/`、`src/ai/`、`src/lib/`。
+- **质量 Agent**:负责 TypeScript、build、Eval、Playwright、安全和数据验收;默认只测试与报告,除非主 Agent 明确授权修复范围。
+- **发布 Agent**:在 Phase E 或发布任务中核对 README、notes、环境变量清单、Git 状态和 Vercel 部署。
+
+启用规则:
+
+1. 小型、单文件或强耦合任务由主 Agent 直接完成。
+2. 中型任务通常启用 1-2 个子 Agent;跨前后端的大任务可启用 3-4 个。
+3. 子任务必须边界清楚、能够独立推进,且不同写入 Agent 的文件范围不得重叠。
+4. 关键路径和重大产品决策不下放;用户拍板规则继续生效。
+5. 子 Agent 不单独 commit、push 或修改进度章程;最终集成、验证和留痕由主 Agent 统一负责。
+6. 开始实质工作前,主 Agent 应简短说明本轮启用了哪些角色及各自职责。
+
 ---
 
 ## 产品模块（三种对话模式）
