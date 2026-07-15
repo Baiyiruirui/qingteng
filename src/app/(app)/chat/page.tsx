@@ -5,6 +5,7 @@ import { getOrCreateActiveConversation, loadMessages } from '@/db/repositories/c
 import { db } from '@/db'
 import { poems, immersionScripts } from '@/db/schema'
 import { REPRESENTATIVE_QUIZ_POEM_IDS } from '@/ai/quiz/representative-set'
+import { normalizeDynasty } from '@/lib/poem-display'
 import ChatClient, { type DailyPoem } from './_chat-client'
 
 const QUIZ_POEM_IDS = new Set<string>(REPRESENTATIVE_QUIZ_POEM_IDS)
@@ -28,7 +29,7 @@ async function getDailyPoem(): Promise<DailyPoem | null> {
     id: p.id,
     title: p.title,
     author: p.author,
-    dynasty: p.dynasty,
+    dynasty: normalizeDynasty(p.dynasty),
     lines: (p.lines ?? []).slice(0, 4).map(l => l.content),
     hasQuiz: QUIZ_POEM_IDS.has(p.id),
   }

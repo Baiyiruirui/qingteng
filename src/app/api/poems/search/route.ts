@@ -4,6 +4,7 @@ import { getSession } from '@/lib/auth-server'
 import { db } from '@/db'
 import { immersionScripts, poems } from '@/db/schema'
 import { semanticPoemSearch, type PoemSearchResult } from '@/ai/poems/search'
+import { normalizeDynasty } from '@/lib/poem-display'
 import {
   checkRateLimits,
   PUBLIC_AI_BUDGET_POLICIES,
@@ -49,7 +50,7 @@ function toResult(poem: PoemRow, matchReason: string, similarity: number | null)
     id: poem.id,
     title: poem.title,
     author: poem.author,
-    dynasty: poem.dynasty,
+    dynasty: normalizeDynasty(poem.dynasty),
     grade: poem.grade,
     themes: poem.themes,
     imagery: poem.imagery,
@@ -67,7 +68,7 @@ export async function GET(req: Request) {
 
   const { searchParams } = new URL(req.url)
   const query = (searchParams.get('q') ?? '').trim()
-  const dynasty = (searchParams.get('dynasty') ?? '').trim()
+  const dynasty = normalizeDynasty(searchParams.get('dynasty')) ?? ''
   const requestedLimit = Number.parseInt(searchParams.get('limit') ?? '48', 10)
   const limit = Number.isFinite(requestedLimit) && requestedLimit > 0
     ? Math.min(requestedLimit, 80)
@@ -115,7 +116,7 @@ export async function GET(req: Request) {
       id: poem.id,
       title: poem.title,
       author: poem.author,
-      dynasty: poem.dynasty,
+      dynasty: normalizeDynasty(poem.dynasty),
       grade: poem.grade,
       themes: poem.themes ?? [],
       imagery: poem.imagery ?? [],
@@ -160,7 +161,8 @@ export async function GET(req: Request) {
       hasScript: scriptPoemIds.has(item.poem.id),
     })
   }
-  for (const poem of semanticResults) {
+  for (const rawPoem of semanticResults) {
+    const poem = { ...rawPoem, dynasty: normalizeDynasty(rawPoem.dynasty) }
     const existing = merged.get(poem.id)
     if (existing) {
       merged.set(poem.id, {

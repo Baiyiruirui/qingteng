@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { History, Plus } from 'lucide-react'
+import { History, House, MessageCircle, Plus } from 'lucide-react'
 import type { UIMessage } from 'ai'
 import { inkFadeIn, inkFadeInStagger } from '@/lib/motion'
 import { ShanshuiBanner } from '@/components/ShanshuiBanner'
@@ -82,6 +82,10 @@ export default function ChatClient({
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const isDailyChat = !sessionMode || sessionMode === 'chat'
+  const supportsDesk = sessionMode === undefined
+  const [dailyView, setDailyView] = useState<'desk' | 'conversation'>(
+    supportsDesk ? 'desk' : 'conversation',
+  )
 
   const transport = useMemo(
     () => new DefaultChatTransport({ body: { conversationId } }),
@@ -93,9 +97,9 @@ export default function ChatClient({
     messages: initialMessages,
   })
 
-  // 案头模式：还没聊起来（无用户消息）时展示今日案头
+  // /chat 始终保留今日案头；进入对话后可在两种视图间往返。
   const hasConversation = messages.some(m => m.role === 'user')
-  const showDesk = isDailyChat && !hasConversation
+  const showDesk = supportsDesk && dailyView === 'desk'
 
   useEffect(() => {
     if (initialMessages.length > 0 || openingFetched.current) return
@@ -137,6 +141,7 @@ export default function ChatClient({
     const text = input.trim()
     if (!text || status === 'submitted' || status === 'streaming') return
     if (error) clearError()
+    if (supportsDesk) setDailyView('conversation')
     sendMessage({ text })
     setInput('')
   }
@@ -150,6 +155,8 @@ export default function ChatClient({
         setActionError('暂时无法新建对话，请稍后再试。')
         return
       }
+      if (supportsDesk) setDailyView('desk')
+      router.replace('/chat')
       router.refresh()
     } finally {
       setNewConvLoading(false)
@@ -186,17 +193,36 @@ export default function ChatClient({
 
   // 案头信文 = 开场白（最后一条 assistant 消息）
   const lastAssistant = [...messages].reverse().find(m => m.role === 'assistant')
-  const openingText = lastAssistant
+  const openingText = !hasConversation && lastAssistant
     ? getTextContent(lastAssistant.parts as Array<{ type: string; text?: string }>)
     : null
+
+  const navTitle = supportsDesk
+    ? (showDesk ? '今日案头' : '与青藤对话')
+    : `${sessionMode === 'creative' ? '共写' : '旧日对话'}${sessionPoemTitle ? ` · ${sessionPoemTitle}` : ''}`
+  const deskToggleLabel = showDesk ? '继续对话' : '返回案头'
 
   return (
     <div className="flex min-h-screen flex-col bg-paper text-ink">
       <AppNav
-        title={isDailyChat ? '今日案头' : `${sessionMode === 'creative' ? '共写' : '对话'}${sessionPoemTitle ? ` · ${sessionPoemTitle}` : ''}`}
+        title={navTitle}
         userName={userName}
         right={isDailyChat ? (
           <div className="flex items-center gap-1">
+            {supportsDesk && hasConversation && (
+              <button
+                type="button"
+                onClick={() => setDailyView(showDesk ? 'conversation' : 'desk')}
+                aria-label={deskToggleLabel}
+                title={deskToggleLabel}
+                className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-edge px-2 text-xs font-medium text-ink-mid outline-none transition-colors hover:bg-paper-block hover:text-ink focus-visible:ring-2 focus-visible:ring-jade/55"
+              >
+                {showDesk
+                  ? <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" />
+                  : <House className="h-3.5 w-3.5" aria-hidden="true" />}
+                <span className="hidden lg:inline">{deskToggleLabel}</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={() => setHistoryOpen(true)}

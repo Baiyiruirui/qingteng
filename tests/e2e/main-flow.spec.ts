@@ -29,6 +29,16 @@ test.describe('signed-in learning flow', () => {
   })
 
   test('opens conversation history and returns to the desk', async ({ page }) => {
+    await expect(page.getByRole('heading', { name: '今日青藤札记' })).toBeVisible()
+
+    const continueButton = page.getByRole('button', { name: '继续对话' })
+    if (await continueButton.isVisible()) {
+      await continueButton.click()
+      await expect(page.getByText('与青藤对话', { exact: true })).toBeVisible()
+      await page.getByRole('button', { name: '返回案头' }).click()
+      await expect(page.getByRole('heading', { name: '今日青藤札记' })).toBeVisible()
+    }
+
     await page.getByRole('button', { name: '历史对话' }).click()
     await expect(page.getByRole('dialog', { name: '旧日对话' })).toBeVisible()
     await expect(page.getByText('回到曾经读诗和交谈的地方')).toBeVisible()

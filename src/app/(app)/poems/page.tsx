@@ -3,6 +3,7 @@ import { asc } from 'drizzle-orm'
 import { getCurrentUser } from '@/lib/auth-server'
 import { db } from '@/db'
 import { poems, immersionScripts } from '@/db/schema'
+import { normalizeDynasty } from '@/lib/poem-display'
 import PoemsClient from './_poems-client'
 
 export default async function PoemsPage() {
@@ -30,6 +31,7 @@ export default async function PoemsPage() {
       userName={user.name}
       poems={allPoems.map(p => ({
         ...p,
+        dynasty: normalizeDynasty(p.dynasty),
         hasScript: scriptPoemIds.has(p.id),
       }))}
     />
