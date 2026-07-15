@@ -77,6 +77,7 @@
 | Phase E-5 | ✅ | 外部 Provider 加固：embedding/腾讯 ASR 超时、结构校验、错误脱敏与 5/5 guard 校验 | `9ae24b6` |
 | Phase E-6 | ✅ | 全站体验收口：统一字体层级/AppNav/退出入口，来源感知返回，诗笺筛选保留，通用加载与错误页 | `b72c623` |
 | Phase E-7 | ✅ | 会话历史回看/续聊抽屉 + Playwright smoke 基建；公开入口 1/1 通过，登录后 2 条待专用 E2E 账号 | `6433454` / `18a9da2` |
+| Phase E-8 | ✅ | 全站字体统一为霞鹜文楷，等宽信息使用霞鹜文楷 Mono，设计规范同步 | `b600faa` |
 | Phase E | ⏳ | Demo 视频 + README 终稿 + key 轮换 | - |
 
 **完成一个 Day 后必须更新这张表**(把 ⏳ 改 ✅,填 commit hash)。

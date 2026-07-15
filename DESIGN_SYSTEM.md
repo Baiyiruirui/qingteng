@@ -35,25 +35,25 @@
 
 ## 2. 字体 · 排版
 
-### 引入 Noto Serif SC(中文衬线)
-- 通过 Google Fonts 或 self-host 引入 `Noto Serif SC`(weights: 400, 500)
-- Next.js 用 `next/font/google` 引入,避免 FOUT,优化加载
-- 中文标题、"青藤"二字、诗句、副标题 → Noto Serif SC
-- 正文、说明、按钮内文字、表单 → 系统 sans(现有)
+### 全站统一霞鹜文楷
+- 通过 `lxgw-wenkai-webfont` 本地依赖引入 `LXGW WenKai`,构建不依赖 Google Fonts
+- `font-sans`、`font-serif`、`font-kai` 全部映射为 `LXGW WenKai`,正文、标题、按钮和表单保持同一品牌字形
+- `font-mono` 使用同字体包中的 `LXGW WenKai Mono`,仅用于需要等宽对齐的内部信息
+- 中文字体回退顺序:`KaiTi` → `STKaiti` → `serif`
 
 ### 字号层级
 | 用途 | 字号 | 字重 | 字体 |
 |---|---|---|---|
-| 主标题(青藤) | 28-32px | 500 | Serif |
-| 页面标题 | 22px | 500 | Serif |
-| 诗句 / 副标题 | 17-19px | 400 | Serif |
-| 正文 | 14-15px | 400 | Sans |
-| 提示 / 小字 | 12-13px | 400 | Sans |
+| 主标题(青藤) | 28-32px | 500 | LXGW WenKai |
+| 页面标题 | 22px | 500 | LXGW WenKai |
+| 诗句 / 副标题 | 17-19px | 400 | LXGW WenKai |
+| 正文 | 14-15px | 400 | LXGW WenKai |
+| 提示 / 小字 | 12-13px | 400 | LXGW WenKai |
 
-标题/诗句加 `letter-spacing: 2-4px`(衬线中文加字距更雅)。
+全站 `letter-spacing: 0`;层级通过字号、字重、颜色和留白建立,不靠拉宽字距。
 
 ### 按钮
-- 主按钮:墨色底 `#3A4742` + 宣纸字 `#F2EDE0`,serif,letter-spacing 3px,圆角 8px
+- 主按钮:墨色底 `#3A4742` + 宣纸字 `#F2EDE0`,霞鹜文楷,圆角 8px
 - 次按钮:透明底 + 中墨字 + 0.5px 暖灰边框
 - 链接:朱砂 `#C0623F`
 
