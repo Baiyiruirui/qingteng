@@ -194,6 +194,7 @@ function checkRouteCoverage(): Result[] {
     { file: 'src/app/api/auth/register/route.ts', tokens: ['checkRateLimits'] },
     { file: 'src/app/api/chat/route.ts', tokens: ['checkRateLimits', 'parseUiMessages'] },
     { file: 'src/app/api/chat/opening/route.ts', tokens: ['checkRateLimits'] },
+    { file: 'src/app/api/conversations/route.ts', tokens: ['getSession'] },
     { file: 'src/app/api/session/immersion/chat/route.ts', tokens: ['checkRateLimits', 'parseUiMessages'] },
     { file: 'src/app/api/session/immersion/opening/route.ts', tokens: ['checkRateLimits'] },
     { file: 'src/app/api/quiz/judge/route.ts', tokens: ['checkRateLimits'] },

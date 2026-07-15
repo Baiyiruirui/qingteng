@@ -6,12 +6,13 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus } from 'lucide-react'
+import { History, Plus } from 'lucide-react'
 import type { UIMessage } from 'ai'
 import { inkFadeIn, inkFadeInStagger } from '@/lib/motion'
 import { ShanshuiBanner } from '@/components/ShanshuiBanner'
 import { Seal } from '@/components/Seal'
 import { AppNav } from '@/components/AppNav'
+import { ConversationHistoryDrawer } from '@/components/ConversationHistoryDrawer'
 import { getPoemImage } from '@/lib/poem-images'
 import { withReturnTo } from '@/lib/navigation'
 
@@ -72,6 +73,7 @@ export default function ChatClient({
   const router = useRouter()
   const [input, setInput] = useState('')
   const [newConvLoading, setNewConvLoading] = useState(false)
+  const [historyOpen, setHistoryOpen] = useState(false)
   const [openingLoading, setOpeningLoading] = useState(false)
   const [modeLoading, setModeLoading] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
@@ -143,7 +145,11 @@ export default function ChatClient({
     if (newConvLoading) return
     setNewConvLoading(true)
     try {
-      await fetch('/api/conversations', { method: 'POST' })
+      const response = await fetch('/api/conversations', { method: 'POST' })
+      if (!response.ok) {
+        setActionError('暂时无法新建对话，请稍后再试。')
+        return
+      }
       router.refresh()
     } finally {
       setNewConvLoading(false)
@@ -190,17 +196,36 @@ export default function ChatClient({
         title={isDailyChat ? '今日案头' : `${sessionMode === 'creative' ? '共写' : '对话'}${sessionPoemTitle ? ` · ${sessionPoemTitle}` : ''}`}
         userName={userName}
         right={isDailyChat ? (
-          <button
-            type="button"
-            onClick={handleNewConversation}
-            disabled={newConvLoading}
-            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-edge px-2.5 text-xs font-medium text-ink-mid outline-none transition-colors hover:bg-paper-block focus-visible:ring-2 focus-visible:ring-jade/55 disabled:opacity-40"
-          >
-            <Plus className="h-3.5 w-3.5" aria-hidden="true" />
-            <span className="hidden md:inline">新对话</span>
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setHistoryOpen(true)}
+              aria-label="历史对话"
+              title="历史对话"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-ink-faint outline-none transition-colors hover:bg-paper-block hover:text-ink focus-visible:ring-2 focus-visible:ring-jade/55"
+            >
+              <History className="h-4 w-4" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              onClick={handleNewConversation}
+              disabled={newConvLoading}
+              className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-edge px-2.5 text-xs font-medium text-ink-mid outline-none transition-colors hover:bg-paper-block focus-visible:ring-2 focus-visible:ring-jade/55 disabled:opacity-40"
+            >
+              <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="hidden md:inline">新对话</span>
+            </button>
+          </div>
         ) : undefined}
       />
+
+      {isDailyChat && (
+        <ConversationHistoryDrawer
+          open={historyOpen}
+          currentConversationId={conversationId}
+          onClose={() => setHistoryOpen(false)}
+        />
+      )}
 
       {actionError && (
         <p role="alert" className="mx-auto mt-3 w-[calc(100%-2rem)] max-w-6xl border-l-2 border-cinnabar bg-cinnabar/5 px-4 py-3 text-sm text-cinnabar">
