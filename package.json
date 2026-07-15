@@ -6,6 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "test:e2e": "playwright test",
+    "test:e2e:list": "playwright test --list",
     "import:poems": "tsx --env-file=.env.local scripts/import-poems.ts",
     "db:check": "tsx --env-file=.env.local scripts/db-check.ts",
     "db:verify": "tsx --env-file=.env.local scripts/verify-poems.ts",
@@ -61,6 +63,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^3.0.0",
     "@types/node": "^20.19.43",
