@@ -37,11 +37,13 @@
 | Phase E-3 | ✅ | 日常聊天与沉浸模式的长期 Memory 改由 Next `after()` 可靠承接 |
 | Phase E-4 | ✅ | README 移除未落地能力，模型、数据与观测栈口径已和线上实现对齐 |
 | Phase E-5 | ✅ | embedding/腾讯 ASR 增加超时、响应校验、错误脱敏与 provider guard |
+| Phase E-6 | ✅ | 字体、全站导航、退出入口、任务返回、诗笺筛选状态和通用加载/错误页完成统一 |
 | Phase E | ⏳ | 3 分钟视频、README 终稿、密钥轮换、最终归档 |
 
 最近关键提交：
 
 ```text
+b72c623 feat(ui): unify app navigation and return flows
 9ae24b6 fix(ai): harden external provider calls
 5d20573 docs: align README with deployed capabilities
 8c16a0d fix(memory): persist extraction after streamed responses
@@ -70,6 +72,10 @@ dfd1ed2 feat(security): add public demo cost guardrails
 - `pnpm verify:wrong-question` 当前 5/5；客观题答对或主观题达到 50% 后解除待加强，答题记录与错题状态在同一事务内落库。
 - 日常聊天与沉浸模式的长期 Memory 抽取已挂到 Next `after()` 请求生命周期；无可用请求上下文时会同步回退，不再使用裸 fire-and-forget Promise。
 - `pnpm verify:providers` 当前 5/5；embedding 与腾讯 ASR 已有硬超时、Zod 响应校验和客户端错误脱敏，语义搜索失败时自动回退关键词结果。
+- 全站现统一使用 `AppNav`：四个主入口、退出登录和移动端头部规则一致；聊天页“诗库”旧称已收口为“诗笺地图”。
+- 诗笺搜索词与朝代筛选已进入 URL；从诗笺地图进入朗读、做题、沉浸后，会回到原筛选现场。沉浸结束使用来源感知的 `replace`，不会后退回已结束会话。
+- UI 收口验证：`pnpm build` 通过，导航策略 4/4，`verify:security` 27/27（2 个既有 warning），`verify:wrong-question` 5/5。
+- 应用内浏览器仍因 Windows kernel assets 写入权限报错，登录态桌面/移动截图复验尚未完成；不要把本轮源码与构建验收写成完整视觉验收。
 
 ## Phase D-6 安全实现
 
