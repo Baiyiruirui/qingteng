@@ -76,6 +76,7 @@
 | Phase E-4 | ✅ | README 能力口径收口：移除未落地声明，模型/数据/观测栈与线上实现对齐 | `5d20573` |
 | Phase E-5 | ✅ | 外部 Provider 加固：embedding/腾讯 ASR 超时、结构校验、错误脱敏与 5/5 guard 校验 | `9ae24b6` |
 | Phase E-6 | ✅ | 全站体验收口：统一字体层级/AppNav/退出入口，来源感知返回，诗笺筛选保留，通用加载与错误页 | `b72c623` |
+| Phase E-7 | ✅ | 会话历史回看/续聊抽屉 + Playwright smoke 基建；公开入口 1/1 通过，登录后 2 条待专用 E2E 账号 | `6433454` / `18a9da2` |
 | Phase E | ⏳ | Demo 视频 + README 终稿 + key 轮换 | - |
 
 **完成一个 Day 后必须更新这张表**(把 ⏳ 改 ✅,填 commit hash)。
@@ -214,6 +215,7 @@ qingteng/
 - FIClash 规则节点可能禁止 Neon 的 5432 端口；本地 DB 脚本遇到 TLS `ECONNRESET` 时可短暂切 direct，执行完必须恢复 rule
 - 数据验收入口为 `pnpm verify:data`; 口径见 `notes/phase-d/2026-07-08-data-readiness.md`
 - 发布前安全自检入口为 `pnpm verify:security`;当前仅 `QT_ADMIN_USER_IDS` 未配置,内部工具默认全部拒绝
+- Playwright 入口为 `pnpm test:e2e`;未配置 `E2E_USER_NAME` / `E2E_USER_PASSWORD` 时仅执行公开入口 smoke,登录后主链路会明确跳过
 - 腾讯云和 Langfuse 凭据曾在协作截图中出现,Phase E 必须按 `notes/phase-d/2026-07-10-public-demo-security.md` 轮换
 
 ---

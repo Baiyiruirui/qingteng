@@ -105,6 +105,7 @@ AI    Vercel AI SDK
       自建 Memory + 多模型路由 + Prompt 版本化
 
 观测  Langfuse
+质量  62 项 Eval + Playwright smoke
 部署  Vercel (全 serverless)
 ```
 
@@ -173,7 +174,20 @@ pnpm eval
 pnpm verify:data
 pnpm verify:quiz:representative
 pnpm verify:wrong-question
+
+# 浏览器 smoke（首次运行前：pnpm exec playwright install chromium）
+pnpm test:e2e
 ```
+
+`pnpm test:e2e` 默认验证未登录入口。要运行登录后的「今日案头 → 历史对话 / 诗笺地图 → 青藤考你 → 先生批注」主链路，请在当前 PowerShell 会话设置专用测试账号，不要把凭据写进仓库：
+
+```powershell
+$env:E2E_USER_NAME='your-e2e-user'
+$env:E2E_USER_PASSWORD='your-e2e-password'
+pnpm test:e2e
+```
+
+判题响应在 e2e 中被确定性 mock，不消耗模型额度，也不会写入答题记录。
 
 需要的服务账号：
 
