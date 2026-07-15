@@ -7,6 +7,7 @@ import { wrongQuestions, quizQuestions, poems } from '@/db/schema'
 import { SealStamp } from '@/components/SealStamp'
 import { AppNav } from '@/components/AppNav'
 import { ArrowRight, CheckCircle2 } from 'lucide-react'
+import { withReturnTo } from '@/lib/navigation'
 
 export default async function WrongPage() {
   const session = await getSession()
@@ -63,6 +64,13 @@ export default async function WrongPage() {
             <p className="mt-2 text-sm text-ink-faint">
               暂无待加强，继续精进
             </p>
+            <Link
+              href="/poems"
+              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-ink px-4 py-2 text-sm font-medium text-paper transition-opacity hover:opacity-85"
+            >
+              去诗笺地图
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
           </div>
         )}
 
@@ -96,7 +104,10 @@ export default async function WrongPage() {
                     <p className="line-clamp-2 text-sm leading-6 text-ink">{row.stem}</p>
                   </div>
                   <Link
-                    href={`/quiz/${row.poemId}?mode=review&pointType=${encodeURIComponent(row.pointType ?? row.type)}`}
+                    href={withReturnTo(
+                      `/quiz/${row.poemId}?mode=review&pointType=${encodeURIComponent(row.pointType ?? row.type)}`,
+                      '/wrong',
+                    )}
                     className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-ink px-3 py-2 text-xs font-medium text-paper transition-opacity hover:opacity-85"
                   >
                     专项练习

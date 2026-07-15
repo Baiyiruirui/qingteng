@@ -2,8 +2,10 @@
 
 import { useRef, useState } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { BookOpenText, Mic, RotateCcw, Send, Square, Volume2 } from 'lucide-react'
 import { SealStamp } from '@/components/SealStamp'
+import { safeReturnTo, withReturnTo } from '@/lib/navigation'
 
 type RecitePoem = {
   id: string
@@ -129,6 +131,8 @@ export default function ReciteClient({
   poem: RecitePoem
   imageSrc?: string
 }) {
+  const searchParams = useSearchParams()
+  const returnTo = safeReturnTo(searchParams.get('returnTo'))
   const [state, setState] = useState<CaptureState>({ phase: 'idle' })
   const chunksRef = useRef<Float32Array[]>([])
   const streamRef = useRef<MediaStream | null>(null)
@@ -439,14 +443,14 @@ export default function ReciteClient({
 
         <div className="flex flex-wrap gap-3">
           <Link
-            href="/poems"
+            href={returnTo}
             className="inline-flex items-center gap-2 rounded-lg border border-edge px-4 py-2 text-sm font-medium text-ink-mid transition-colors hover:bg-white/70"
           >
             <BookOpenText className="h-4 w-4" aria-hidden="true" />
-            返回诗笺地图
+            {returnTo.startsWith('/poems') ? '返回诗笺地图' : '返回上一处'}
           </Link>
           <Link
-            href={`/quiz/${poem.id}`}
+            href={withReturnTo(`/quiz/${poem.id}`, returnTo)}
             className="inline-flex items-center gap-2 rounded-lg border border-edge px-4 py-2 text-sm font-medium text-ink-mid transition-colors hover:bg-white/70"
           >
             青藤考你

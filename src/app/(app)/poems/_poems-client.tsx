@@ -1,13 +1,14 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { inkFadeIn, inkFadeInStagger } from '@/lib/motion'
 import { ShanshuiBanner } from '@/components/ShanshuiBanner'
 import { AppNav } from '@/components/AppNav'
 import { REPRESENTATIVE_QUIZ_POEM_IDS } from '@/ai/quiz/representative-set'
+import { withReturnTo } from '@/lib/navigation'
 
 const QUIZ_POEM_IDS = new Set<string>(REPRESENTATIVE_QUIZ_POEM_IDS)
 
@@ -29,15 +30,17 @@ type Props = {
 
 export default function PoemsClient({ userName, poems }: Props) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [loading, setLoading] = useState<string | null>(null)
-  const [query, setQuery] = useState('')
-  const [debouncedQuery, setDebouncedQuery] = useState('')
-  const [dynasty, setDynasty] = useState<string | null>(null)
+  const [query, setQuery] = useState(() => searchParams.get('q')?.slice(0, 120) ?? '')
+  const [debouncedQuery, setDebouncedQuery] = useState(() => searchParams.get('q')?.slice(0, 120) ?? '')
+  const [dynasty, setDynasty] = useState<string | null>(() => searchParams.get('dynasty'))
   const [results, setResults] = useState<Poem[]>(poems)
   const [searching, setSearching] = useState(false)
   const [searchMode, setSearchMode] = useState<'browse' | 'hybrid' | 'keyword-fallback'>('browse')
+  const [actionError, setActionError] = useState<string | null>(null)
 
-  // 朝代筛选轴：从数据动态派生，保持诗库出现顺序
+  // 朝代筛选轴：从数据动态派生，保持诗笺地图中的出现顺序
   const dynasties = useMemo(() => {
     const seen: string[] = []
     for (const p of poems) {
@@ -49,6 +52,7 @@ export default function PoemsClient({ userName, poems }: Props) {
   async function startMode(mode: 'roleplay', poemId: string) {
     const key = `${mode}-${poemId}`
     if (loading) return
+    setActionError(null)
     setLoading(key)
     try {
       const res = await fetch('/api/conversations/start', {
@@ -58,12 +62,12 @@ export default function PoemsClient({ userName, poems }: Props) {
       })
       const data = await res.json()
       if (!res.ok) {
-        alert(data.error?.message ?? '出了点问题，请稍后再试')
+        setActionError(data.error?.message ?? '暂时无法进入诗境，请稍后再试。')
         return
       }
-      router.push(`/session/${data.conversationId}`)
+      router.push(withReturnTo(`/session/${data.conversationId}`, returnTo))
     } catch {
-      alert('网络错误，请稍后再试')
+      setActionError('网络暂时不稳，请稍后再试。')
     } finally {
       setLoading(null)
     }
@@ -75,6 +79,20 @@ export default function PoemsClient({ userName, poems }: Props) {
   }, [query])
 
   const q = debouncedQuery
+  const returnTo = useMemo(() => {
+    const params = new URLSearchParams()
+    if (q) params.set('q', q)
+    if (dynasty) params.set('dynasty', dynasty)
+    const suffix = params.toString()
+    return suffix ? `/poems?${suffix}` : '/poems'
+  }, [dynasty, q])
+
+  useEffect(() => {
+    const next = returnTo
+    const current = `${window.location.pathname}${window.location.search}`
+    if (current !== next) router.replace(next, { scroll: false })
+  }, [returnTo, router])
+
   useEffect(() => {
     const controller = new AbortController()
     const params = new URLSearchParams()
@@ -163,6 +181,12 @@ export default function PoemsClient({ userName, poems }: Props) {
               : `共 ${poems.length} 张诗笺 · 标注「可沉浸」的诗支持角色扮演模式`}
         </p>
 
+        {actionError && (
+          <p role="alert" className="mb-5 border-l-2 border-cinnabar bg-cinnabar/5 px-4 py-3 text-sm text-cinnabar">
+            {actionError}
+          </p>
+        )}
+
         {/* 空状态 */}
         {filtered.length === 0 && (
           <motion.div
@@ -223,14 +247,14 @@ export default function PoemsClient({ userName, poems }: Props) {
               {/* 操作按钮 */}
               <div className="mt-4 flex flex-wrap items-center gap-2">
                 <Link
-                  href={`/recite/${poem.id}`}
+                  href={withReturnTo(`/recite/${poem.id}`, returnTo)}
                   className="rounded-lg border border-edge bg-paper/70 px-3 py-1.5 text-xs font-medium text-ink-mid transition-colors hover:bg-paper-block hover:text-ink"
                 >
                   朗读
                 </Link>
                 {QUIZ_POEM_IDS.has(poem.id) && (
                   <Link
-                    href={`/quiz/${poem.id}`}
+                    href={withReturnTo(`/quiz/${poem.id}`, returnTo)}
                     className="rounded-lg bg-ink px-3 py-1.5 text-xs font-medium text-paper transition-opacity hover:opacity-85"
                   >
                     青藤考你
@@ -270,6 +294,7 @@ function FilterChip({
   return (
     <button
       onClick={onClick}
+      aria-pressed={active}
       className={
         active
           ? 'rounded-full border border-jade bg-jade px-3.5 py-1 text-xs font-medium text-white transition-colors'

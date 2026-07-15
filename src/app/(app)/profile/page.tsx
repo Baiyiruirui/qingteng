@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { desc, eq } from 'drizzle-orm'
 import { Activity, BookOpenText, ClipboardCheck, Flame, GraduationCap, TrendingUp } from 'lucide-react'
 import { AppNav } from '@/components/AppNav'
+import { withReturnTo } from '@/lib/navigation'
 import { SealStamp } from '@/components/SealStamp'
 import { db } from '@/db'
 import { conversations, events, poems, quizAttempts, quizQuestions, wrongQuestions } from '@/db/schema'
@@ -395,7 +396,7 @@ export default async function ProfilePage() {
                   {poemProgress.slice(0, 5).map(poem => (
                     <Link
                       key={poem.id}
-                      href={`/quiz/${poem.id}`}
+                      href={withReturnTo(`/quiz/${poem.id}`, '/profile')}
                       className="block border-b border-edge/70 pb-3 last:border-b-0 last:pb-0"
                     >
                       <div className="flex items-center justify-between gap-3">

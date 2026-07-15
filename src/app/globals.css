@@ -102,10 +102,10 @@
   --color-moon:         #E8C9A0;
 
   /* 字体 */
-  --font-sans:  Arial, Helvetica, sans-serif;
+  --font-sans:  "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", Arial, sans-serif;
   --font-mono:  Consolas, "Courier New", monospace;
   --font-serif: "LXGW WenKai", "KaiTi", "STKaiti", Georgia, serif;
-  --font-kai:   "KaiTi", "STKaiti", "LXGW WenKai", serif;
+  --font-kai:   "LXGW WenKai", "KaiTi", "STKaiti", Georgia, serif;
 
   --radius: var(--radius);
 }
@@ -116,6 +116,7 @@
 @layer base {
   * {
     border-color: hsl(var(--border));
+    letter-spacing: 0 !important;
   }
   html {
     color-scheme: light; /* 锁定亮色，禁止系统暗色覆盖 */
@@ -124,6 +125,13 @@
     background-color: var(--qt-paper);
     color: var(--qt-ink);
     font-family: var(--font-sans);
+    line-height: 1.6;
+  }
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
   }
 }
 
@@ -177,7 +185,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-ink-rise, .animate-moon-breathe, .animate-vine-sway {
+  .animate-ink-fade-in,
+  .animate-ink-fade-in-delay,
+  .animate-ink-rise,
+  .animate-moon-breathe,
+  .animate-vine-sway {
     animation: none;
     opacity: 1;
     transform: none;

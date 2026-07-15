@@ -3,10 +3,12 @@
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { BookOpenText, DoorOpen } from 'lucide-react'
 import type { UIMessage } from 'ai'
 import { AppNav } from '@/components/AppNav'
 import { getPoemImage } from '@/lib/poem-images'
+import { safeReturnTo } from '@/lib/navigation'
 
 function getTextContent(parts: Array<{ type: string; text?: string }>) {
   return parts
@@ -44,6 +46,8 @@ export default function ImmersionClient({
   role,
 }: Props) {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const returnTo = safeReturnTo(searchParams.get('returnTo'), '/chat')
   const [input, setInput] = useState('')
   const [openingLoading, setOpeningLoading] = useState(false)
   const [showPoem, setShowPoem] = useState(false)
@@ -113,15 +117,21 @@ export default function ImmersionClient({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowPoem(v => !v)}
-              className="rounded-lg border border-edge px-2.5 py-1 text-xs text-ink-mid transition-colors hover:bg-paper-block"
+              aria-label={showPoem ? '收起原诗' : '展开原诗'}
+              title={showPoem ? '收起原诗' : '展开原诗'}
+              className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-edge px-2.5 text-xs text-ink-mid outline-none transition-colors hover:bg-paper-block focus-visible:ring-2 focus-visible:ring-jade/55"
             >
-              {showPoem ? '收起原诗' : '展开原诗'}
+              <BookOpenText className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="hidden md:inline">{showPoem ? '收起原诗' : '展开原诗'}</span>
             </button>
             <button
-              onClick={() => router.push('/chat')}
-              className="rounded-lg border border-edge px-2.5 py-1 text-xs text-ink-mid transition-colors hover:bg-paper-block"
+              onClick={() => router.replace(returnTo)}
+              aria-label="结束沉浸"
+              title="结束沉浸"
+              className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-edge px-2.5 text-xs text-ink-mid outline-none transition-colors hover:bg-paper-block focus-visible:ring-2 focus-visible:ring-jade/55"
             >
-              结束沉浸
+              <DoorOpen className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="hidden md:inline">结束沉浸</span>
             </button>
           </div>
         }

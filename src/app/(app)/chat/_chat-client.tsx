@@ -6,11 +6,14 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Plus } from 'lucide-react'
 import type { UIMessage } from 'ai'
 import { inkFadeIn, inkFadeInStagger } from '@/lib/motion'
 import { ShanshuiBanner } from '@/components/ShanshuiBanner'
 import { Seal } from '@/components/Seal'
+import { AppNav } from '@/components/AppNav'
 import { getPoemImage } from '@/lib/poem-images'
+import { withReturnTo } from '@/lib/navigation'
 
 function getTextContent(parts: Array<{ type: string; text?: string }>) {
   return parts
@@ -71,6 +74,7 @@ export default function ChatClient({
   const [newConvLoading, setNewConvLoading] = useState(false)
   const [openingLoading, setOpeningLoading] = useState(false)
   const [modeLoading, setModeLoading] = useState<string | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
   const [memCtx, setMemCtx] = useState<MemoryContext | null>(null)
   const openingFetched = useRef(false)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -135,11 +139,6 @@ export default function ChatClient({
     setInput('')
   }
 
-  async function handleLogout() {
-    await fetch('/api/auth/logout', { method: 'POST' })
-    router.push('/login')
-  }
-
   async function handleNewConversation() {
     if (newConvLoading) return
     setNewConvLoading(true)
@@ -155,6 +154,7 @@ export default function ChatClient({
   async function startMode(mode: 'roleplay', poemId: string) {
     const key = `${mode}-${poemId}`
     if (modeLoading) return
+    setActionError(null)
     setModeLoading(key)
     try {
       const res = await fetch('/api/conversations/start', {
@@ -164,12 +164,12 @@ export default function ChatClient({
       })
       const data = await res.json()
       if (!res.ok) {
-        alert(data.error?.message ?? '出了点问题，请稍后再试')
+        setActionError(data.error?.message ?? '暂时无法进入诗境，请稍后再试。')
         return
       }
-      router.push(`/session/${data.conversationId}`)
+      router.push(withReturnTo(`/session/${data.conversationId}`, '/chat'))
     } catch {
-      alert('网络错误，请稍后再试')
+      setActionError('网络暂时不稳，请稍后再试。')
     } finally {
       setModeLoading(null)
     }
@@ -186,52 +186,27 @@ export default function ChatClient({
 
   return (
     <div className="flex min-h-screen flex-col bg-paper text-ink">
-      {/* 磨砂 Header */}
-      <header className="sticky top-0 z-20 border-b border-edge bg-paper/85 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3.5 lg:px-6">
-          <div className="flex items-center gap-2.5">
-            <Seal char="藤" size={30} />
-            <span className="font-kai text-[26px] leading-none text-ink">青藤</span>
-            {!isDailyChat && (
-              <span className="ml-2 rounded-full bg-paper-block px-2.5 py-1 text-xs text-ink-mid">
-                {sessionMode === 'roleplay' ? '沉浸' : '共写'}
-                {sessionPoemTitle ? ` · ${sessionPoemTitle}` : ''}
-              </span>
-            )}
-          </div>
+      <AppNav
+        title={isDailyChat ? '今日案头' : `${sessionMode === 'creative' ? '共写' : '对话'}${sessionPoemTitle ? ` · ${sessionPoemTitle}` : ''}`}
+        userName={userName}
+        right={isDailyChat ? (
+          <button
+            type="button"
+            onClick={handleNewConversation}
+            disabled={newConvLoading}
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-edge px-2.5 text-xs font-medium text-ink-mid outline-none transition-colors hover:bg-paper-block focus-visible:ring-2 focus-visible:ring-jade/55 disabled:opacity-40"
+          >
+            <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+            <span className="hidden md:inline">新对话</span>
+          </button>
+        ) : undefined}
+      />
 
-          <nav className="flex items-center gap-5">
-            <Link
-              href="/poems"
-              className="cursor-pointer font-serif text-sm text-ink-mid transition-colors duration-200 hover:text-ink"
-            >
-              诗库
-            </Link>
-            <Link
-              href="/wrong"
-              className="cursor-pointer font-serif text-sm text-ink-mid transition-colors duration-200 hover:text-ink"
-            >
-              待加强
-            </Link>
-            <span className="hidden text-sm text-ink-faint sm:inline">你好，{userName}</span>
-            {isDailyChat && (
-              <button
-                onClick={handleNewConversation}
-                disabled={newConvLoading}
-                className="cursor-pointer rounded-lg border border-edge bg-transparent px-2.5 py-1 text-xs text-ink-faint transition-opacity duration-200 hover:opacity-70 disabled:opacity-40"
-              >
-                + 新对话
-              </button>
-            )}
-            <button
-              onClick={handleLogout}
-              className="cursor-pointer text-xs text-ink-faint underline underline-offset-2 transition-colors duration-200 hover:text-ink"
-            >
-              登出
-            </button>
-          </nav>
-        </div>
-      </header>
+      {actionError && (
+        <p role="alert" className="mx-auto mt-3 w-[calc(100%-2rem)] max-w-6xl border-l-2 border-cinnabar bg-cinnabar/5 px-4 py-3 text-sm text-cinnabar">
+          {actionError}
+        </p>
+      )}
 
       {showDesk ? (
         <DailyDesk
@@ -519,7 +494,7 @@ function DailyDesk({
                   </button>
                   {dailyPoem.hasQuiz && (
                     <Link
-                      href={`/quiz/${dailyPoem.id}`}
+                      href={withReturnTo(`/quiz/${dailyPoem.id}`, '/chat')}
                       className="cursor-pointer rounded-lg border border-jade/60 px-6 py-2.5 font-serif text-[15px] tracking-[0.15em] text-jade transition-all duration-200 hover:bg-jade/10 active:scale-[0.98]"
                     >
                       青藤考你 ›
@@ -530,7 +505,7 @@ function DailyDesk({
             </div>
           ) : (
             <div className="rounded-2xl border border-edge bg-paper-block/70 px-8 py-16 text-center font-serif text-ink-faint">
-              今日入诗准备中…先去诗库逛逛吧。
+              今日入诗准备中…先去诗笺地图逛逛吧。
             </div>
           )}
         </motion.section>
@@ -547,7 +522,7 @@ function DailyDesk({
         <DeskTab
           label="练一题"
           tone="jade"
-          href={dailyPoem?.hasQuiz ? `/quiz/${dailyPoem.id}` : '/poems'}
+          href={dailyPoem?.hasQuiz ? withReturnTo(`/quiz/${dailyPoem.id}`, '/chat') : '/poems'}
         />
       </motion.div>
     </main>

@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import { AppNav } from '@/components/AppNav'
 import { SealStamp } from '@/components/SealStamp'
+import { safeReturnTo } from '@/lib/navigation'
 
 type SafeQuestion = {
   id: string
@@ -74,10 +75,16 @@ function completionCopy(rate: number) {
 export default function QuizPage() {
   const { poemId } = useParams<{ poemId: string }>()
   const searchParams = useSearchParams()
+  const mode = searchParams.get('mode') === 'review' ? 'review' : 'adaptive'
+  const focusPointType = searchParams.get('pointType')
+  const returnTo = safeReturnTo(searchParams.get('returnTo'))
+  const returnLabel = returnTo.startsWith('/poems') ? '返回诗笺地图' : '返回上一处'
   const [state, setState] = useState<SessionState>({ phase: 'loading' })
+  const [actionError, setActionError] = useState<string | null>(null)
   const submitted = state.phase === 'quiz' ? state.submitted : null
 
   const startSession = useCallback(async () => {
+    setActionError(null)
     setState({ phase: 'loading' })
     try {
       const res = await fetch('/api/quiz/session', {
@@ -85,8 +92,8 @@ export default function QuizPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           poemId,
-          mode: searchParams.get('mode') === 'review' ? 'review' : 'adaptive',
-          focusPointType: searchParams.get('pointType'),
+          mode,
+          focusPointType,
         }),
       })
       const data = await res.json()
@@ -105,7 +112,7 @@ export default function QuizPage() {
     } catch (error) {
       setState({ phase: 'error', message: error instanceof Error ? error.message : '网络错误' })
     }
-  }, [poemId, searchParams])
+  }, [focusPointType, mode, poemId])
 
   useEffect(() => {
     void startSession()
@@ -115,6 +122,7 @@ export default function QuizPage() {
     if (state.phase !== 'quiz' || state.submitting || state.submitted) return
     const question = state.questions[state.current]
     if (!state.userAnswer.trim()) return
+    setActionError(null)
     setState(current => current.phase === 'quiz' ? { ...current, submitting: true } : current)
     try {
       const res = await fetch('/api/quiz/judge', {
@@ -133,7 +141,7 @@ export default function QuizPage() {
         : current)
     } catch (error) {
       setState(current => current.phase === 'quiz' ? { ...current, submitting: false } : current)
-      alert(error instanceof Error ? error.message : '网络错误，请重试')
+      setActionError(error instanceof Error ? error.message : '网络错误，请重试')
     }
   }
 
@@ -186,8 +194,8 @@ export default function QuizPage() {
             <RotateCcw className="h-4 w-4" aria-hidden="true" />
             重试
           </button>
-          <Link href="/poems" className="text-sm text-ink-faint transition-colors hover:text-ink">
-            返回诗笺地图
+          <Link href={returnTo} className="text-sm text-ink-faint transition-colors hover:text-ink">
+            {returnLabel}
           </Link>
         </main>
       </div>
@@ -230,11 +238,11 @@ export default function QuizPage() {
                 待加强
               </Link>
               <Link
-                href="/poems"
+                href={returnTo}
                 className="inline-flex items-center gap-2 rounded-lg border border-edge px-4 py-2.5 text-sm font-medium text-ink-mid transition-colors hover:bg-paper-block"
               >
                 <BookOpenText className="h-4 w-4" aria-hidden="true" />
-                诗笺地图
+                {returnTo.startsWith('/poems') ? '诗笺地图' : '返回上一处'}
               </Link>
             </div>
           </section>
@@ -259,6 +267,11 @@ export default function QuizPage() {
       />
 
       <main className="mx-auto max-w-4xl space-y-5 px-4 py-6 sm:py-8">
+        {actionError && (
+          <p role="alert" className="border-l-2 border-cinnabar bg-cinnabar/5 px-4 py-3 text-sm text-cinnabar">
+            {actionError}
+          </p>
+        )}
         <section className="border-l-2 border-jade bg-paper-block/60 px-4 py-3 text-sm text-ink-mid sm:px-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="font-medium text-ink">

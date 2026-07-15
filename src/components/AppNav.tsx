@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { BookOpenText, ClipboardCheck, MessageCircle, UserRound } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
+import { BookOpenText, ClipboardCheck, LoaderCircle, LogOut, MessageCircle, UserRound } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { useState } from 'react'
 import { Seal } from '@/components/Seal'
 
 const navItems = [
@@ -23,12 +24,26 @@ export function AppNav({
   right?: ReactNode
 }) {
   const pathname = usePathname()
+  const router = useRouter()
+  const [loggingOut, setLoggingOut] = useState(false)
+
+  async function handleLogout() {
+    if (loggingOut) return
+    setLoggingOut(true)
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+      router.replace('/login')
+      router.refresh()
+    } finally {
+      setLoggingOut(false)
+    }
+  }
 
   return (
-    <header className="sticky top-0 z-30 border-b border-edge bg-paper/85 px-4 py-3 backdrop-blur-md">
+    <header className="sticky top-0 z-30 border-b border-edge bg-paper/90 px-4 py-3 backdrop-blur-md">
       <div className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-3 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
         <div className="flex min-w-0 items-center gap-3">
-          <Link href="/chat" className="flex shrink-0 items-center gap-2">
+          <Link href="/chat" className="flex shrink-0 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-jade/55">
             <Seal char="藤" size={28} />
             <span className="font-kai text-[24px] leading-none text-ink">青藤</span>
           </Link>
@@ -50,8 +65,8 @@ export function AppNav({
                 aria-current={active ? 'page' : undefined}
                 className={
                   active
-                    ? 'flex shrink-0 items-center gap-1.5 rounded-lg bg-ink px-2.5 py-2 text-xs font-medium text-paper-block sm:px-3'
-                    : 'flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-medium text-ink-mid transition-colors hover:bg-paper-block hover:text-ink sm:px-3'
+                    ? 'flex shrink-0 items-center gap-1.5 rounded-lg bg-ink px-2.5 py-2 text-xs font-medium text-paper-block outline-none focus-visible:ring-2 focus-visible:ring-jade/55 sm:px-3'
+                    : 'flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-medium text-ink-mid outline-none transition-colors hover:bg-paper-block hover:text-ink focus-visible:ring-2 focus-visible:ring-jade/55 sm:px-3'
                 }
               >
                 <Icon className="h-3.5 w-3.5" aria-hidden="true" />
@@ -61,9 +76,21 @@ export function AppNav({
           })}
         </nav>
 
-        <div className="col-start-2 row-start-1 flex min-w-0 items-center justify-end gap-3 text-xs text-ink-faint sm:col-start-3 sm:min-w-28">
-          {userName && <span className="truncate">你好，{userName}</span>}
+        <div className="col-start-2 row-start-1 flex min-w-0 items-center justify-end gap-2 text-xs text-ink-faint sm:col-start-3 sm:min-w-28">
+          {userName && <span className="hidden max-w-28 truncate lg:inline">你好，{userName}</span>}
           {right}
+          <button
+            type="button"
+            onClick={() => void handleLogout()}
+            disabled={loggingOut}
+            aria-label="退出登录"
+            title="退出登录"
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-ink-faint outline-none transition-colors hover:bg-paper-block hover:text-ink focus-visible:ring-2 focus-visible:ring-jade/55 disabled:opacity-40"
+          >
+            {loggingOut
+              ? <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
+              : <LogOut className="h-4 w-4" aria-hidden="true" />}
+          </button>
         </div>
       </div>
     </header>
