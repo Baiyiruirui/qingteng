@@ -28,7 +28,7 @@ export function SealStamp({ size = 56, className = '', tilt = false }: Props) {
         textAnchor="middle"
         fill="#C0623F"
         fontSize="14"
-        fontFamily="serif"
+        fontFamily='"LXGW WenKai", "KaiTi", "STKaiti", serif'
         fontWeight="500"
         letterSpacing="1"
       >
@@ -41,7 +41,7 @@ export function SealStamp({ size = 56, className = '', tilt = false }: Props) {
         textAnchor="middle"
         fill="#C0623F"
         fontSize="14"
-        fontFamily="serif"
+        fontFamily='"LXGW WenKai", "KaiTi", "STKaiti", serif'
         fontWeight="500"
         letterSpacing="1"
       >

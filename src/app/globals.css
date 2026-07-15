@@ -102,8 +102,8 @@
   --color-moon:         #E8C9A0;
 
   /* 字体 */
-  --font-sans:  "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", Arial, sans-serif;
-  --font-mono:  Consolas, "Courier New", monospace;
+  --font-sans:  "LXGW WenKai", "KaiTi", "STKaiti", serif;
+  --font-mono:  "LXGW WenKai Mono", "LXGW WenKai", Consolas, monospace;
   --font-serif: "LXGW WenKai", "KaiTi", "STKaiti", Georgia, serif;
   --font-kai:   "LXGW WenKai", "KaiTi", "STKaiti", Georgia, serif;
 
