@@ -30,6 +30,13 @@ test.describe('signed-in learning flow', () => {
 
   test('opens conversation history and returns to the desk', async ({ page }) => {
     await expect(page.getByRole('heading', { name: '今日青藤札记' })).toBeVisible()
+    await expect(page.getByRole('navigation', { name: '案头快捷入口' })).toBeVisible()
+    await expect(page.getByRole('link', { name: /读一首/ })).toBeVisible()
+    await expect(page.getByRole('link', { name: /练一题/ })).toBeVisible()
+
+    const composer = page.getByLabel('给青藤的消息')
+    await expect(composer).toBeVisible()
+    await expect(composer.locator('xpath=ancestor::footer')).toHaveCSS('position', 'fixed')
 
     const continueButton = page.getByRole('button', { name: '继续对话' })
     if (await continueButton.isVisible()) {
