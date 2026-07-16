@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { History, House, MessageCircle, Plus } from 'lucide-react'
+import { BookOpen, History, House, MessageCircle, PenLine, Plus, Send } from 'lucide-react'
 import type { UIMessage } from 'ai'
 import { inkFadeIn, inkFadeInStagger } from '@/lib/motion'
 import { ShanshuiBanner } from '@/components/ShanshuiBanner'
@@ -80,6 +80,7 @@ export default function ChatClient({
   const [memCtx, setMemCtx] = useState<MemoryContext | null>(null)
   const openingFetched = useRef(false)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const composingRef = useRef(false)
 
   const isDailyChat = !sessionMode || sessionMode === 'chat'
   const supportsDesk = sessionMode === undefined
@@ -136,14 +137,18 @@ export default function ChatClient({
     if (!showDesk) bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, showDesk])
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const submitMessage = () => {
     const text = input.trim()
     if (!text || status === 'submitted' || status === 'streaming') return
     if (error) clearError()
     if (supportsDesk) setDailyView('conversation')
     sendMessage({ text })
     setInput('')
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    submitMessage()
   }
 
   async function handleNewConversation() {
@@ -203,7 +208,7 @@ export default function ChatClient({
   const deskToggleLabel = showDesk ? '继续对话' : '返回案头'
 
   return (
-    <div className="flex min-h-screen flex-col bg-paper text-ink">
+    <div className="flex min-h-dvh flex-col bg-paper text-ink">
       <AppNav
         title={navTitle}
         userName={userName}
@@ -280,7 +285,7 @@ export default function ChatClient({
           )}
 
           {/* 消息区 */}
-          <main className="flex-1 overflow-y-auto py-8">
+          <main className="flex-1 overflow-y-auto pb-40 pt-8 sm:pb-44">
             <div className="mx-auto max-w-180 space-y-8 px-4">
               {messages.map((m, i) => {
                 const text = getTextContent(m.parts as Array<{ type: string; text?: string }>)
@@ -342,48 +347,72 @@ export default function ChatClient({
       )}
 
       {/* 输入区（案头与对话共用：从案头输入即进入对话） */}
-      <footer
-        className={`${showDesk ? 'relative' : 'sticky bottom-0'} z-20 border-t border-edge bg-paper/95 py-4 backdrop-blur`}
-      >
-        {error && (
-          <p className="mx-auto mb-2 max-w-180 px-4 text-xs text-cinnabar">
-            {chatErrorMessage(error)}
-          </p>
-        )}
-        <form onSubmit={handleSubmit} className="mx-auto flex max-w-180 items-end gap-3 px-4">
-          <input
-            className="flex-1 rounded-xl border border-edge bg-white px-4 py-3 text-sm text-ink outline-none transition-colors duration-200 placeholder:text-ink-faint focus:border-jade"
-            value={input}
-            onChange={e => {
-              if (error) clearError()
-              setInput(e.target.value)
-            }}
-            maxLength={2000}
-            onKeyDown={e => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault()
-                handleSubmit(e as unknown as React.FormEvent)
-              }
-            }}
-            placeholder={showDesk ? '回应青藤，或随便聊聊…' : '和青藤聊聊…'}
-            disabled={busy}
-            autoFocus
+      <footer className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:px-5 sm:pb-[calc(1rem+env(safe-area-inset-bottom))]">
+        <div className="pointer-events-auto relative mx-auto max-w-180 overflow-hidden rounded-lg border border-edge/80 bg-paper/90 px-3 py-3 shadow-[0_14px_36px_-22px_rgba(46,58,52,0.5)] backdrop-blur-md sm:px-4">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/yijing/vine-left.webp"
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-20 -top-20 h-48 w-80 select-none object-cover object-top opacity-[0.045] saturate-50 mix-blend-multiply"
           />
-          <button
-            type="submit"
-            disabled={!input.trim() || busy}
-            className="shrink-0 cursor-pointer rounded-xl px-5 py-3 font-serif text-sm tracking-[0.12em] text-paper-block transition-opacity duration-200 disabled:opacity-40"
-            style={{ background: 'var(--qt-ink-btn)' }}
-          >
-            发
-          </button>
-        </form>
+          {error && (
+            <p role="alert" className="relative mb-2 px-1 text-xs text-cinnabar">
+              {chatErrorMessage(error)}
+            </p>
+          )}
+          <form onSubmit={handleSubmit} className="relative flex items-end gap-2.5">
+            <label htmlFor="chat-composer" className="sr-only">
+              给青藤的消息
+            </label>
+            <textarea
+              id="chat-composer"
+              rows={1}
+              className="max-h-32 min-h-12 flex-1 resize-none rounded-lg border border-edge bg-white/80 px-4 py-3 text-sm leading-6 text-ink outline-none [field-sizing:content] transition-colors duration-200 placeholder:text-ink-faint focus:border-jade focus:ring-2 focus:ring-jade/15"
+              value={input}
+              onChange={e => {
+                if (error) clearError()
+                setInput(e.target.value)
+              }}
+              maxLength={2000}
+              onCompositionStart={() => {
+                composingRef.current = true
+              }}
+              onCompositionEnd={() => {
+                composingRef.current = false
+              }}
+              onKeyDown={e => {
+                if (
+                  e.key === 'Enter' &&
+                  !e.shiftKey &&
+                  !composingRef.current &&
+                  !e.nativeEvent.isComposing
+                ) {
+                  e.preventDefault()
+                  submitMessage()
+                }
+              }}
+              placeholder={showDesk ? '回应青藤，或随便聊聊…' : '和青藤聊聊…'}
+              disabled={busy}
+            />
+            <button
+              type="submit"
+              disabled={!input.trim() || busy}
+              aria-label="发送消息"
+              title="发送消息"
+              className="inline-flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-lg text-paper-block outline-none transition-all duration-200 hover:brightness-110 focus-visible:ring-2 focus-visible:ring-jade/55 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
+              style={{ background: 'var(--qt-ink-btn)' }}
+            >
+              <Send className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </form>
+        </div>
       </footer>
     </div>
   )
 }
 
-// ── 今日案头 · 方案 A「一封信」：信 + 今日入诗 + 三枚书签，无图标 ──────────
+// ── 今日案头 · 方案 A「一封信」：信 + 今日入诗 + 双入口 ──────────────────
 
 function DailyDesk({
   userName,
@@ -432,17 +461,17 @@ function DailyDesk({
   const yijingSrc = dailyPoem ? getPoemImage(dailyPoem.id) : undefined
 
   return (
-    <main className="relative mx-auto w-full max-w-6xl flex-1 px-4 pb-12 pt-8 lg:px-6">
-      {/* 垂藤（左缘垂下，multiply 融进宣纸，径向遮罩消掉方形纸底边界） */}
+    <main className="relative mx-auto w-full max-w-6xl flex-1 overflow-hidden px-4 pb-44 pt-8 sm:pb-48 lg:px-6">
+      {/* 垂藤退为低对比背景，径向遮罩消掉方形纸底边界。 */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/yijing/vine-left.webp"
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute -left-24 -top-10 hidden w-[34rem] select-none opacity-95 mix-blend-multiply lg:block xl:w-[40rem]"
+        className="pointer-events-none absolute -left-[24rem] -top-16 z-0 w-[52rem] max-w-none select-none opacity-[0.12] saturate-[0.35] contrast-75 mix-blend-multiply sm:-left-[22rem] lg:-left-[18rem] lg:-top-24 lg:w-[68rem] lg:opacity-[0.16] xl:-left-[20rem] xl:w-[78rem]"
         style={{
           maskImage:
-            'radial-gradient(130% 115% at 24% 4%, black 48%, rgba(0,0,0,0.35) 72%, transparent 90%)',
+            'radial-gradient(125% 112% at 34% 8%, black 42%, rgba(0,0,0,0.3) 68%, transparent 88%)',
         }}
       />
 
@@ -450,7 +479,7 @@ function DailyDesk({
         variants={inkFadeInStagger}
         initial="hidden"
         animate="visible"
-        className="grid items-start gap-10 lg:grid-cols-[1fr_1.15fr]"
+        className="relative z-10 grid items-start gap-10 lg:grid-cols-[1fr_1.15fr]"
       >
         {/* 左：青藤的信 */}
         <motion.section variants={inkFadeIn} className="relative lg:pl-28 lg:pt-8">
@@ -562,78 +591,50 @@ function DailyDesk({
         </motion.section>
       </motion.div>
 
-      {/* 三枚书签（竖排签条，替代图标条） */}
-      <motion.div
+      {/* 案头快捷入口 */}
+      <motion.nav
+        aria-label="案头快捷入口"
         variants={inkFadeInStagger}
         initial="hidden"
         animate="visible"
-        className="mt-12 flex items-start justify-center gap-7 sm:gap-10"
+        className="relative z-10 mx-auto mt-12 grid w-full max-w-2xl grid-cols-2 overflow-hidden rounded-lg border border-edge/80 bg-paper-block/65 shadow-[0_14px_32px_-24px_rgba(46,58,52,0.55)] backdrop-blur-sm"
       >
-        <DeskTab label="读一首" tone="cinnabar" href="/poems" />
-        <DeskTab
-          label="练一题"
-          tone="jade"
-          href={dailyPoem?.hasQuiz ? withReturnTo(`/quiz/${dailyPoem.id}`, '/chat') : '/poems'}
-        />
-      </motion.div>
+        <motion.div variants={inkFadeIn}>
+          <Link
+            href="/poems"
+            className="group flex min-h-20 items-center justify-center gap-3 px-4 py-4 text-ink outline-none transition-colors hover:bg-white/55 focus-visible:bg-white/55 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-jade/55"
+          >
+            <BookOpen
+              className="h-5 w-5 shrink-0 text-cinnabar transition-transform group-hover:-translate-y-0.5"
+              aria-hidden="true"
+            />
+            <span>
+              <span className="block font-kai text-lg">读一首</span>
+              <span className="hidden text-xs text-ink-faint sm:block">去诗笺地图</span>
+            </span>
+          </Link>
+        </motion.div>
+        <motion.div variants={inkFadeIn} className="border-l border-edge/80">
+          <Link
+            href={
+              dailyPoem?.hasQuiz
+                ? withReturnTo(`/quiz/${dailyPoem.id}`, '/chat')
+                : '/poems'
+            }
+            className="group flex min-h-20 items-center justify-center gap-3 px-4 py-4 text-ink outline-none transition-colors hover:bg-white/55 focus-visible:bg-white/55 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-jade/55"
+          >
+            <PenLine
+              className="h-5 w-5 shrink-0 text-jade transition-transform group-hover:-translate-y-0.5"
+              aria-hidden="true"
+            />
+            <span>
+              <span className="block font-kai text-lg">练一题</span>
+              <span className="hidden text-xs text-ink-faint sm:block">巩固今日所学</span>
+            </span>
+          </Link>
+        </motion.div>
+      </motion.nav>
     </main>
-  )
-}
-
-const TAB_TONE: Record<string, string> = {
-  cinnabar: '#C0623F',
-  jade: '#6E8B7E',
-  earth: '#7C6B4F',
-}
-
-/** 竖排书签签条 */
-function DeskTab({
-  label,
-  tone,
-  href,
-  onClick,
-  loading,
-}: {
-  label: string
-  tone: keyof typeof TAB_TONE
-  href?: string
-  onClick?: () => void
-  loading?: boolean
-}) {
-  const inner = (
-    <span
-      className="flex h-44 w-14 flex-col items-center rounded-b-xl border border-edge/80 bg-white/55 pt-4 shadow-[0_10px_24px_-16px_rgba(46,58,52,0.4)] backdrop-blur-[2px] transition-all duration-200 group-hover:-translate-y-1 group-hover:bg-white/80 group-hover:shadow-[0_16px_32px_-16px_rgba(46,58,52,0.5)]"
-      style={{ borderTop: `4px solid ${TAB_TONE[tone]}` }}
-    >
-      <span
-        className="font-kai text-xl text-ink"
-        style={{ writingMode: 'vertical-rl', letterSpacing: '0.35em' }}
-      >
-        {loading ? '进入中' : label}
-      </span>
-    </span>
-  )
-
-  if (onClick) {
-    return (
-      <motion.div variants={inkFadeIn}>
-        <button
-          onClick={onClick}
-          disabled={loading}
-          aria-label={label}
-          className="group cursor-pointer disabled:opacity-50"
-        >
-          {inner}
-        </button>
-      </motion.div>
-    )
-  }
-  return (
-    <motion.div variants={inkFadeIn}>
-      <Link href={href ?? '/poems'} aria-label={label} className="group cursor-pointer">
-        {inner}
-      </Link>
-    </motion.div>
   )
 }
 
