@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { BookOpen, History, House, MessageCircle, PenLine, Plus, Send } from 'lucide-react'
+import { BookOpen, History, House, MessageCircle, PenLine, Plus, Send, Square } from 'lucide-react'
 import type { UIMessage } from 'ai'
 import { inkFadeIn, inkFadeInStagger } from '@/lib/motion'
 import { ShanshuiBanner } from '@/components/ShanshuiBanner'
@@ -93,7 +93,7 @@ export default function ChatClient({
     [conversationId],
   )
 
-  const { messages, status, sendMessage, setMessages, error, clearError } = useChat({
+  const { messages, status, sendMessage, setMessages, stop, error, clearError } = useChat({
     transport,
     messages: initialMessages,
   })
@@ -395,16 +395,28 @@ export default function ChatClient({
               placeholder={showDesk ? '回应青藤，或随便聊聊…' : '和青藤聊聊…'}
               disabled={busy}
             />
-            <button
-              type="submit"
-              disabled={!input.trim() || busy}
-              aria-label="发送消息"
-              title="发送消息"
-              className="inline-flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-lg text-paper-block outline-none transition-all duration-200 hover:brightness-110 focus-visible:ring-2 focus-visible:ring-jade/55 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
-              style={{ background: 'var(--qt-ink-btn)' }}
-            >
-              <Send className="h-4 w-4" aria-hidden="true" />
-            </button>
+            {busy ? (
+              <button
+                type="button"
+                onClick={() => void stop()}
+                aria-label="停止生成"
+                title="停止生成"
+                className="inline-flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-cinnabar/35 bg-cinnabar/8 text-cinnabar outline-none transition-colors hover:bg-cinnabar/12 focus-visible:ring-2 focus-visible:ring-cinnabar/45 focus-visible:ring-offset-2"
+              >
+                <Square className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={!input.trim()}
+                aria-label="发送消息"
+                title="发送消息"
+                className="inline-flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-lg text-paper-block outline-none transition-all duration-200 hover:brightness-110 focus-visible:ring-2 focus-visible:ring-jade/55 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
+                style={{ background: 'var(--qt-ink-btn)' }}
+              >
+                <Send className="h-4 w-4" aria-hidden="true" />
+              </button>
+            )}
           </form>
         </div>
       </footer>

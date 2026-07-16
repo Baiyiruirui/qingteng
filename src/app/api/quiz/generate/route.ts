@@ -3,6 +3,7 @@ import { getSession } from '@/lib/auth-server'
 import { canUseInternalTools } from '@/lib/demo-guard'
 import { generateQuestion } from '@/ai/quiz/generate'
 import type { QuizType, QuizDifficulty } from '@/ai/prompts/v1/quiz-generate'
+import { requestAbortSignal } from '@/lib/ai-budget'
 
 export const runtime = 'nodejs'
 
@@ -56,13 +57,13 @@ export async function POST(req: Request) {
       poemId,
       type as QuizType,
       difficulty as QuizDifficulty,
+      { abortSignal: requestAbortSignal(req) },
     )
     return NextResponse.json({ question })
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown error'
     console.error('[quiz/generate] error:', err)
     return NextResponse.json(
-      { error: { code: 'SERVER_ERROR', message } },
+      { error: { code: 'SERVER_ERROR', message: '生成题目失败，请稍后再试' } },
       { status: 500 },
     )
   }

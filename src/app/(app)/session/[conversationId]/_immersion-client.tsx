@@ -4,7 +4,7 @@ import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { BookOpenText, DoorOpen } from 'lucide-react'
+import { BookOpenText, DoorOpen, Send, Square } from 'lucide-react'
 import type { UIMessage } from 'ai'
 import { AppNav } from '@/components/AppNav'
 import { getPoemImage } from '@/lib/poem-images'
@@ -53,6 +53,7 @@ export default function ImmersionClient({
   const [showPoem, setShowPoem] = useState(false)
   const openingFetched = useRef(false)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const composingRef = useRef(false)
 
   const transport = useMemo(
     () => new DefaultChatTransport({
@@ -62,7 +63,7 @@ export default function ImmersionClient({
     [conversationId],
   )
 
-  const { messages, status, sendMessage, setMessages, error, clearError } = useChat({
+  const { messages, status, sendMessage, setMessages, stop, error, clearError } = useChat({
     transport,
     messages: initialMessages,
   })
@@ -268,32 +269,61 @@ export default function ImmersionClient({
           onSubmit={handleSubmit}
           className="mx-auto flex max-w-4xl items-end gap-3 px-4"
         >
-          <input
-            className="flex-1 rounded-xl border border-edge bg-white/80 px-4 py-3 text-sm text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-jade"
+          <label htmlFor="immersion-composer" className="sr-only">
+            回应诗境中的角色
+          </label>
+          <textarea
+            id="immersion-composer"
+            rows={1}
+            className="max-h-32 min-h-12 flex-1 resize-none rounded-xl border border-edge bg-white/80 px-4 py-3 text-sm leading-6 text-ink outline-none [field-sizing:content] transition-colors placeholder:text-ink-faint focus:border-jade"
             value={input}
             onChange={e => {
               if (error) clearError()
               setInput(e.target.value)
             }}
             maxLength={2000}
+            onCompositionStart={() => {
+              composingRef.current = true
+            }}
+            onCompositionEnd={() => {
+              composingRef.current = false
+            }}
             onKeyDown={e => {
-              if (e.key === 'Enter' && !e.shiftKey) {
+              if (
+                e.key === 'Enter' &&
+                !e.shiftKey &&
+                !composingRef.current &&
+                !e.nativeEvent.isComposing
+              ) {
                 e.preventDefault()
                 handleSubmit(e as unknown as React.FormEvent)
               }
             }}
             placeholder="说说你看见了什么，感受到什么..."
             disabled={busy}
-            autoFocus
           />
-          <button
-            type="submit"
-            disabled={!input.trim() || busy}
-            className="shrink-0 rounded-xl px-5 py-3 font-serif text-sm tracking-[0.12em] text-paper-block transition-opacity disabled:opacity-40"
-            style={{ background: 'var(--qt-ink-btn)' }}
-          >
-            回应
-          </button>
+          {busy ? (
+            <button
+              type="button"
+              onClick={() => void stop()}
+              aria-label="停止生成"
+              title="停止生成"
+              className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-cinnabar/35 bg-cinnabar/8 text-cinnabar outline-none transition-colors hover:bg-cinnabar/12 focus-visible:ring-2 focus-visible:ring-cinnabar/45"
+            >
+              <Square className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={!input.trim()}
+              aria-label="回应"
+              title="回应"
+              className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-paper-block outline-none transition-opacity focus-visible:ring-2 focus-visible:ring-jade/55 disabled:opacity-40"
+              style={{ background: 'var(--qt-ink-btn)' }}
+            >
+              <Send className="h-4 w-4" aria-hidden="true" />
+            </button>
+          )}
         </form>
       </footer>
     </div>

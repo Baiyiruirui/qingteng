@@ -12,6 +12,7 @@ import {
   PUBLIC_AI_BUDGET_POLICIES,
   rateLimitResponse,
 } from '@/lib/rate-limit'
+import { requestAbortSignal } from '@/lib/ai-budget'
 
 const requestSchema = z.object({
   questionId: z.string().uuid(),
@@ -102,6 +103,7 @@ export async function POST(req: Request) {
       { type, stem: question.stem, answer: question.answer, scoringPoints },
       userAnswer,
       poem,
+      requestAbortSignal(req),
     )
     isCorrect = null
     completionRate = result.completionRate

@@ -16,6 +16,7 @@ import {
   PUBLIC_AI_BUDGET_POLICIES,
   rateLimitResponse,
 } from '@/lib/rate-limit'
+import { AI_GENERATION_BUDGETS, requestAbortSignal } from '@/lib/ai-budget'
 
 export const runtime = 'nodejs'
 
@@ -102,6 +103,8 @@ export async function POST(req: Request) {
     model: route.characterDialog,
     system: systemPrompt,
     prompt: '请用开场白把学生带入诗的情境。',
+    ...AI_GENERATION_BUDGETS.opening,
+    abortSignal: requestAbortSignal(req),
   })
 
   const openingText = result.text.trim()
@@ -117,7 +120,13 @@ export async function POST(req: Request) {
     userId: session.userId,
     type: 'immersion',
     poemId: conv.poemId,
-    meta: { conversationId, subType: 'opening' },
+    meta: {
+      conversationId,
+      subType: 'opening',
+      inputTokens: result.usage.inputTokens,
+      outputTokens: result.usage.outputTokens,
+      totalTokens: result.usage.totalTokens,
+    },
   }).catch(() => {})
 
   return NextResponse.json({

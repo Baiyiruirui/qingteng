@@ -10,6 +10,7 @@ import { quizQuestions, quizBlueprints } from '@/db/schema'
 import type { BlueprintPoint } from '@/db/schema'
 import { telemetry } from '@/ai/observability/telemetry'
 import { isDemoReadyQuestion, MIN_DEMO_QUIZ_QUALITY } from '@/ai/quiz/quality'
+import { AI_GENERATION_BUDGETS } from '@/lib/ai-budget'
 
 // Zod schemas — mcq has options, subjective adds scoringPoints
 const BaseQuizSchema = z.object({
@@ -53,6 +54,7 @@ async function callWithFallback(
   prompt: string,
   form: QuizForm,
   metadata: Record<string, string | number | boolean | undefined>,
+  abortSignal?: AbortSignal,
 ): Promise<z.infer<typeof McqSchema> | z.infer<typeof SubjectiveSchema> | z.infer<typeof BaseQuizSchema>> {
   const schema = form === 'mcq' ? McqSchema : form === 'subjective' ? SubjectiveSchema : BaseQuizSchema
 
@@ -62,6 +64,8 @@ async function callWithFallback(
       model: route.quizGenerate,
       schema,
       prompt,
+      ...AI_GENERATION_BUDGETS.quizGeneration,
+      abortSignal,
       experimental_telemetry: telemetry('qingteng.quiz.generate.object', metadata),
     })
     return result.object
@@ -73,6 +77,8 @@ async function callWithFallback(
   const result = await generateText({
     model: route.quizGenerate,
     prompt,
+    ...AI_GENERATION_BUDGETS.quizGeneration,
+    abortSignal,
     experimental_telemetry: telemetry('qingteng.quiz.generate.text-fallback', metadata),
   })
 
@@ -87,6 +93,7 @@ export async function generateQuestion(
   poemId: string,
   type: QuizType,
   difficulty: QuizDifficulty,
+  options: { abortSignal?: AbortSignal } = {},
 ) {
   const poem = await getPoemForQuiz(poemId)
   if (!poem) throw new Error(`Poem not found: ${poemId}`)
@@ -99,7 +106,7 @@ export async function generateQuestion(
     poemId,
     type,
     difficulty,
-  })
+  }, options.abortSignal)
 
   // Post-validation 1: evidence lines must appear in poem text
   const poemLineContents = poem.lines.map(l => l.content)

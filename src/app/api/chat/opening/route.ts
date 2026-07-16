@@ -14,6 +14,7 @@ import {
   PUBLIC_AI_BUDGET_POLICIES,
   rateLimitResponse,
 } from '@/lib/rate-limit'
+import { AI_GENERATION_BUDGETS, requestAbortSignal } from '@/lib/ai-budget'
 
 export const runtime = 'nodejs'
 
@@ -46,6 +47,8 @@ export async function POST(req: Request) {
     model: route.characterDialog,
     system: CHARACTER_SYSTEM_PROMPT,
     prompt: userPrompt,
+    ...AI_GENERATION_BUDGETS.opening,
+    abortSignal: requestAbortSignal(req),
     experimental_telemetry: telemetry('qingteng.opening', {
       route: '/api/chat/opening',
       conversationId: conversation.id,
@@ -69,6 +72,9 @@ export async function POST(req: Request) {
     meta: {
       conversationId: conversation.id,
       isReturning: !!snapshot && snapshot.recentMessages.length > 0,
+      inputTokens: result.usage.inputTokens,
+      outputTokens: result.usage.outputTokens,
+      totalTokens: result.usage.totalTokens,
     },
   }).catch(() => {})
 

@@ -7,6 +7,7 @@ import { quizBlueprints } from '@/db/schema'
 import type { BlueprintPoint } from '@/db/schema'
 import { sql } from 'drizzle-orm'
 import { BlueprintSchema, validateBlueprintAgainstPoem } from '@/ai/quiz/blueprint-schema'
+import { AI_GENERATION_BUDGETS } from '@/lib/ai-budget'
 
 export async function draftBlueprintForPoem(
   poemId: string,
@@ -23,6 +24,7 @@ export async function draftBlueprintForPoem(
       const result = await generateText({
         model: route.quizGenerate,
         prompt,
+        ...AI_GENERATION_BUDGETS.blueprintGeneration,
       })
 
       const jsonMatch = result.text.match(/\[[\s\S]*\]/)

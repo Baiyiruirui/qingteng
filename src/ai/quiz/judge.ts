@@ -4,6 +4,7 @@ import { route } from '@/ai/router'
 import { buildJudgePrompt } from '@/ai/prompts/v1/quiz-judge'
 import type { PoemForQuiz } from '@/db/repositories/poems'
 import { telemetry } from '@/ai/observability/telemetry'
+import { AI_GENERATION_BUDGETS } from '@/lib/ai-budget'
 
 export interface ObjectiveQuestion {
   type: 'mcq' | 'fill'
@@ -204,6 +205,7 @@ export async function judgeSubjective(
   question: SubjectiveQuestion,
   userAnswer: string,
   poem: PoemForQuiz,
+  abortSignal?: AbortSignal,
 ): Promise<SubjectiveJudgeResult> {
   const prompt = buildJudgePrompt({
     stem: question.stem,
@@ -220,6 +222,8 @@ export async function judgeSubjective(
       model: route.quizGenerate,
       schema: JudgeResponseSchema,
       prompt,
+      ...AI_GENERATION_BUDGETS.quizJudge,
+      abortSignal,
       experimental_telemetry: telemetry('qingteng.quiz.judge.object', {
         mode: 'quiz-judge',
         poemId: poem.id,
@@ -232,6 +236,8 @@ export async function judgeSubjective(
     const result = await generateText({
       model: route.quizGenerate,
       prompt,
+      ...AI_GENERATION_BUDGETS.quizJudge,
+      abortSignal,
       experimental_telemetry: telemetry('qingteng.quiz.judge.text-fallback', {
         mode: 'quiz-judge',
         poemId: poem.id,
