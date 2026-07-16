@@ -6,7 +6,7 @@ import { CHARACTER_SYSTEM_PROMPT } from '@/ai/prompts/v1/character'
 import { getSession } from '@/lib/auth-server'
 import { db } from '@/db'
 import { conversations, users } from '@/db/schema'
-import { appendMessage } from '@/db/repositories/messages'
+import { appendMessage, loadAuthoritativeUiMessages } from '@/db/repositories/messages'
 import { recordEvent } from '@/db/repositories/events'
 import { updateShortTerm } from '@/ai/memory/short-term'
 import { buildSystemContext, renderMemoryContext } from '@/ai/memory/build-context'
@@ -64,12 +64,12 @@ export async function POST(req: Request) {
     }
 
     const { conversationId } = parsedBody.data
-    const { messages, lastUserText: userText } = parsedMessages.data
+    const { lastUserText: userText } = parsedMessages.data
 
     // Verify conversation ownership and fetch user name in parallel
     const [convRows, userRows] = await Promise.all([
       db
-        .select({ id: conversations.id })
+        .select({ id: conversations.id, mode: conversations.mode })
         .from(conversations)
         .where(
           and(
@@ -91,6 +91,12 @@ export async function POST(req: Request) {
         { status: 403 },
       )
     }
+    if (convRows[0].mode !== 'chat') {
+      return Response.json(
+        { error: { code: 'BAD_REQUEST', message: '非日常对话模式' } },
+        { status: 400 },
+      )
+    }
 
     const userName = userRows[0]?.name ?? ''
 
@@ -100,8 +106,9 @@ export async function POST(req: Request) {
       e => console.error('[redis] updateShortTerm user failed:', e),
     )
 
-    // Build mid-term profile context + recall long-term memories in parallel
-    const [profileContext, recalled] = await Promise.all([
+    // Rebuild model history from PostgreSQL after the current user message is durable.
+    const [authoritativeMessages, profileContext, recalled] = await Promise.all([
+      loadAuthoritativeUiMessages(conversationId),
       buildSystemContext(session.userId, userName),
       recall(session.userId, userText).catch(() => []),
     ])
@@ -112,7 +119,7 @@ export async function POST(req: Request) {
     const result = streamText({
       model: route.characterDialog,
       system: systemPrompt,
-      messages: await convertToModelMessages(messages),
+      messages: await convertToModelMessages(authoritativeMessages),
       experimental_telemetry: telemetry('qingteng.chat', {
         route: '/api/chat',
         conversationId,
@@ -148,7 +155,10 @@ export async function POST(req: Request) {
     })
     return result.toUIMessageStreamResponse()
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown error'
-    return Response.json({ error: { code: 'SERVER_ERROR', message } }, { status: 500 })
+    console.error('[chat] request failed:', err)
+    return Response.json(
+      { error: { code: 'SERVER_ERROR', message: '服务暂时不可用，请稍后再试' } },
+      { status: 500 },
+    )
   }
 }

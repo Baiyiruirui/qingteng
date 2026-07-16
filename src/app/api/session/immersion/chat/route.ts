@@ -8,7 +8,7 @@ import { db } from '@/db'
 import { conversations, poems } from '@/db/schema'
 import type { PoemLine } from '@/db/schema'
 import { getImmersionScript } from '@/db/repositories/conversations'
-import { appendMessage } from '@/db/repositories/messages'
+import { appendMessage, loadAuthoritativeUiMessages } from '@/db/repositories/messages'
 import { recordEvent } from '@/db/repositories/events'
 import { extractImmersionAndStore } from '@/ai/memory/long-term'
 import {
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     }
 
     const { conversationId } = parsedBody.data
-    const { messages, lastUserText: userText } = parsedMessages.data
+    const { lastUserText: userText } = parsedMessages.data
 
     // Verify conversation ownership and mode
     const [conv] = await db
@@ -82,8 +82,9 @@ export async function POST(req: Request) {
     // Save user message
     await appendMessage(conversationId, 'user', userText)
 
-    // Load immersion script + poem lines in parallel
-    const [script, poemRow] = await Promise.all([
+    // Load authoritative model history, immersion script, and poem lines in parallel.
+    const [authoritativeMessages, script, poemRow] = await Promise.all([
+      loadAuthoritativeUiMessages(conversationId),
       getImmersionScript(conv.poemId),
       db
         .select({ title: poems.title, author: poems.author, lines: poems.lines })
@@ -114,7 +115,7 @@ export async function POST(req: Request) {
     const result = streamText({
       model: route.characterDialog,
       system: systemPrompt,
-      messages: await convertToModelMessages(messages),
+      messages: await convertToModelMessages(authoritativeMessages),
       onFinish: async ({ text, usage, finishReason, model }) => {
         try {
           await appendMessage(conversationId, 'assistant', text, {
@@ -150,7 +151,10 @@ export async function POST(req: Request) {
 
     return result.toUIMessageStreamResponse()
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown error'
-    return Response.json({ error: { code: 'SERVER_ERROR', message } }, { status: 500 })
+    console.error('[immersion chat] request failed:', err)
+    return Response.json(
+      { error: { code: 'SERVER_ERROR', message: '服务暂时不可用，请稍后再试' } },
+      { status: 500 },
+    )
   }
 }
