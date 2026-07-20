@@ -33,8 +33,8 @@
 | 打开 App | 闯关地图 / 题目列表 | 青藤先生基于学习画像的个性化开场白 |
 | 学一首诗 | 看翻译 + 听朗读 + 做题 | **诗境沉浸** — AI 扮演诗中角色带你进入场景 |
 | 出题练习 | 通用题库，AI 即时出题 | **青藤考你** — 基于 grounding 防幻觉出题，evidenceLines 强制溯源 |
-| 朗读 | 录音对照原文 | 腾讯 ASR 转写 + 逐字对齐评分 |
-| 记忆 | 仅记录答题历史 | 三层 Memory（短期会话 / 中期画像 / 长期诗友记忆） |
+| 朗读 | 录音对照原文 | 腾讯标准示范音 + 云端拼音 + 逐句跟读 + ASR 字句对齐反馈 |
+| 记忆 | 仅记录答题历史 | 三层 Memory，并允许学生查看、纠正、删除、暂停和设置保留期限 |
 
 ---
 
@@ -48,7 +48,13 @@
 长期 Memory  →  pgvector         "用户喜欢豪放派"、"上次为李清照动容"
 ```
 
-每次对话前三层 Memory 拼成 system prompt 注入 —— 把"ChatGPT 套壳"和"真正的 AI 应用"区分开。
+每次对话前三层 Memory 拼成 system prompt 注入。长期记忆同时提供用户侧控制面：可查看、纠正、删除、暂停记录并设置保留期限，避免把“记得你”做成不可见的黑箱。
+
+### 🔁 服务端权威的流式对话
+
+客户端只提交本轮消息和稳定的 `clientMessageId`，服务端从 PostgreSQL 重建可信历史，不接受客户端伪造的完整上下文。Redis 轮次锁阻止重复生成，已完成轮次可以幂等重放；流后写库失败会进入恢复队列，由后续请求重试。
+
+所有生成链路统一限制输入、输出 token 和超时，并传播浏览器请求中断。高成本调用继续受用户/IP 预算约束，既保护上下文一致性，也控制公开 Demo 成本。
 
 ### 🎯 多模型路由 + 成本控制
 
@@ -56,7 +62,7 @@
 |---|---|---|
 | 角色对话 | DeepSeek Chat（可选 Claude Haiku） | 默认国内可用，配置 Anthropic 后自动切换 |
 | 出题 / 批改 | DeepSeek Chat | 公开 Demo 成本友好，结构化任务质量够用 |
-| 朗读评分 | 腾讯 ASR | 国内可用，当前账户额度可覆盖 Demo |
+| 示范朗读 / 朗读评分 | 腾讯 TTS + ASR | 国内可用，同一组腾讯云凭据覆盖 Demo |
 
 按任务做模型路由，并用用户/IP 限流控制公开 Demo 成本；未配置 Anthropic 时角色对话自动降级到 DeepSeek。
 
@@ -101,7 +107,7 @@ LLM 出古诗题容易把典故安在错误的诗句上（案例：《登高》"
 数据  PostgreSQL (Neon) + pgvector + Upstash Redis
 
 AI    Vercel AI SDK
-      DeepSeek · Claude Haiku（可选）· Tencent ASR
+      DeepSeek · Claude Haiku（可选）· Tencent TTS / ASR
       自建 Memory + 多模型路由 + Prompt 版本化
 
 观测  Langfuse
@@ -174,6 +180,8 @@ pnpm eval
 pnpm verify:data
 pnpm verify:quiz:representative
 pnpm verify:wrong-question
+pnpm verify:memory:controls
+pnpm test:recite
 
 # 浏览器 smoke（首次运行前：pnpm exec playwright install chromium）
 pnpm test:e2e
@@ -195,7 +203,7 @@ pnpm test:e2e
 - [DeepSeek](https://platform.deepseek.com) — 出题 / 批改
 - [Anthropic](https://console.anthropic.com) — 角色对话（可选，未配置时降级到 DeepSeek）
 - [Langfuse](https://cloud.langfuse.com) — LLM 观测（可选）
-- [腾讯云语音识别 ASR](https://cloud.tencent.com/product/asr) — 朗读转写与评分（可选）
+- [腾讯云语音技术](https://cloud.tencent.com/product/asr) — 标准示范音、拼音时间轴、朗读转写与字句对齐反馈（可选）
 
 ---
 
