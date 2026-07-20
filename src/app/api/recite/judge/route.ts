@@ -1,10 +1,11 @@
 import { randomUUID } from 'node:crypto'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { requireAuth } from '@/lib/auth-server'
+import { getSession } from '@/lib/auth-server'
 import { getPoemForQuiz } from '@/db/repositories/poems'
 import { recordEvent } from '@/db/repositories/events'
-import { poemLinesToText, scoreRecitation } from '@/ai/recite/score'
+import { scoreRecitation } from '@/ai/recite/score'
+import { ReciteTargetError, resolveReciteTarget } from '@/ai/recite/target'
 import { recognizeSentence, TencentAsrError } from '@/ai/recite/tencent-asr'
 import { checkRateLimits, rateLimitResponse } from '@/lib/rate-limit'
 import { estimateBase64Bytes } from '@/lib/request-limits'
@@ -16,13 +17,18 @@ const MAX_BASE64_CHARS = Math.ceil((MAX_AUDIO_BYTES * 4) / 3) + 4
 
 const requestSchema = z.object({
   poemId: z.string().min(1).max(64),
+  mode: z.enum(['line', 'poem']).default('line'),
+  lineIndex: z.number().int().min(0).max(200).default(0),
   audioBase64: z.string().min(1).max(MAX_BASE64_CHARS),
   audioBytes: z.number().int().positive().max(MAX_AUDIO_BYTES),
   voiceFormat: z.enum(['wav']).optional(),
 })
 
 export async function POST(req: Request) {
-  const session = await requireAuth()
+  const session = await getSession()
+  if (!session) {
+    return NextResponse.json({ error: '请先登录' }, { status: 401 })
+  }
 
   const rateLimit = await checkRateLimits({
     req,
@@ -39,12 +45,12 @@ export async function POST(req: Request) {
 
   const parsedBody = requestSchema.safeParse(await req.json().catch(() => null))
   if (!parsedBody.success) {
-    return NextResponse.json({ error: 'Missing poemId or audio data' }, { status: 400 })
+    return NextResponse.json({ error: '朗读参数或录音数据不完整' }, { status: 400 })
   }
   const body = parsedBody.data
   const actualAudioBytes = estimateBase64Bytes(body.audioBase64)
   if (actualAudioBytes <= 0 || actualAudioBytes > MAX_AUDIO_BYTES) {
-    return NextResponse.json({ error: 'Audio is too large; please keep it under 20 seconds' }, { status: 413 })
+    return NextResponse.json({ error: '录音太长，请缩短后再试' }, { status: 413 })
   }
 
   const poem = await getPoemForQuiz(body.poemId)
@@ -53,14 +59,18 @@ export async function POST(req: Request) {
   }
 
   try {
+    const target = resolveReciteTarget({
+      lines: poem.lines,
+      mode: body.mode,
+      lineIndex: body.lineIndex,
+    })
     const asr = await recognizeSentence({
       audioBase64: body.audioBase64,
       audioBytes: actualAudioBytes,
       voiceFormat: body.voiceFormat ?? 'wav',
       userAudioKey: `${session.userId}-${body.poemId}-${randomUUID()}`,
     })
-    const expectedText = poemLinesToText(poem.lines)
-    const score = scoreRecitation({ expectedText, transcript: asr.transcript })
+    const score = scoreRecitation({ expectedText: target.expectedText, transcript: asr.transcript })
 
     await recordEvent({
       userId: session.userId,
@@ -74,6 +84,8 @@ export async function POST(req: Request) {
         totalChars: score.totalChars,
         audioDuration: asr.audioDuration,
         requestId: asr.requestId,
+        mode: target.mode,
+        lineIndex: target.lineIndex,
       },
     })
 
@@ -88,6 +100,9 @@ export async function POST(req: Request) {
       feedback: score.feedback,
     })
   } catch (error) {
+    if (error instanceof ReciteTargetError) {
+      return NextResponse.json({ error: error.message }, { status: 400 })
+    }
     if (error instanceof TencentAsrError) {
       console.error('[recite] Tencent ASR failed:', {
         code: error.code,

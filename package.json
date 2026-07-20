@@ -8,6 +8,7 @@
     "start": "next start",
     "test:e2e": "playwright test",
     "test:e2e:list": "playwright test --list",
+    "test:recite": "tsx src/ai/recite/recite-core.test.ts",
     "import:poems": "tsx --env-file=.env.local scripts/import-poems.ts",
     "db:check": "tsx --env-file=.env.local scripts/db-check.ts",
     "db:verify": "tsx --env-file=.env.local scripts/verify-poems.ts",
