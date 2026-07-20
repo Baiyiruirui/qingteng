@@ -642,18 +642,22 @@ export default function ReciteClient({
     || state.phase === 'submitting'
   const recordingLocked = standardStatus === 'playing' || standardStatus === 'loading'
   const pct = state.phase === 'done' ? Math.round(state.result.accuracy * 100) : null
+  const activeLine = poem.lines[currentLine] ?? ''
+  const progress = mode === 'line'
+    ? ((currentLine + 1) / Math.max(1, poem.lines.length)) * 100
+    : 100
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8">
+    <main className="mx-auto w-full max-w-7xl px-4 py-6 pb-28 sm:py-8">
       <audio ref={standardAudioRef} className="hidden" onEnded={() => void onStandardEnded()} />
 
-      <section className="relative aspect-video overflow-hidden border-y border-edge bg-paper-block">
+      <section className="relative overflow-hidden border-y border-edge bg-paper-block lg:min-h-[720px]">
         {imageSrc && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={imageSrc}
             alt={`《${poem.title}》意境图`}
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover opacity-60 saturate-50"
           />
         )}
         <div
@@ -661,28 +665,25 @@ export default function ReciteClient({
           className="absolute inset-0"
           style={{
             background: imageSrc
-              ? 'linear-gradient(90deg, rgba(247,244,236,0.97) 0%, rgba(247,244,236,0.82) 32%, rgba(247,244,236,0.14) 60%, transparent 78%)'
-              : 'linear-gradient(110deg, rgba(242,237,224,0.9), rgba(247,244,236,0.7))',
+              ? 'linear-gradient(90deg, rgba(247,244,236,0.98) 0%, rgba(247,244,236,0.9) 46%, rgba(247,244,236,0.58) 72%, rgba(247,244,236,0.34) 100%)'
+              : 'linear-gradient(110deg, rgba(242,237,224,0.96), rgba(247,244,236,0.82))',
           }}
         />
-        <div className="relative flex h-full max-w-[80%] items-center px-5 py-4 sm:max-w-[62%] sm:px-10 sm:py-6">
-          <div className="flex items-start gap-3 sm:gap-4">
-            <div className="hidden sm:block"><SealStamp size={42} tilt /></div>
-            <div>
-              <p className="text-xs tracking-[0.24em] text-ink-faint">RECITE</p>
-              <h1 className="mt-1 font-serif text-xl leading-snug text-ink sm:text-5xl sm:leading-tight">
-                {poem.title}
-              </h1>
-              <p className="mt-2 text-sm text-ink-mid">{poem.dynasty ?? ''} · {poem.author}</p>
-            </div>
-          </div>
-        </div>
-      </section>
+        <div className="relative grid lg:min-h-[720px] lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.55fr)]">
+          <div className="flex min-w-0 flex-col px-5 py-7 sm:px-10 sm:py-10 lg:px-14">
+            <header className="flex flex-wrap items-start justify-between gap-5">
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className="hidden sm:block"><SealStamp size={42} tilt /></div>
+                <div>
+                  <p className="text-xs tracking-[0.24em] text-cinnabar">RECITE</p>
+                  <h1 className="mt-1 font-serif text-3xl leading-tight text-ink sm:text-5xl">
+                    {poem.title}
+                  </h1>
+                  <p className="mt-2 text-sm text-ink-mid">{poem.dynasty ?? ''} · {poem.author}</p>
+                </div>
+              </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,0.75fr)]">
-        <section className="border border-edge bg-white/55 p-5 sm:p-6">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-edge pb-5">
-            <div className="inline-flex rounded-lg border border-edge bg-paper-block p-1" aria-label="朗读模式">
+              <div className="inline-flex rounded-lg border border-edge/80 bg-paper/75 p-1 backdrop-blur-sm" aria-label="朗读模式">
               <button
                 type="button"
                 onClick={() => changeMode('line')}
@@ -701,49 +702,44 @@ export default function ReciteClient({
               >
                 整首挑战
               </button>
-            </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={showPinyin}
-              onClick={() => void togglePinyin()}
-              disabled={interactionLocked}
-              className="inline-flex items-center gap-2 text-sm text-ink-mid disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <span className={`relative h-5 w-9 rounded-full transition-colors ${showPinyin ? 'bg-jade' : 'bg-edge'}`}>
-                <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${showPinyin ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
-              </span>
-              拼音
-            </button>
-          </div>
+              </div>
+            </header>
 
-          {mode === 'line' && (
-            <div className="mt-5 flex items-center justify-between gap-3">
+            {mode === 'line' && (
+              <div className="mt-8 flex max-w-xl items-center gap-3">
               <button
                 type="button"
                 onClick={() => selectLine(Math.max(0, currentLine - 1))}
                 disabled={interactionLocked || currentLine === 0}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-edge text-ink-mid disabled:opacity-30"
+                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-edge bg-paper/70 text-ink-mid backdrop-blur-sm disabled:opacity-30"
                 aria-label="上一句"
                 title="上一句"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
-              <p className="text-sm text-ink-faint">第 {currentLine + 1} 句，共 {poem.lines.length} 句</p>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between text-xs text-ink-faint">
+                    <span>第 {currentLine + 1} 句</span>
+                    <span>共 {poem.lines.length} 句</span>
+                  </div>
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-paper-block/90">
+                    <div className="h-full rounded-full bg-jade transition-all" style={{ width: `${progress}%` }} />
+                  </div>
+                </div>
               <button
                 type="button"
                 onClick={() => selectLine(Math.min(poem.lines.length - 1, currentLine + 1))}
                 disabled={interactionLocked || currentLine === poem.lines.length - 1}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-edge text-ink-mid disabled:opacity-30"
+                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-edge bg-paper/70 text-ink-mid backdrop-blur-sm disabled:opacity-30"
                 aria-label="下一句"
                 title="下一句"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
             </div>
-          )}
+            )}
 
-          <div className="mt-5 space-y-2 font-serif text-2xl leading-loose text-ink sm:text-3xl">
+            <div className="my-auto max-w-2xl py-10 font-serif text-2xl leading-loose text-ink sm:text-4xl sm:leading-[1.9]">
             {poem.lines.map((line, index) => {
               const active = mode === 'line' && index === currentLine
               return (
@@ -752,10 +748,11 @@ export default function ReciteClient({
                   type="button"
                   onClick={() => mode === 'line' && selectLine(index)}
                   disabled={interactionLocked}
-                  className={`block w-full border-l-2 px-4 py-2 text-left transition-colors disabled:cursor-not-allowed ${active ? 'border-jade bg-jade/8 text-ink' : mode === 'line' ? 'border-transparent text-ink-faint hover:bg-paper-block/60' : 'border-transparent text-ink'}`}
+                    aria-current={active ? 'step' : undefined}
+                    className={`block w-full border-l-[3px] px-4 py-1 text-left transition-all disabled:cursor-not-allowed sm:px-6 ${active ? 'border-jade bg-paper/72 text-ink shadow-[inset_0_-1px_0_rgba(47,93,80,0.08)] backdrop-blur-sm' : mode === 'line' ? 'border-transparent text-ink-faint hover:bg-paper/45 hover:text-ink-mid' : 'border-transparent text-ink'}`}
                 >
                   {active && showPinyin && (
-                    <span className="mb-1 block min-h-6 font-sans text-sm leading-6 text-jade">
+                      <span className="mb-0 block min-h-6 font-sans text-sm leading-6 text-jade sm:text-base">
                       {pinyin ?? pinyinMessage}
                     </span>
                   )}
@@ -763,118 +760,83 @@ export default function ReciteClient({
                 </button>
               )
             })}
-          </div>
+            </div>
 
-          {mode === 'poem' && showPinyin && (
-            <p className="mt-4 border-l-2 border-jade/45 bg-paper-block/70 px-3 py-2 text-sm leading-6 text-ink-mid">
+            {mode === 'poem' && showPinyin && (
+              <p className="max-w-2xl border-l-2 border-jade/45 bg-paper/65 px-3 py-2 text-sm leading-6 text-ink-mid backdrop-blur-sm">
               {pinyinMessage || '整首拼音会随示范分段显示，逐句模式更适合初学。'}
             </p>
-          )}
-          {mode === 'poem' && isLongPoem && (
-            <p className="mt-5 border-l-2 border-cinnabar/55 bg-cinnabar/5 px-3 py-2 text-sm leading-6 text-ink-mid">
+            )}
+            {mode === 'poem' && isLongPoem && (
+              <p className="max-w-2xl border-l-2 border-cinnabar/55 bg-paper/65 px-3 py-2 text-sm leading-6 text-ink-mid backdrop-blur-sm">
               这首诗较长，AI 示范音会自动分段播放。整首录音评分暂不开放，建议先逐句跟读。
             </p>
-          )}
-        </section>
-
-        <section className="space-y-4">
-          <div className="border border-edge bg-paper-block/75 p-5">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <Headphones className="h-4 w-4 text-jade" aria-hidden="true" />
-                <h2 className="font-serif text-xl text-ink">先听示范</h2>
-              </div>
-              <span className="text-xs text-ink-faint">AI 合成朗读</span>
-            </div>
-
-            <div className="mt-4 flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => void toggleStandardAudio()}
-                disabled={state.phase === 'preparing' || state.phase === 'recording'}
-                className="inline-flex items-center gap-2 rounded-lg bg-jade px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                {standardStatus === 'playing' ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                {standardStatus === 'loading' ? '正在准备' : standardStatus === 'playing' ? '暂停' : standardStatus === 'paused' ? '继续播放' : '听标准朗读'}
-              </button>
-              {standardSource && (
-                <button
-                  type="button"
-                  onClick={() => void replayStandardAudio()}
-                  disabled={state.phase === 'preparing' || state.phase === 'recording'}
-                  className="inline-flex items-center gap-2 rounded-lg border border-edge px-3 py-2 text-sm text-ink-mid hover:bg-white/70 disabled:opacity-40"
-                >
-                  <RotateCcw className="h-4 w-4" />
-                  重播
-                </button>
-              )}
-            </div>
-
-            {standardMessage && (
-              <p className={`mt-3 text-sm leading-6 ${standardStatus === 'error' ? 'text-cinnabar' : 'text-ink-faint'}`}>
-                {standardMessage}
-                {standardSource === 'tencent' && standardPart.count > 1
-                  ? `（${standardPart.index + 1}/${standardPart.count}）`
-                  : ''}
-              </p>
             )}
           </div>
 
-          <div className="border border-edge bg-paper-block/75 p-5">
-            <div className="flex items-center gap-2">
-              <Volume2 className="h-4 w-4 text-jade" aria-hidden="true" />
-              <h2 className="font-serif text-xl text-ink">跟着读一遍</h2>
-            </div>
-            <p className="mt-2 text-sm leading-6 text-ink-faint">
-              {mode === 'line' ? `本次只听第 ${currentLine + 1} 句，按字句对齐给提示。` : '本次听整首，按字句对齐给出朗读掌握度。'}
-            </p>
+          <aside className={`${state.phase === 'idle' ? 'hidden lg:flex' : 'flex'} min-w-0 flex-col justify-between border-t border-edge/80 bg-paper/82 p-5 backdrop-blur-md sm:p-8 lg:border-l lg:border-t-0`}>
+            <div>
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs tracking-[0.2em] text-cinnabar">
+                  {state.phase === 'done' ? 'FEEDBACK' : mode === 'line' ? 'CURRENT LINE' : 'WHOLE POEM'}
+                </p>
+                {mode === 'line' && <span className="text-xs text-ink-faint">{currentLine + 1} / {poem.lines.length}</span>}
+              </div>
 
-            <div className="mt-5 flex flex-wrap gap-3">
-              {canRecord && (
-                <button
-                  type="button"
-                  onClick={() => void startRecording()}
-                  disabled={recordingLocked || (mode === 'poem' && isLongPoem)}
-                  className="inline-flex items-center gap-2 rounded-lg bg-ink px-4 py-2 text-sm font-medium text-paper transition-opacity hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  <Mic className="h-4 w-4" aria-hidden="true" />
-                  准备跟读
-                </button>
-              )}
-              {state.phase === 'recording' && (
-                <button
-                  type="button"
-                  onClick={() => void stopRecording()}
-                  className="inline-flex items-center gap-2 rounded-lg bg-cinnabar px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-85"
-                >
-                  <Square className="h-4 w-4" aria-hidden="true" />
-                  结束录音
-                </button>
-              )}
-              {(state.phase === 'ready' || state.phase === 'done') && (
-                <button
-                  type="button"
-                  onClick={() => resetCapture()}
-                  className="inline-flex items-center gap-2 rounded-lg border border-edge px-4 py-2 text-sm font-medium text-ink-mid transition-colors hover:bg-white/70"
-                >
-                  <RotateCcw className="h-4 w-4" aria-hidden="true" />
-                  重录
-                </button>
+              {state.phase === 'done' ? (
+                <div className="mt-5">
+                  <div className="flex items-end justify-between gap-4">
+                    <div>
+                      <p className="font-serif text-5xl text-ink">{pct}%</p>
+                      <p className="mt-1 text-sm text-ink-faint">朗读掌握度 · 字句对齐</p>
+                    </div>
+                    <span className="rounded-lg border-2 border-cinnabar px-2 py-1 font-kai text-2xl text-cinnabar">
+                      {pct !== null && pct >= 85 ? '清' : pct !== null && pct >= 60 ? '进' : '习'}
+                    </span>
+                  </div>
+                  <div className="mt-5 h-2 overflow-hidden rounded-full bg-paper-block">
+                    <div className="h-full rounded-full bg-jade" style={{ width: `${pct}%` }} />
+                  </div>
+                  <p className="mt-6 text-sm leading-7 text-ink-mid">{state.result.feedback}</p>
+                  <div className="mt-5 border-t border-edge pt-4 text-sm leading-7">
+                    <p className="text-xs text-ink-faint">青藤听到</p>
+                    <p className="mt-1 text-ink">{state.result.transcript || '没有识别到清晰文字'}</p>
+                    {state.result.missingChars.length > 0 && (
+                      <p className="mt-3 text-cinnabar">留意：{state.result.missingChars.join('、')}</p>
+                    )}
+                    {state.result.extraChars.length > 0 && (
+                      <p className="mt-2 text-ink-faint">多识别：{state.result.extraChars.join('、')}</p>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-5">
+                  <p className="font-serif text-2xl leading-relaxed text-ink sm:text-3xl">
+                    {mode === 'line' ? activeLine : poem.title}
+                  </p>
+                  {mode === 'line' && showPinyin && (
+                    <p className="mt-2 min-h-6 text-sm leading-6 text-jade">{pinyin ?? pinyinMessage}</p>
+                  )}
+                  <p className="mt-4 text-sm leading-7 text-ink-faint">
+                    {mode === 'line' ? '字句对齐，不评价音色。' : '整首按字句完整度给出反馈。'}
+                  </p>
+                </div>
               )}
             </div>
 
+            <div className="mt-8">
             {state.phase === 'preparing' && (
-              <div role="status" aria-live="polite" className="mt-5 flex items-center gap-4 border-l-2 border-jade bg-white/55 px-4 py-3">
-                <span className="font-serif text-4xl text-jade">{state.countdown}</span>
+                <div role="status" aria-live="polite" className="flex items-center gap-4 border-l-2 border-jade bg-paper-block/70 px-4 py-3">
+                  <span className="font-serif text-5xl text-jade">{state.countdown}</span>
                 <div>
-                  <p className="font-medium text-ink">看准当前句</p>
-                  <p className="text-sm text-ink-faint">倒计时结束后开始录音</p>
+                    <p className="font-medium text-ink">准备</p>
+                    <p className="text-sm text-ink-faint">录音即将开始</p>
                 </div>
               </div>
             )}
 
             {state.phase === 'recording' && (
-              <div className="mt-5">
+                <div role="status" aria-live="polite">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-cinnabar">正在听你读</span>
                   <span className="text-ink-faint">{state.elapsed}s / {maxSeconds}s</span>
@@ -889,18 +851,9 @@ export default function ReciteClient({
             )}
 
             {(state.phase === 'ready' || state.phase === 'submitting' || state.phase === 'done') && (
-              <div className="mt-5 space-y-4">
+                <div className="space-y-3 border-t border-edge pt-4">
+                  <p className="text-xs text-ink-faint">我的录音</p>
                 <audio ref={recordedAudioRef} src={state.audioUrl} controls className="w-full" />
-                {state.phase === 'ready' && (
-                  <button
-                    type="button"
-                    onClick={() => void submitRecite()}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-jade px-4 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-85"
-                  >
-                    <Send className="h-4 w-4" aria-hidden="true" />
-                    交给青藤听
-                  </button>
-                )}
                 {state.phase === 'submitting' && (
                   <p className="text-center text-sm text-ink-faint">青藤正在听写和对齐...</p>
                 )}
@@ -908,71 +861,128 @@ export default function ReciteClient({
             )}
 
             {state.phase === 'error' && (
-              <p className="mt-5 rounded-lg border border-cinnabar/25 bg-cinnabar/5 px-3 py-2 text-sm text-cinnabar">
+                <p role="alert" className="border-l-2 border-cinnabar bg-cinnabar/5 px-3 py-2 text-sm leading-6 text-cinnabar">
                 {state.message}
               </p>
             )}
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <div className="sticky bottom-3 z-30 mx-auto mt-5 max-w-4xl rounded-lg border border-edge/90 bg-paper/92 p-2 shadow-[0_18px_55px_rgba(42,52,46,0.2)] backdrop-blur-xl md:bottom-4">
+        <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)_minmax(0,0.9fr)] items-center gap-1 sm:gap-2">
+          <div className="flex min-w-0 items-center gap-1">
+            <button
+              type="button"
+              onClick={() => void toggleStandardAudio()}
+              disabled={interactionLocked}
+              className="inline-flex h-12 min-w-0 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-ink transition-colors hover:bg-paper-block disabled:cursor-not-allowed disabled:opacity-40 sm:gap-2 sm:px-4"
+            >
+              {standardStatus === 'playing' ? <Pause className="h-4 w-4 shrink-0" /> : <Headphones className="h-4 w-4 shrink-0 text-jade" />}
+              <span className="truncate">{standardStatus === 'loading' ? '准备示范音' : standardStatus === 'playing' ? '暂停示范' : standardStatus === 'paused' ? '继续示范' : '听示范'}</span>
+            </button>
+            {standardSource && (
+              <button
+                type="button"
+                onClick={() => void replayStandardAudio()}
+                disabled={interactionLocked}
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-ink-mid transition-colors hover:bg-paper-block disabled:opacity-40"
+                aria-label="重新播放示范音"
+                title="重播示范"
+              >
+                <RotateCcw className="h-4 w-4" />
+              </button>
+            )}
           </div>
 
-          {state.phase === 'done' && (
-            <div className="border border-edge bg-white/60 p-5">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-xs tracking-[0.24em] text-cinnabar">RESULT</p>
-                  <h2 className="font-serif text-2xl text-ink">朗读掌握度 {pct}%</h2>
-                  <p className="mt-1 text-xs text-ink-faint">依据 ASR 转写与原文的字句对齐</p>
-                </div>
-                <span className="rounded-lg border-2 border-cinnabar px-2 py-1 font-kai text-2xl text-cinnabar">
-                  {pct !== null && pct >= 85 ? '清' : pct !== null && pct >= 60 ? '进' : '习'}
-                </span>
-              </div>
-
-              <div className="mt-4 h-2 overflow-hidden rounded-full bg-paper-block">
-                <div className="h-full rounded-full bg-jade" style={{ width: `${pct}%` }} />
-              </div>
-
-              <div className="mt-5 space-y-4 text-sm leading-7">
-                <div>
-                  <p className="text-xs font-medium text-ink-faint">识别结果</p>
-                  <p className="mt-1 text-ink">{state.result.transcript || '没有识别到清晰文字'}</p>
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-ink-faint">青藤说</p>
-                  <p className="mt-1 text-ink-mid">{state.result.feedback}</p>
-                </div>
-                {state.result.missingChars.length > 0 && (
-                  <div>
-                    <p className="text-xs font-medium text-cinnabar">留意这些字</p>
-                    <p className="mt-1 text-ink">{state.result.missingChars.join('、')}</p>
-                  </div>
-                )}
-                {state.result.extraChars.length > 0 && (
-                  <div>
-                    <p className="text-xs font-medium text-ink-faint">识别中多出来的字</p>
-                    <p className="mt-1 text-ink-mid">{state.result.extraChars.join('、')}</p>
-                  </div>
-                )}
-              </div>
-            </div>
+          {canRecord && (
+            <button
+              type="button"
+              onClick={() => void startRecording()}
+              disabled={recordingLocked || (mode === 'poem' && isLongPoem)}
+              className="inline-flex h-12 min-w-0 items-center justify-center gap-1.5 rounded-lg bg-ink px-2 text-sm font-medium text-paper shadow-lg transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40 sm:h-14 sm:min-w-40 sm:gap-2 sm:rounded-full sm:px-5"
+            >
+              <Mic className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" aria-hidden="true" />
+              <span>{state.phase === 'done' ? '再读' : '开始跟读'}</span>
+            </button>
+          )}
+          {state.phase === 'preparing' && (
+            <button type="button" disabled className="inline-flex h-12 min-w-0 items-center justify-center rounded-lg bg-jade px-2 text-paper sm:h-14 sm:min-w-40 sm:rounded-full sm:px-5">
+              <span className="font-serif text-2xl">{state.countdown}</span>
+            </button>
+          )}
+          {state.phase === 'recording' && (
+            <button
+              type="button"
+              onClick={() => void stopRecording()}
+              className="inline-flex h-12 min-w-0 items-center justify-center gap-1.5 rounded-lg bg-cinnabar px-2 text-sm font-medium text-white shadow-lg sm:h-14 sm:min-w-40 sm:gap-2 sm:rounded-full sm:px-5"
+            >
+              <Square className="h-5 w-5" aria-hidden="true" />
+              <span>结束</span>
+            </button>
+          )}
+          {state.phase === 'ready' && (
+            <button
+              type="button"
+              onClick={() => void submitRecite()}
+              className="inline-flex h-12 min-w-0 items-center justify-center gap-1.5 rounded-lg bg-jade px-2 text-sm font-medium text-white shadow-lg sm:h-14 sm:min-w-40 sm:gap-2 sm:rounded-full sm:px-5"
+            >
+              <Send className="h-5 w-5" aria-hidden="true" />
+              <span>提交</span>
+            </button>
+          )}
+          {state.phase === 'submitting' && (
+            <button type="button" disabled className="inline-flex h-12 min-w-0 items-center justify-center rounded-lg bg-jade px-2 text-sm text-white opacity-70 sm:h-14 sm:min-w-40 sm:rounded-full sm:px-5">
+              正在听
+            </button>
           )}
 
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href={returnTo}
-              className="inline-flex items-center gap-2 rounded-lg border border-edge px-4 py-2 text-sm font-medium text-ink-mid transition-colors hover:bg-white/70"
+          <div className="flex min-w-0 items-center justify-end gap-1">
+            {(state.phase === 'ready' || state.phase === 'done') && (
+              <button
+                type="button"
+                onClick={() => resetCapture()}
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-ink-mid transition-colors hover:bg-paper-block"
+                aria-label="重新录音"
+                title="重录"
+              >
+                <RotateCcw className="h-4 w-4" />
+              </button>
+            )}
+            <button
+              type="button"
+              role="switch"
+              aria-checked={showPinyin}
+              onClick={() => void togglePinyin()}
+              disabled={interactionLocked}
+              className="inline-flex h-12 min-w-0 items-center gap-1.5 rounded-lg px-2 text-sm text-ink-mid transition-colors hover:bg-paper-block disabled:opacity-40 sm:gap-2 sm:px-4"
             >
-              <BookOpenText className="h-4 w-4" aria-hidden="true" />
-              {returnTo.startsWith('/poems') ? '返回诗笺地图' : '返回上一处'}
-            </Link>
-            <Link
-              href={withReturnTo(`/quiz/${poem.id}`, returnTo)}
-              className="inline-flex items-center gap-2 rounded-lg border border-edge px-4 py-2 text-sm font-medium text-ink-mid transition-colors hover:bg-white/70"
-            >
-              青藤考你
-            </Link>
+              <span className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${showPinyin ? 'bg-jade' : 'bg-edge'}`}>
+                <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${showPinyin ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
+              </span>
+              <span>拼音</span>
+            </button>
           </div>
-        </section>
+        </div>
+        {(standardMessage || standardStatus === 'error') && (
+          <p role="status" className={`px-3 pb-1 text-center text-xs ${standardStatus === 'error' ? 'text-cinnabar' : 'text-ink-faint'}`}>
+            {standardMessage}
+            {standardSource === 'tencent' && standardPart.count > 1 ? `（${standardPart.index + 1}/${standardPart.count}）` : ''}
+          </p>
+        )}
       </div>
+
+      <footer className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-edge pt-4">
+        <Link href={returnTo} className="inline-flex items-center gap-2 text-sm text-ink-mid transition-colors hover:text-ink">
+          <BookOpenText className="h-4 w-4" aria-hidden="true" />
+          {returnTo.startsWith('/poems') ? '返回诗笺地图' : '返回上一处'}
+        </Link>
+        <Link href={withReturnTo(`/quiz/${poem.id}`, returnTo)} className="inline-flex items-center gap-2 text-sm text-ink-mid transition-colors hover:text-ink">
+          <Volume2 className="h-4 w-4 text-jade" aria-hidden="true" />
+          青藤考你
+        </Link>
+      </footer>
     </main>
   )
 }

@@ -89,6 +89,7 @@ export function MemoryManager() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [confirmClear, setConfirmClear] = useState(false)
   const [settingsPending, setSettingsPending] = useState(false)
+  const [expanded, setExpanded] = useState(false)
 
   const loadMemories = useCallback(async (offset = 0) => {
     offset === 0 ? setLoading(true) : setLoadingMore(true)
@@ -151,11 +152,14 @@ export function MemoryManager() {
   }
 
   function startEditing(item: MemoryItem) {
+    setExpanded(true)
     setEditingId(item.id)
     setEditingContent(item.content)
     setConfirmDeleteId(null)
     setNotice(null)
   }
+
+  const visibleItems = expanded ? items : items.slice(0, 3)
 
   async function saveCorrection(memoryId: string) {
     const content = editingContent.trim()
@@ -347,7 +351,7 @@ export function MemoryManager() {
           </div>
         ) : (
           <div className="divide-y divide-edge">
-            {items.map(item => (
+            {visibleItems.map(item => (
               <article key={item.id} className="py-4">
                 {editingId === item.id ? (
                   <div className="space-y-3">
@@ -447,7 +451,21 @@ export function MemoryManager() {
           </div>
         )}
 
-        {hasMore && (
+        {items.length > 3 && (
+          <div className="border-t border-edge pt-4 text-center">
+            <button
+              type="button"
+              onClick={() => setExpanded(current => !current)}
+              className="inline-flex h-10 items-center gap-2 rounded-lg border border-edge bg-paper px-4 text-sm text-ink-mid transition-colors hover:border-jade/45 hover:text-ink"
+              aria-expanded={expanded}
+            >
+              <ChevronDown className={`h-4 w-4 transition-transform ${expanded ? 'rotate-180' : ''}`} aria-hidden="true" />
+              {expanded ? '收起 Memory' : `展开管理全部 ${total} 条`}
+            </button>
+          </div>
+        )}
+
+        {expanded && hasMore && (
           <div className="border-t border-edge pt-4 text-center">
             <button
               type="button"
