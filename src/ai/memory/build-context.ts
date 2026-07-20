@@ -1,10 +1,13 @@
 import 'server-only'
+import { isMemoryEnabled } from '@/lib/memory-preferences'
 import { getProfile } from './mid-term'
 export { renderMemoryContext } from './render-context'
 
 export async function buildSystemContext(userId: string, userName: string): Promise<string> {
+  if (!(await isMemoryEnabled(userId))) return ''
+
   const profile = await getProfile(userId)
-  if (!profile) return ''
+  if (!profile || !(await isMemoryEnabled(userId))) return ''
 
   const hasData =
     profile.recentPoems.length > 0 ||
@@ -12,10 +15,6 @@ export async function buildSystemContext(userId: string, userName: string): Prom
     profile.totalConversations > 1
 
   if (!hasData) return ''
-
-  console.log(
-    `[mid-term] context | user:${userId.slice(0, 8)} | poems:[${profile.recentPoems.join(', ')}] | themes:[${profile.recentThemes.join(', ')}] | days7:${profile.activeDays7}`,
-  )
 
   const lines: string[] = [
     '---',

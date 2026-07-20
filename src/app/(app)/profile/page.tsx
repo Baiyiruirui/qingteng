@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { desc, eq } from 'drizzle-orm'
 import { Activity, BookOpenText, ClipboardCheck, Flame, GraduationCap, TrendingUp } from 'lucide-react'
 import { AppNav } from '@/components/AppNav'
+import { MemoryManager } from '@/components/MemoryManager'
 import { withReturnTo } from '@/lib/navigation'
 import { SealStamp } from '@/components/SealStamp'
 import { db } from '@/db'
@@ -293,6 +294,8 @@ export default async function ProfilePage() {
             suffix={averageScore === null ? '' : '%'}
           />
         </section>
+
+        <MemoryManager />
 
         <section className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
           <div className="space-y-4">

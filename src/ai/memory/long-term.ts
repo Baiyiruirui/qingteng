@@ -1,6 +1,6 @@
 import 'server-only'
 import { generateText } from 'ai'
-import { cosineDistance, desc, and, eq, ne, sql } from 'drizzle-orm'
+import { cosineDistance, desc, and, eq, lt, ne, sql } from 'drizzle-orm'
 import { route } from '@/ai/router'
 import { db } from '@/db'
 import { memories } from '@/db/schema'
@@ -8,6 +8,10 @@ import { embed } from '@/ai/embedding'
 import { buildExtractPrompt } from '@/ai/prompts/v1/memory-extract'
 import { buildImmersionMemoryPrompt } from '@/ai/prompts/v1/immersion-memory'
 import { telemetry } from '@/ai/observability/telemetry'
+import { AI_GENERATION_BUDGETS } from '@/lib/ai-budget'
+import { getMemoryPreferences, isMemoryEnabled } from '@/lib/memory-preferences'
+import { shouldSkipMemoryExtraction, userTextFromChatTranscript } from './extraction-policy'
+import { memoryRetentionCutoff, type MemoryRetentionDays } from './preferences-policy'
 import {
   MEMORY_CAP_PER_USER,
   MEMORY_DECAY_BASE,
@@ -58,8 +62,12 @@ function parseExtracted(raw: string): ExtractedMemory[] {
 }
 
 export async function extractAndStore(userId: string, transcript: string): Promise<void> {
+  if (shouldSkipMemoryExtraction(userTextFromChatTranscript(transcript))) return
+  if (!(await isMemoryEnabled(userId))) return
+
   const { text } = await generateText({
     model: route.quizGenerate, // DeepSeek — cheap
+    ...AI_GENERATION_BUDGETS.memoryExtraction,
     prompt: buildExtractPrompt(transcript),
     experimental_telemetry: telemetry('qingteng.memory.extract', {
       mode: 'memory-extract',
@@ -70,11 +78,17 @@ export async function extractAndStore(userId: string, transcript: string): Promi
 
   const extracted = parseExtracted(text)
   if (extracted.length === 0) return
+  if (!(await isMemoryEnabled(userId))) return
 
   await storeMemoryCandidates(userId, extracted)
 }
 
 async function storeMemoryCandidates(userId: string, candidates: ExtractedMemory[]): Promise<void> {
+  if (!(await isMemoryEnabled(userId))) return
+
+  const preferences = await getMemoryPreferences(userId)
+  await cleanupExpiredMemories(userId, preferences.retentionDays)
+
   const seenContents = new Set<string>()
   const normalizedCandidates = candidates.flatMap(m => {
     const content = normalizeMemoryContent(m.content)
@@ -134,8 +148,12 @@ export async function extractImmersionAndStore(input: {
   userText: string
   assistantText: string
 }): Promise<void> {
+  if (shouldSkipMemoryExtraction(input.userText)) return
+  if (!(await isMemoryEnabled(input.userId))) return
+
   const { text } = await generateText({
     model: route.quizGenerate,
+    ...AI_GENERATION_BUDGETS.memoryExtraction,
     prompt: buildImmersionMemoryPrompt(input),
     experimental_telemetry: telemetry('qingteng.memory.extract', {
       mode: 'immersion-memory-extract',
@@ -147,6 +165,7 @@ export async function extractImmersionAndStore(input: {
 
   const extracted = parseExtracted(text)
   if (extracted.length === 0) return
+  if (!(await isMemoryEnabled(input.userId))) return
 
   await storeMemoryCandidates(input.userId, extracted)
 }
@@ -156,6 +175,11 @@ export async function recall(
   queryText: string,
   limit = RECALL_LIMIT,
 ): Promise<RecalledMemory[]> {
+  if (!(await isMemoryEnabled(userId))) return []
+
+  const preferences = await getMemoryPreferences(userId)
+  await cleanupExpiredMemories(userId, preferences.retentionDays)
+
   const queryVector = await embed(queryText)
   const similarity = sql<number>`1 - (${cosineDistance(memories.embedding, queryVector)})`
   const effectiveScore = decayedScoreExpr(similarity)
@@ -214,14 +238,26 @@ export async function recall(
     }
   }
 
-  console.log(
-    `[long-term] recall | user:${userId.slice(0, 8)} | query:"${queryText.slice(0, 40)}" |`,
-    result.length === 0
-      ? 'no results'
-      : result.map(m => `[${m.source}] ${m.content.slice(0, 35)}`).join(' // '),
-  )
+  return (await isMemoryEnabled(userId)) ? result : []
+}
 
-  return result
+export async function cleanupExpiredMemories(
+  userId: string,
+  retentionDays: MemoryRetentionDays,
+): Promise<number> {
+  const cutoff = memoryRetentionCutoff(retentionDays)
+  const deleted = await db
+    .delete(memories)
+    .where(and(eq(memories.userId, userId), lt(memories.createdAt, cutoff)))
+    .returning({ id: memories.id })
+
+  if (deleted.length > 0) {
+    console.info(
+      `[long-term] expired ${deleted.length} memories for user:${userId.slice(0, 8)}`,
+    )
+  }
+
+  return deleted.length
 }
 
 export async function enforceMemoryCap(userId: string): Promise<number> {

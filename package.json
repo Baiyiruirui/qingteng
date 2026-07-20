@@ -14,6 +14,7 @@
     "verify:data": "tsx --env-file=.env.local scripts/verify-data.ts",
     "verify:security": "tsx --env-file=.env.local scripts/verify-security.ts",
     "verify:memory": "tsx --env-file=.env.local scripts/verify-memory-policy.ts",
+    "verify:memory:controls": "tsx src/ai/memory/verify-controls.ts",
     "verify:wrong-question": "tsx scripts/verify-wrong-question-policy.ts",
     "verify:providers": "tsx scripts/verify-provider-guards.ts",
     "audit:quiz": "tsx --env-file=.env.local scripts/audit-quiz-bank.ts",
