@@ -51,9 +51,10 @@ export function parseUiMessages(value: unknown): ParseResult {
     }
   }
 
-  const messageId = typeof last.id === 'string' && last.id.length > 0 && last.id.length <= 128
-    ? last.id
-    : 'message-new'
+  const messageId = typeof last.id === 'string' ? last.id.trim() : ''
+  if (!messageId || messageId.length > 128 || /[\u0000-\u001f\u007f]/.test(messageId)) {
+    return { success: false, message: '消息标识格式不正确' }
+  }
 
   return { success: true, data: { messageId, lastUserText } }
 }

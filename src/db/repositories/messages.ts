@@ -1,5 +1,5 @@
 import type { UIMessage } from 'ai'
-import { desc, eq } from 'drizzle-orm'
+import { and, desc, eq, sql } from 'drizzle-orm'
 import { db } from '@/db'
 import { messages } from '@/db/schema'
 import {
@@ -20,6 +20,91 @@ export async function appendMessage(
     .values({ conversationId, role, content, meta })
     .returning()
   return msg
+}
+
+export type PersistedMessage = typeof messages.$inferSelect
+
+export async function findUserMessageByClientId(
+  conversationId: string,
+  clientMessageId: string,
+): Promise<PersistedMessage | null> {
+  const [message] = await db
+    .select()
+    .from(messages)
+    .where(
+      and(
+        eq(messages.conversationId, conversationId),
+        eq(messages.role, 'user'),
+        sql`${messages.meta} ->> 'clientMessageId' = ${clientMessageId}`,
+      ),
+    )
+    .limit(1)
+
+  return message ?? null
+}
+
+export async function findAssistantMessageByReplyId(
+  conversationId: string,
+  clientMessageId: string,
+): Promise<PersistedMessage | null> {
+  const [message] = await db
+    .select()
+    .from(messages)
+    .where(
+      and(
+        eq(messages.conversationId, conversationId),
+        eq(messages.role, 'assistant'),
+        sql`${messages.meta} ->> 'inReplyTo' = ${clientMessageId}`,
+      ),
+    )
+    .limit(1)
+
+  return message ?? null
+}
+
+export async function appendUserMessageOnce({
+  conversationId,
+  clientMessageId,
+  content,
+}: {
+  conversationId: string
+  clientMessageId: string
+  content: string
+}) {
+  const existing = await findUserMessageByClientId(conversationId, clientMessageId)
+  if (existing) {
+    return {
+      message: existing,
+      inserted: false,
+      contentMatches: existing.content === content,
+    }
+  }
+
+  const message = await appendMessage(conversationId, 'user', content, {
+    clientMessageId,
+  })
+  return { message, inserted: true, contentMatches: true }
+}
+
+export async function appendAssistantMessageOnce({
+  conversationId,
+  clientMessageId,
+  content,
+  meta,
+}: {
+  conversationId: string
+  clientMessageId: string
+  content: string
+  meta?: Record<string, unknown>
+}) {
+  const existing = await findAssistantMessageByReplyId(conversationId, clientMessageId)
+  if (existing) return { message: existing, inserted: false }
+
+  const message = await appendMessage(conversationId, 'assistant', content, {
+    ...meta,
+    inReplyTo: clientMessageId,
+  })
+  return { message, inserted: true }
 }
 
 export async function loadAuthoritativeUiMessages(
