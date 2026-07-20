@@ -1,5 +1,3 @@
-import 'server-only'
-
 type AiGenerationBudget = {
   maxOutputTokens: number
   maxRetries: number
