@@ -23,6 +23,7 @@ import {
 } from '@/lib/rate-limit'
 import { parseUiMessages } from '@/lib/request-limits'
 import { scheduleAfterResponse } from '@/lib/after-response'
+import { AI_GENERATION_BUDGETS, requestAbortSignal } from '@/lib/ai-budget'
 import {
   acquireTurnLock,
   createReliabilityKey,
@@ -231,6 +232,8 @@ export async function POST(req: Request) {
 
     const result = streamText({
       model: route.characterDialog,
+      ...AI_GENERATION_BUDGETS.chat,
+      abortSignal: requestAbortSignal(req),
       system: systemPrompt,
       messages: await convertToModelMessages(authoritativeMessages),
       experimental_telemetry: telemetry('qingteng.chat', {
